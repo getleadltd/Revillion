@@ -249,8 +249,8 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Earn industry-leading CPA commissions on First-Time Deposits with transparent tracking, 
-                  weekly payments, and no hidden fees or deductions.
+                  Earn industry-leading CPA commissions on First-Time Deposits with transparent tracking 
+                  and no hidden fees or deductions.
                 </CardDescription>
               </CardContent>
             </Card>
