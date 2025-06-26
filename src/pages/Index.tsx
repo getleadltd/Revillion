@@ -186,19 +186,19 @@ const Index = () => {
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div className="group">
               <div className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text mb-2">
-                $50M+
+                $10M+
               </div>
               <p className="text-gray-600 font-semibold">Paid to Affiliates</p>
             </div>
             <div className="group">
               <div className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text mb-2">
-                10K+
+                800
               </div>
               <p className="text-gray-600 font-semibold">Active Affiliates</p>
             </div>
             <div className="group">
               <div className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text mb-2">
-                50+
+                40+
               </div>
               <p className="text-gray-600 font-semibold">Global Markets</p>
             </div>
