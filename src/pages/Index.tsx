@@ -13,7 +13,7 @@ const Index = () => {
     website: '',
     trafficSource: '',
     geoInterest: '',
-    monthlyTraffic: '',
+    contact: '',
     socialPlatforms: '',
     message: ''
   });
@@ -27,7 +27,7 @@ const Index = () => {
       website: '', 
       trafficSource: '',
       geoInterest: '',
-      monthlyTraffic: '',
+      contact: '',
       socialPlatforms: '',
       message: '' 
     });
@@ -695,16 +695,16 @@ const Index = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="monthlyTraffic" className="block text-sm font-bold text-gray-800 mb-3">
-                        Monthly Traffic Volume
+                      <label htmlFor="contact" className="block text-sm font-bold text-gray-800 mb-3">
+                        Telegram/Phone Contact
                       </label>
                       <Input
-                        id="monthlyTraffic"
+                        id="contact"
                         type="text"
-                        value={formData.monthlyTraffic}
-                        onChange={(e) => setFormData({...formData, monthlyTraffic: e.target.value})}
+                        value={formData.contact}
+                        onChange={(e) => setFormData({...formData, contact: e.target.value})}
                         className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                        placeholder="e.g., 10K, 50K, 100K+ visitors"
+                        placeholder="Telegram: @username or Phone: +1234567890"
                       />
                     </div>
                   </div>
