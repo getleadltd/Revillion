@@ -374,7 +374,7 @@ const Index = () => {
 
           <div className="max-w-5xl mx-auto">
             <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 rounded-3xl p-8 mb-8">
-              <div className="grid md:grid-cols-4 gap-6 mb-8">
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-2xl p-6 text-center">
                   <div className="text-3xl font-black text-orange-400 mb-2">1,247</div>
                   <div className="text-gray-300 text-sm font-semibold">Live Clicks</div>
@@ -397,14 +397,6 @@ const Index = () => {
                   <div className="flex items-center justify-center mt-2">
                     <DollarSign className="w-4 h-4 text-green-400 mr-1" />
                     <span className="text-green-400 text-xs">$2,840 earned</span>
-                  </div>
-                </div>
-                <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-2xl p-6 text-center">
-                  <div className="text-3xl font-black text-purple-400 mb-2">7.2%</div>
-                  <div className="text-gray-300 text-sm font-semibold">Conversion Rate</div>
-                  <div className="flex items-center justify-center mt-2">
-                    <BarChart3 className="w-4 h-4 text-orange-400 mr-1" />
-                    <span className="text-orange-400 text-xs">Above avg</span>
                   </div>
                 </div>
               </div>
