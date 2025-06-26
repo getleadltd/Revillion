@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield } from "lucide-react";
+import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock } from "lucide-react";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,13 +12,26 @@ const Index = () => {
     fullName: '',
     email: '',
     website: '',
+    trafficSource: '',
+    geoInterest: '',
+    monthlyTraffic: '',
+    socialPlatforms: '',
     message: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('Thank you for your interest! We will contact you within 24 hours to discuss partnership opportunities.');
-    setFormData({ fullName: '', email: '', website: '', message: '' });
+    setFormData({ 
+      fullName: '', 
+      email: '', 
+      website: '', 
+      trafficSource: '',
+      geoInterest: '',
+      monthlyTraffic: '',
+      socialPlatforms: '',
+      message: '' 
+    });
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -50,6 +63,13 @@ const Index = () => {
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
                 Why Join
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+              </button>
+              <button 
+                onClick={() => scrollToSection('tools')}
+                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
+              >
+                Tools
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
               <button 
@@ -92,6 +112,12 @@ const Index = () => {
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   Why Join
+                </button>
+                <button 
+                  onClick={() => scrollToSection('tools')}
+                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
+                >
+                  Tools
                 </button>
                 <button 
                   onClick={() => scrollToSection('offers')}
@@ -248,59 +274,212 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Offers Section */}
-      <section id="offers" className="py-24 bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
+      {/* Advanced Tools & Features Section */}
+      <section id="tools" className="py-24 bg-gradient-to-br from-white to-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+              <span className="text-orange-600 font-semibold text-sm">ADVANCED TOOLS</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+              Powerful <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Tools</span> & Features
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Advanced tracking tools and real-time analytics to maximize your affiliate success
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <Card className="group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg bg-white relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto bg-gradient-to-br from-purple-100 to-purple-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Link className="w-8 h-8 text-purple-600" />
+                </div>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Smart Short URLs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-600 text-sm leading-relaxed">
+                  Custom short URLs that make sharing on social platforms easier and improve content memorability across Telegram, Twitter & Instagram.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg bg-white relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="w-8 h-8 text-blue-600" />
+                </div>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Real-Time Analytics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-600 text-sm leading-relaxed">
+                  Advanced dashboard with real-time data tracking via postback system. Monitor registrations, deposits, and conversions instantly.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg bg-white relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto bg-gradient-to-br from-green-100 to-green-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Zap className="w-8 h-8 text-green-600" />
+                </div>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Instant Postback</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-600 text-sm leading-relaxed">
+                  Near real-time postback system delivers conversion data instantly, allowing you to optimize campaigns and track performance immediately.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg bg-white relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto bg-gradient-to-br from-red-100 to-red-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Shield className="w-8 h-8 text-red-600" />
+                </div>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Advanced Tracking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-600 text-sm leading-relaxed">
+                  Comprehensive tracking system monitors every step from registration to deposit, providing detailed insights for campaign optimization.
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Real-Time Dashboard Preview */}
+      <section className="py-24 bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-transparent"></div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="text-center mb-16">
             <div className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-400 font-semibold text-sm">PREMIUM OFFERS</span>
+              <span className="text-orange-400 font-semibold text-sm">LIVE DASHBOARD</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
+              See Your <span className="text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">Performance</span> Live
+            </h2>
+            <p className="text-xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
+              Monitor your campaigns with our advanced dashboard featuring real-time metrics, 
+              instant postback data, and comprehensive analytics.
+            </p>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 rounded-3xl p-8 mb-8">
+              <div className="grid md:grid-cols-4 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-2xl p-6 text-center">
+                  <div className="text-3xl font-black text-orange-400 mb-2">1,247</div>
+                  <div className="text-gray-300 text-sm font-semibold">Live Clicks</div>
+                  <div className="flex items-center justify-center mt-2">
+                    <Clock className="w-4 h-4 text-green-400 mr-1" />
+                    <span className="text-green-400 text-xs">Real-time</span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-2xl p-6 text-center">
+                  <div className="text-3xl font-black text-green-400 mb-2">89</div>
+                  <div className="text-gray-300 text-sm font-semibold">Registrations</div>
+                  <div className="flex items-center justify-center mt-2">
+                    <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
+                    <span className="text-green-400 text-xs">+12% today</span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-2xl p-6 text-center">
+                  <div className="text-3xl font-black text-blue-400 mb-2">34</div>
+                  <div className="text-gray-300 text-sm font-semibold">Deposits</div>
+                  <div className="flex items-center justify-center mt-2">
+                    <DollarSign className="w-4 h-4 text-green-400 mr-1" />
+                    <span className="text-green-400 text-xs">$2,840 earned</span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-2xl p-6 text-center">
+                  <div className="text-3xl font-black text-purple-400 mb-2">7.2%</div>
+                  <div className="text-gray-300 text-sm font-semibold">Conversion Rate</div>
+                  <div className="flex items-center justify-center mt-2">
+                    <BarChart3 className="w-4 h-4 text-orange-400 mr-1" />
+                    <span className="text-orange-400 text-xs">Above avg</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="inline-flex items-center bg-green-500/20 border border-green-500/30 rounded-full px-4 py-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                  <span className="text-green-400 font-semibold text-sm">Data updated via postback in real-time</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <Button 
+                onClick={() => scrollToSection('contact')}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl"
+              >
+                Access Your Dashboard
+                <BarChart3 className="ml-2 w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Offers Section */}
+      <section id="offers" className="py-24 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+              <span className="text-orange-600 font-semibold text-sm">PREMIUM OFFERS</span>
             </div>
             
             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              Premium <span className="text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">iGaming</span> Offers
+              Premium <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">iGaming</span> Offers
             </h2>
             
-            <p className="text-xl text-gray-300 mb-12 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-12 leading-relaxed">
               Promote the best casino and iGaming brands across multiple GEOs with our extensive 
               portfolio of high-converting offers. From slots and table games to live dealer experiences, 
               we provide access to top-tier operators with proven track records.
             </p>
             
-            <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 rounded-3xl p-10 mb-12 backdrop-blur-sm">
-              <h3 className="text-3xl font-bold text-white mb-8 flex items-center justify-center">
-                <Shield className="w-8 h-8 text-orange-400 mr-3" />
+            <div className="bg-gradient-to-br from-orange-500/5 to-orange-600/5 border border-orange-500/20 rounded-3xl p-10 mb-12">
+              <h3 className="text-3xl font-bold text-gray-900 mb-8 flex items-center justify-center">
+                <Shield className="w-8 h-8 text-orange-500 mr-3" />
                 Available Markets Include:
               </h3>
               <div className="grid md:grid-cols-2 gap-6 text-left">
                 <ul className="space-y-4">
-                  <li className="flex items-center text-gray-300 text-lg">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mr-4"></div>
+                  <li className="flex items-center text-gray-700 text-lg">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
                     Europe (UK, Germany, Sweden, Norway)
                   </li>
-                  <li className="flex items-center text-gray-300 text-lg">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mr-4"></div>
+                  <li className="flex items-center text-gray-700 text-lg">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
                     Latin America (Brazil, Mexico, Chile)
                   </li>
-                  <li className="flex items-center text-gray-300 text-lg">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mr-4"></div>
+                  <li className="flex items-center text-gray-700 text-lg">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
                     Asia-Pacific (Japan, India, Australia)
                   </li>
                 </ul>
                 <ul className="space-y-4">
-                  <li className="flex items-center text-gray-300 text-lg">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mr-4"></div>
+                  <li className="flex items-center text-gray-700 text-lg">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
                     North America (US, Canada)
                   </li>
-                  <li className="flex items-center text-gray-300 text-lg">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mr-4"></div>
+                  <li className="flex items-center text-gray-700 text-lg">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
                     Africa (South Africa, Nigeria, Kenya)
                   </li>
-                  <li className="flex items-center text-gray-300 text-lg">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mr-4"></div>
+                  <li className="flex items-center text-gray-700 text-lg">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
                     And many more emerging markets
                   </li>
                 </ul>
@@ -313,6 +492,106 @@ const Index = () => {
             >
               Explore Our Offers
               <Globe className="ml-2 w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Media Ready Section */}
+      <section className="py-24 bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-transparent"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-6">
+              <span className="text-orange-400 font-semibold text-sm">SOCIAL MEDIA OPTIMIZED</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
+              Perfect for <span className="text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">Social Media</span>
+            </h2>
+            <p className="text-xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
+              Our smart short URLs and content tools are specifically designed for social media success 
+              across all major platforms.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 text-white">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto bg-gradient-to-br from-blue-500/20 to-blue-600/10 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6">
+                  <MessageCircle className="w-10 h-10 text-blue-400" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-white mb-3">Telegram Ready</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                  Short, memorable URLs perfect for Telegram channels and groups. Easy sharing with instant 
+                  tracking and analytics for your community engagement.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 text-white">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto bg-gradient-to-br from-blue-400/20 to-blue-500/10 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6">
+                  <Twitter className="w-10 h-10 text-blue-400" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-white mb-3">Twitter Optimized</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                  Character-efficient short links that leave more room for engaging content. Track clicks, 
+                  engagement, and conversions from your Twitter campaigns effortlessly.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 text-white">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto bg-gradient-to-br from-pink-500/20 to-pink-600/10 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6">
+                  <Instagram className="w-10 h-10 text-pink-400" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-white mb-3">Instagram Stories</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                  Clean, professional short URLs perfect for Instagram bio links and stories. 
+                  Improve memorability and drive more traffic from your visual content.
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 rounded-3xl p-10 mb-12 text-center">
+            <h3 className="text-3xl font-bold text-white mb-6 flex items-center justify-center">
+              <Share2 className="w-8 h-8 text-orange-400 mr-3" />
+              Short URL Examples:
+            </h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-gray-800/50 rounded-2xl p-6">
+                <div className="text-orange-400 font-mono text-lg mb-2">rev.ly/casino-win</div>
+                <div className="text-gray-300 text-sm">Perfect for social posts</div>
+              </div>
+              <div className="bg-gray-800/50 rounded-2xl p-6">
+                <div className="text-orange-400 font-mono text-lg mb-2">rev.ly/slots-bonus</div>
+                <div className="text-gray-300 text-sm">Easy to remember</div>
+              </div>
+              <div className="bg-gray-800/50 rounded-2xl p-6">
+                <div className="text-orange-400 font-mono text-lg mb-2">rev.ly/mega-jackpot</div>
+                <div className="text-gray-300 text-sm">Branded and clean</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <Button 
+              onClick={() => scrollToSection('contact')}
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            >
+              Get Your Short URLs
+              <Share2 className="ml-2 w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -338,54 +617,117 @@ const Index = () => {
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-orange-600"></div>
               <CardContent className="p-10">
                 <form onSubmit={handleSubmit} className="space-y-8">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="fullName" className="block text-sm font-bold text-gray-800 mb-3">
+                        Full Name *
+                      </label>
+                      <Input
+                        id="fullName"
+                        type="text"
+                        required
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-bold text-gray-800 mb-3">
+                        Email Address *
+                      </label>
+                      <Input
+                        id="email"
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
+                        placeholder="Enter your email address"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="website" className="block text-sm font-bold text-gray-800 mb-3">
+                        Website/Traffic Source *
+                      </label>
+                      <Input
+                        id="website"
+                        type="url"
+                        required
+                        value={formData.website}
+                        onChange={(e) => setFormData({...formData, website: e.target.value})}
+                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
+                        placeholder="https://your-website.com"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="trafficSource" className="block text-sm font-bold text-gray-800 mb-3">
+                        Primary Traffic Source *
+                      </label>
+                      <Input
+                        id="trafficSource"
+                        type="text"
+                        required
+                        value={formData.trafficSource}
+                        onChange={(e) => setFormData({...formData, trafficSource: e.target.value})}
+                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
+                        placeholder="Social Media, PPC, Email, SEO, etc."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="geoInterest" className="block text-sm font-bold text-gray-800 mb-3">
+                        GEOs of Interest
+                      </label>
+                      <Input
+                        id="geoInterest"
+                        type="text"
+                        value={formData.geoInterest}
+                        onChange={(e) => setFormData({...formData, geoInterest: e.target.value})}
+                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
+                        placeholder="UK, Germany, Brazil, etc."
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="monthlyTraffic" className="block text-sm font-bold text-gray-800 mb-3">
+                        Monthly Traffic Volume
+                      </label>
+                      <Input
+                        id="monthlyTraffic"
+                        type="text"
+                        value={formData.monthlyTraffic}
+                        onChange={(e) => setFormData({...formData, monthlyTraffic: e.target.value})}
+                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
+                        placeholder="e.g., 10K, 50K, 100K+ visitors"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label htmlFor="fullName" className="block text-sm font-bold text-gray-800 mb-3">
-                      Full Name *
+                    <label htmlFor="socialPlatforms" className="block text-sm font-bold text-gray-800 mb-3">
+                      Social Media Platforms Used
                     </label>
                     <Input
-                      id="fullName"
+                      id="socialPlatforms"
                       type="text"
-                      required
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                      value={formData.socialPlatforms}
+                      onChange={(e) => setFormData({...formData, socialPlatforms: e.target.value})}
                       className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-bold text-gray-800 mb-3">
-                      Email Address *
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                      placeholder="Enter your email address"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="website" className="block text-sm font-bold text-gray-800 mb-3">
-                      Website/Traffic Source *
-                    </label>
-                    <Input
-                      id="website"
-                      type="url"
-                      required
-                      value={formData.website}
-                      onChange={(e) => setFormData({...formData, website: e.target.value})}
-                      className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                      placeholder="https://your-website.com"
+                      placeholder="Telegram, Twitter, Instagram, TikTok, etc."
                     />
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-bold text-gray-800 mb-3">
-                      Message
+                      Additional Information
                     </label>
                     <Textarea
                       id="message"
@@ -393,7 +735,7 @@ const Index = () => {
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                       className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
                       rows={5}
-                      placeholder="Tell us about your traffic sources and experience with affiliate marketing..."
+                      placeholder="Tell us about your experience with affiliate marketing, preferred commission structure, or any specific requirements..."
                     />
                   </div>
 
