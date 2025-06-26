@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -498,65 +497,64 @@ const Index = () => {
       </section>
 
       {/* Social Media Ready Section */}
-      <section className="py-24 bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-transparent"></div>
-        </div>
-        
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-white">        
+        <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-400 font-semibold text-sm">SOCIAL MEDIA OPTIMIZED</span>
+            <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+              <span className="text-orange-600 font-semibold text-sm">SOCIAL MEDIA OPTIMIZED</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              Perfect for <span className="text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">Social Media</span>
+            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight text-gray-900">
+              Perfect for <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Social Media</span>
             </h2>
-            <p className="text-xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
               Our smart short URLs and content tools are specifically designed for social media success 
               across all major platforms.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 text-white">
+            <Card className="bg-white hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-400"></div>
               <CardHeader className="text-center pb-4">
-                <div className="mx-auto bg-gradient-to-br from-blue-500/20 to-blue-600/10 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6">
-                  <MessageCircle className="w-10 h-10 text-blue-400" />
+                <div className="mx-auto bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <MessageCircle className="w-10 h-10 text-blue-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-white mb-3">Telegram Ready</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Telegram Ready</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                <CardDescription className="text-gray-600 text-base leading-relaxed">
                   Short, memorable URLs perfect for Telegram channels and groups. Easy sharing with instant 
                   tracking and analytics for your community engagement.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 text-white">
+            <Card className="bg-white hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-500"></div>
               <CardHeader className="text-center pb-4">
-                <div className="mx-auto bg-gradient-to-br from-blue-400/20 to-blue-500/10 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6">
-                  <Twitter className="w-10 h-10 text-blue-400" />
+                <div className="mx-auto bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Twitter className="w-10 h-10 text-blue-500" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-white mb-3">Twitter Optimized</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Twitter Optimized</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                <CardDescription className="text-gray-600 text-base leading-relaxed">
                   Character-efficient short links that leave more room for engaging content. Track clicks, 
                   engagement, and conversions from your Twitter campaigns effortlessly.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-orange-500/20 text-white">
+            <Card className="bg-white hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 to-orange-400"></div>
               <CardHeader className="text-center pb-4">
-                <div className="mx-auto bg-gradient-to-br from-pink-500/20 to-pink-600/10 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6">
-                  <Instagram className="w-10 h-10 text-pink-400" />
+                <div className="mx-auto bg-gradient-to-br from-pink-50 to-orange-50 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Instagram className="w-10 h-10 text-pink-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-white mb-3">Instagram Stories</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Instagram Stories</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-gray-300 text-base leading-relaxed">
+                <CardDescription className="text-gray-600 text-base leading-relaxed">
                   Clean, professional short URLs perfect for Instagram bio links and stories. 
                   Improve memorability and drive more traffic from your visual content.
                 </CardDescription>
@@ -564,23 +562,23 @@ const Index = () => {
             </Card>
           </div>
 
-          <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 rounded-3xl p-10 mb-12 text-center">
-            <h3 className="text-3xl font-bold text-white mb-6 flex items-center justify-center">
-              <Share2 className="w-8 h-8 text-orange-400 mr-3" />
+          <div className="bg-gradient-to-br from-orange-500/5 to-orange-600/5 border border-orange-500/20 rounded-3xl p-10 mb-12 text-center">
+            <h3 className="text-3xl font-bold text-gray-900 mb-6 flex items-center justify-center">
+              <Share2 className="w-8 h-8 text-orange-500 mr-3" />
               Short URL Examples:
             </h3>
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-gray-800/50 rounded-2xl p-6">
-                <div className="text-orange-400 font-mono text-lg mb-2">rev.ly/casino-win</div>
-                <div className="text-gray-300 text-sm">Perfect for social posts</div>
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/casino-win</div>
+                <div className="text-gray-600 text-sm">Perfect for social posts</div>
               </div>
-              <div className="bg-gray-800/50 rounded-2xl p-6">
-                <div className="text-orange-400 font-mono text-lg mb-2">rev.ly/slots-bonus</div>
-                <div className="text-gray-300 text-sm">Easy to remember</div>
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/slots-bonus</div>
+                <div className="text-gray-600 text-sm">Easy to remember</div>
               </div>
-              <div className="bg-gray-800/50 rounded-2xl p-6">
-                <div className="text-orange-400 font-mono text-lg mb-2">rev.ly/mega-jackpot</div>
-                <div className="text-gray-300 text-sm">Branded and clean</div>
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/mega-jackpot</div>
+                <div className="text-gray-600 text-sm">Branded and clean</div>
               </div>
             </div>
           </div>
