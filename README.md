@@ -42,7 +42,7 @@ To modify this theme:
 - Modern React components
 - Affiliate marketing focused layout
 - SEO optimized
-- Fast loading with Vite bundling
+- Fast loading with Vite bundling.
 
 ### Support
 
