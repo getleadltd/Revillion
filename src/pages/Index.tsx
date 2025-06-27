@@ -137,7 +137,7 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section id="hero" className="relative bg-gradient-to-br from-black via-gray-900 to-black text-white py-24 overflow-hidden">
+      <section id="hero" className="relative bg-gradient-to-br from-black via-gray-900 to-black text-white py-16 md:py-24 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-transparent"></div>
@@ -145,7 +145,7 @@ const Index = () => {
         </div>
         
         <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-6 py-2 mb-8 animate-fade-in">
+          <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-6 py-2 mb-6 md:mb-8 animate-fade-in">
             <Star className="w-4 h-4 text-orange-500 mr-2" />
             <span className="text-orange-400 font-medium">#1 iGaming Affiliate Network</span>
           </div>
