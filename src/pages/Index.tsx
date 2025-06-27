@@ -223,74 +223,98 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 mb-8">
-            {/* Casino Partner Logos with Real Images */}
+            {/* 22BET Casino */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src="/lovable-uploads/4f35ff1a-f28b-4a51-a003-39b0894a6f22.png" 
                     alt="22BET Casino Logo" 
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-16 max-w-full object-contain"
+                    style={{ minHeight: '40px', minWidth: '60px' }}
+                    onError={(e) => {
+                      console.log('Error loading 22BET logo');
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
+                    }}
                   />
+                  <div className="text-gray-500 font-bold text-sm hidden">22BET</div>
                 </div>
               </div>
             </div>
 
+            {/* BET LABEL Casino */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src="/lovable-uploads/be924c2e-ec55-4121-9248-f7f8f414b94c.png" 
                     alt="BET LABEL Casino Logo" 
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-16 max-w-full object-contain"
+                    style={{ minHeight: '40px', minWidth: '60px' }}
+                    onError={(e) => {
+                      console.log('Error loading BET LABEL logo');
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
+                    }}
                   />
+                  <div className="text-gray-500 font-bold text-sm hidden">BET LABEL</div>
                 </div>
               </div>
             </div>
 
+            {/* 365BET Casino */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src="/lovable-uploads/cbc05380-1b10-42f0-9662-1d9088bd6157.png" 
                     alt="365BET Casino Logo" 
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-16 max-w-full object-contain"
+                    style={{ minHeight: '40px', minWidth: '60px' }}
+                    onError={(e) => {
+                      console.log('Error loading 365BET logo');
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
+                    }}
+                  />
+                  <div className="text-gray-500 font-bold text-sm hidden">365BET</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Placeholder Partners */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
+                    alt="Casino Partner Logo" 
+                    className="max-h-16 max-w-full object-contain"
                   />
                 </div>
               </div>
             </div>
 
             <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
                     alt="Casino Partner Logo" 
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-16 max-w-full object-contain"
                   />
                 </div>
               </div>
             </div>
 
             <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
                     alt="Casino Partner Logo" 
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
-                  <img 
-                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Casino Partner Logo" 
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-16 max-w-full object-contain"
                   />
                 </div>
               </div>
