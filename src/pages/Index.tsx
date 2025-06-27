@@ -181,7 +181,7 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 md:py-16 bg-white border-b border-gray-100">
+      <section className="py-8 md:py-12 bg-white border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div className="group">
@@ -206,8 +206,87 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Trusted Casino Partners Section */}
+      <section className="py-12 md:py-16 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+              <span className="text-orange-600 font-semibold text-sm">PREMIUM PARTNERS</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
+              Trusted <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Casino</span> Partners
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Work with industry-leading casino brands that deliver exceptional conversion rates and player retention
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 mb-8">
+            {/* Casino Partner Logos */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
+                  <div className="text-red-600 font-black text-xl">ROYAL</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
+                  <div className="text-blue-600 font-black text-xl">MEGA</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
+                  <div className="text-green-600 font-black text-xl">LUCKY</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center">
+                  <div className="text-purple-600 font-black text-xl">GOLD</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
+                  <div className="text-orange-600 font-black text-xl">SPIN</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center">
+                  <div className="text-pink-600 font-black text-xl">ELITE</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <div className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-6 py-3 mb-6">
+              <Shield className="w-5 h-5 text-green-600 mr-2" />
+              <span className="text-green-700 font-semibold">All partners are licensed and regulated</span>
+            </div>
+            <p className="text-gray-600 max-w-3xl mx-auto">
+              Every casino partner in our network is fully licensed, regulated, and vetted for quality, 
+              ensuring your traffic converts with trusted brands that players love.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Why Join Section */}
-      <section id="why-join" className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-white">
+      <section id="why-join" className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-20">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
@@ -274,7 +353,7 @@ const Index = () => {
       </section>
 
       {/* Advanced Tools & Features Section */}
-      <section id="tools" className="py-16 md:py-24 bg-gradient-to-br from-white to-gray-50">
+      <section id="tools" className="py-12 md:py-20 bg-gradient-to-br from-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-20">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
@@ -353,7 +432,7 @@ const Index = () => {
       </section>
 
       {/* Real-Time Dashboard Preview */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
+      <section className="py-12 md:py-20 bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-transparent"></div>
         </div>
@@ -423,7 +502,7 @@ const Index = () => {
       </section>
 
       {/* Offers Section */}
-      <section id="offers" className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-white">
+      <section id="offers" className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
@@ -489,7 +568,7 @@ const Index = () => {
       </section>
 
       {/* Social Media Ready Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-white">        
+      <section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">        
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-16">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
@@ -588,7 +667,7 @@ const Index = () => {
       </section>
 
       {/* Contact Form Section */}
-      <section id="contact" className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-white">
+      <section id="contact" className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12 md:mb-16">
@@ -744,7 +823,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-8 md:py-12">
+      <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
         <div className="container mx-auto px-4 text-center">
           <div className="text-3xl font-black mb-6 text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">
             REVILLION
