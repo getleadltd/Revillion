@@ -228,6 +228,42 @@ const Index = () => {
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div className="h-16 flex items-center justify-center">
                   <img 
+                    src="/lovable-uploads/4f35ff1a-f28b-4a51-a003-39b0894a6f22.png" 
+                    alt="22BET Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/be924c2e-ec55-4121-9248-f7f8f414b94c.png" 
+                    alt="BET LABEL Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/cbc05380-1b10-42f0-9662-1d9088bd6157.png" 
+                    alt="365BET Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center">
+                  <img 
                     src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
                     alt="Casino Partner Logo" 
                     className="max-h-full max-w-full object-contain"
@@ -241,7 +277,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center">
                   <img 
                     src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Mega Casino Logo" 
+                    alt="Casino Partner Logo" 
                     className="max-h-full max-w-full object-contain"
                   />
                 </div>
@@ -253,43 +289,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center">
                   <img 
                     src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Lucky Casino Logo" 
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
-                  <img 
-                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Gold Casino Logo" 
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
-                  <img 
-                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Spin Casino Logo" 
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 flex items-center justify-center">
-                  <img 
-                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Elite Casino Logo" 
+                    alt="Casino Partner Logo" 
                     className="max-h-full max-w-full object-contain"
                   />
                 </div>
