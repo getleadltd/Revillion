@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -222,51 +223,75 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 mb-8">
-            {/* Casino Partner Logos */}
+            {/* Casino Partner Logos with Real Images */}
             <div className="group">
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
-                  <div className="text-red-600 font-black text-xl">ROYAL</div>
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
+                    alt="Casino Partner Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
               </div>
             </div>
 
             <div className="group">
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
-                  <div className="text-blue-600 font-black text-xl">MEGA</div>
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
+                    alt="Mega Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
               </div>
             </div>
 
             <div className="group">
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
-                  <div className="text-green-600 font-black text-xl">LUCKY</div>
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
+                    alt="Lucky Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
               </div>
             </div>
 
             <div className="group">
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center">
-                  <div className="text-purple-600 font-black text-xl">GOLD</div>
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
+                    alt="Gold Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
               </div>
             </div>
 
             <div className="group">
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
-                  <div className="text-orange-600 font-black text-xl">SPIN</div>
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
+                    alt="Spin Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
               </div>
             </div>
 
             <div className="group">
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center">
-                  <div className="text-pink-600 font-black text-xl">ELITE</div>
+                <div className="h-16 flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
+                    alt="Elite Casino Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
               </div>
             </div>
