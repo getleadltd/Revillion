@@ -49,11 +49,16 @@ const Index = () => {
               src="/lovable-uploads/ac70f0ff-8ad7-4900-85c0-f2c81d6a2136.png" 
               alt="REVILLION Logo" 
               className="h-8 md:h-10 w-auto"
+              onLoad={() => console.log('REVILLION logo loaded successfully')}
               onError={(e) => {
-                console.log('Error loading REVILLION logo');
+                console.error('Failed to load REVILLION logo from:', e.currentTarget.src);
+                console.error('Attempting fallback to text logo');
                 e.currentTarget.style.display = 'none';
                 const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'block';
+                if (fallback) {
+                  fallback.style.display = 'block';
+                  fallback.classList.remove('hidden');
+                }
               }}
             />
             <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text hidden">
@@ -889,11 +894,16 @@ const Index = () => {
             src="/lovable-uploads/ac70f0ff-8ad7-4900-85c0-f2c81d6a2136.png" 
             alt="REVILLION Logo" 
             className="h-8 md:h-10 w-auto mx-auto mb-6"
+            onLoad={() => console.log('REVILLION footer logo loaded successfully')}
             onError={(e) => {
-              console.log('Error loading REVILLION logo in footer');
+              console.error('Failed to load REVILLION footer logo from:', e.currentTarget.src);
+              console.error('Attempting fallback to text logo');
               e.currentTarget.style.display = 'none';
               const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = 'block';
+              if (fallback) {
+                fallback.style.display = 'block';
+                fallback.classList.remove('hidden');
+              }
             }}
           />
           <div className="text-3xl font-black mb-6 text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text hidden">
