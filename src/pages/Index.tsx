@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,11 +46,11 @@ const Index = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <img 
-                src="/lovable-uploads/303cc445-168a-47a6-af0f-6c6799a4e815.png" 
+                src="/lovable-uploads/16859396-9e45-403a-b4b5-64eff7e9b697.png" 
                 alt="REVILLION Logo" 
                 className="h-10 md:h-12 object-contain"
                 onError={(e) => {
-                  console.log('Error loading logo, falling back to text');
+                  console.log('Error loading new logo, falling back to text');
                   e.currentTarget.style.display = 'none';
                   e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
                 }}
