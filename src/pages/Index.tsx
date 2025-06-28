@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,13 +45,12 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <img 
-              src="/lovable-uploads/ac70f0ff-8ad7-4900-85c0-f2c81d6a2136.png" 
+              src="/logo.png" 
               alt="REVILLION Logo" 
               className="h-8 md:h-10 w-auto"
-              onLoad={() => console.log('REVILLION logo loaded successfully')}
+              onLoad={() => console.log('REVILLION logo loaded successfully from local path')}
               onError={(e) => {
-                console.error('Failed to load REVILLION logo from:', e.currentTarget.src);
-                console.error('Attempting fallback to text logo');
+                console.error('Failed to load local REVILLION logo, showing text fallback');
                 e.currentTarget.style.display = 'none';
                 const fallback = e.currentTarget.nextElementSibling as HTMLElement;
                 if (fallback) {
@@ -891,13 +889,12 @@ const Index = () => {
       <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
         <div className="container mx-auto px-4 text-center">
           <img 
-            src="/lovable-uploads/ac70f0ff-8ad7-4900-85c0-f2c81d6a2136.png" 
+            src="/logo.png" 
             alt="REVILLION Logo" 
             className="h-8 md:h-10 w-auto mx-auto mb-6"
-            onLoad={() => console.log('REVILLION footer logo loaded successfully')}
+            onLoad={() => console.log('REVILLION footer logo loaded successfully from local path')}
             onError={(e) => {
-              console.error('Failed to load REVILLION footer logo from:', e.currentTarget.src);
-              console.error('Attempting fallback to text logo');
+              console.error('Failed to load local REVILLION footer logo, showing text fallback');
               e.currentTarget.style.display = 'none';
               const fallback = e.currentTarget.nextElementSibling as HTMLElement;
               if (fallback) {
