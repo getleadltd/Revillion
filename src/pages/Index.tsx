@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,20 +45,8 @@ const Index = () => {
       <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <img 
-                src="/lovable-uploads/16859396-9e45-403a-b4b5-64eff7e9b697.png" 
-                alt="REVILLION Logo" 
-                className="h-10 md:h-12 object-contain"
-                onError={(e) => {
-                  console.log('Error loading new logo, falling back to text');
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
-                }}
-              />
-              <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text hidden">
-                REVILLION
-              </div>
+            <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">
+              REVILLION
             </div>
             
             {/* Desktop Navigation */}
