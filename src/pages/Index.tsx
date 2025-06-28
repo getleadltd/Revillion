@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,22 +45,7 @@ const Index = () => {
       <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <img 
-              src="/revillion-logo.png" 
-              alt="REVILLION Logo" 
-              className="h-8 md:h-10 w-auto"
-              onLoad={() => console.log('REVILLION logo loaded successfully')}
-              onError={(e) => {
-                console.error('Failed to load REVILLION logo');
-                e.currentTarget.style.display = 'none';
-                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                if (fallback) {
-                  fallback.style.display = 'block';
-                  fallback.classList.remove('hidden');
-                }
-              }}
-            />
-            <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text hidden">
+            <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">
               REVILLION
             </div>
             
@@ -888,22 +874,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
         <div className="container mx-auto px-4 text-center">
-          <img 
-            src="/revillion-logo.png" 
-            alt="REVILLION Logo" 
-            className="h-8 md:h-10 w-auto mx-auto mb-6"
-            onLoad={() => console.log('REVILLION footer logo loaded successfully')}
-            onError={(e) => {
-              console.error('Failed to load REVILLION footer logo');
-              e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-              if (fallback) {
-                fallback.style.display = 'block';
-                fallback.classList.remove('hidden');
-              }
-            }}
-          />
-          <div className="text-3xl font-black mb-6 text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text hidden">
+          <div className="text-3xl font-black mb-6 text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">
             REVILLION
           </div>
           <p className="text-gray-400 text-lg">
