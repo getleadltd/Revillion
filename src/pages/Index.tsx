@@ -45,7 +45,18 @@ const Index = () => {
       <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">
+            <img 
+              src="/lovable-uploads/ac70f0ff-8ad7-4900-85c0-f2c81d6a2136.png" 
+              alt="REVILLION Logo" 
+              className="h-8 md:h-10 w-auto"
+              onError={(e) => {
+                console.log('Error loading REVILLION logo');
+                e.currentTarget.style.display = 'none';
+                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'block';
+              }}
+            />
+            <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text hidden">
               REVILLION
             </div>
             
@@ -874,7 +885,18 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
         <div className="container mx-auto px-4 text-center">
-          <div className="text-3xl font-black mb-6 text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">
+          <img 
+            src="/lovable-uploads/ac70f0ff-8ad7-4900-85c0-f2c81d6a2136.png" 
+            alt="REVILLION Logo" 
+            className="h-8 md:h-10 w-auto mx-auto mb-6"
+            onError={(e) => {
+              console.log('Error loading REVILLION logo in footer');
+              e.currentTarget.style.display = 'none';
+              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'block';
+            }}
+          />
+          <div className="text-3xl font-black mb-6 text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text hidden">
             REVILLION
           </div>
           <p className="text-gray-400 text-lg">
