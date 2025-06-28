@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -38,20 +37,20 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
+
     --sidebar-foreground: 240 5.3% 26.1%;
+
     --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
+
     --sidebar-accent: 240 4.8% 95.9%;
+
     --sidebar-accent-foreground: 240 5.9% 10%;
+
     --sidebar-border: 220 13% 91%;
+
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
-    /* Custom orange colors based on logo #ff5906 */
-    --brand-orange: #ff5906;
-    --brand-orange-light: #ff7633;
-    --brand-orange-lighter: #ffa366;
-    --brand-orange-dark: #e54e05;
-    --brand-orange-darker: #cc4405;
   }
 
   .dark {
@@ -100,56 +99,5 @@
 
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-/* Custom utility classes for brand colors */
-@layer utilities {
-  .text-brand-orange {
-    color: var(--brand-orange);
-  }
-  
-  .text-brand-orange-light {
-    color: var(--brand-orange-light);
-  }
-  
-  .text-brand-orange-lighter {
-    color: var(--brand-orange-lighter);
-  }
-  
-  .text-brand-orange-dark {
-    color: var(--brand-orange-dark);
-  }
-  
-  .bg-brand-orange {
-    background-color: var(--brand-orange);
-  }
-  
-  .bg-brand-orange-light {
-    background-color: var(--brand-orange-light);
-  }
-  
-  .bg-brand-orange-lighter {
-    background-color: var(--brand-orange-lighter);
-  }
-  
-  .bg-brand-orange-dark {
-    background-color: var(--brand-orange-dark);
-  }
-  
-  .border-brand-orange {
-    border-color: var(--brand-orange);
-  }
-  
-  .hover\:bg-brand-orange:hover {
-    background-color: var(--brand-orange);
-  }
-  
-  .hover\:bg-brand-orange-dark:hover {
-    background-color: var(--brand-orange-dark);
-  }
-  
-  .hover\:text-brand-orange:hover {
-    color: var(--brand-orange);
   }
 }
