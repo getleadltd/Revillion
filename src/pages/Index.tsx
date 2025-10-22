@@ -136,7 +136,7 @@ const Index = () => {
           </h1>
           
           <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-4xl mx-auto animate-fade-in leading-relaxed">
-            Partner with the leading iGaming affiliate network and earn 
+            Join Revillion Partners, the leading iGaming affiliate network, and earn 
             <span className="text-orange-400 font-bold"> high CPA commissions</span> promoting 
             premium casino offers across global markets
           </p>
@@ -454,7 +454,7 @@ const Index = () => {
               <span className="text-green-700 font-semibold">All partners are licensed and regulated</span>
             </div>
             <p className="text-gray-600 max-w-3xl mx-auto">
-              Every casino partner in our network is fully licensed, regulated, and vetted for quality, 
+              Every casino partner in Revillion's iGaming affiliate network is fully licensed, regulated, and vetted for quality, 
               ensuring your traffic converts with trusted brands that players love.
             </p>
           </div>
@@ -472,7 +472,7 @@ const Index = () => {
               Why Choose <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Revillion</span>?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Join thousands of successful affiliates who trust Revillion for maximum revenue potential
+              Join thousands of successful partners in Revillion's iGaming affiliate network for maximum revenue potential
             </p>
           </div>
 
@@ -870,7 +870,7 @@ const Index = () => {
             Ready to Start Earning?
           </h2>
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Join hundreds of successful affiliates already earning with Revillion's premium casino brands. 
+            Join hundreds of successful partners already earning with Revillion's iGaming affiliate network and premium casino brands. 
             Start tracking your links and maximizing your commissions today.
           </p>
           
@@ -919,7 +919,7 @@ const Index = () => {
             className="h-12 w-auto mx-auto mb-6"
           />
           <p className="text-gray-400 text-lg">
-            © 2025 Revillion. All rights reserved. Professional iGaming Affiliate Network.
+            © 2025 Revillion Partners. All rights reserved. Professional iGaming Affiliate Network.
           </p>
         </div>
       </footer>
