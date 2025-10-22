@@ -447,7 +447,7 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="text-center">
+          <div className="text-center mt-12">
             <div className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-6 py-3 mb-6">
               <Shield className="w-5 h-5 text-green-600 mr-2" />
               <span className="text-green-700 font-semibold">All partners are licensed and regulated</span>
