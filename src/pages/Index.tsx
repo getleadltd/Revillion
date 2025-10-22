@@ -247,7 +247,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={bassbetLogo} 
-                    alt="BassBet Casino Logo" 
+                    alt="BassBet - Licensed iGaming Partner Casino" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -260,7 +260,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={rabonaLogo} 
-                    alt="Rabona Casino Logo" 
+                    alt="Rabona - Premium Online Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -273,7 +273,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={spinitLogo} 
-                    alt="Spinit Casino Logo" 
+                    alt="Spinit - Licensed Casino Affiliate Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -286,7 +286,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={onlyspinsLogo} 
-                    alt="Only spins Casino Logo" 
+                    alt="OnlySpins - Trusted iGaming Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -299,7 +299,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={bet22Logo} 
-                    alt="22Bet Casino Logo" 
+                    alt="22Bet - Global Casino & Sports Betting Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -312,7 +312,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={azurslotLogo} 
-                    alt="Azurslot Casino Logo" 
+                    alt="Azurslot - Premium Slot Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -325,7 +325,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={safecasinoLogo} 
-                    alt="SafeCasino Logo" 
+                    alt="SafeCasino - Secure Licensed iGaming Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -338,7 +338,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={robocatLogo} 
-                    alt="Robocat Casino Logo" 
+                    alt="Robocat - Innovative Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -351,7 +351,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={betlabelLogo} 
-                    alt="Betlabel Casino Logo" 
+                    alt="Betlabel - Licensed Betting Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -364,7 +364,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={cazeusLogo} 
-                    alt="Cazeus Casino Logo" 
+                    alt="Cazeus - Premium iGaming Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -377,7 +377,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={burancasinoLogo} 
-                    alt="BuranCasino Logo" 
+                    alt="Buran Casino - Trusted Online Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -390,7 +390,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={casiniaLogo} 
-                    alt="Casinia Casino Logo" 
+                    alt="Casinia - Licensed Casino Affiliate Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -403,7 +403,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={librabetLogo} 
-                    alt="Librabet Casino Logo" 
+                    alt="Librabet - Premium Betting & Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -416,7 +416,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={nominiLogo} 
-                    alt="Nomini Casino Logo" 
+                    alt="Nomini - Trusted iGaming Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -429,7 +429,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={tikitakaLogo} 
-                    alt="Tikitaka Casino Logo" 
+                    alt="Tikitaka - Licensed Sports & Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -442,7 +442,7 @@ const Index = () => {
                 <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={spinangaLogo} 
-                    alt="Spinanga Casino Logo" 
+                    alt="Spinanga - Premium Online Casino Partner" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
