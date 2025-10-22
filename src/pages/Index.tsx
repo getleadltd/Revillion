@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock } from "lucide-react";
+import revillionLogo from "@/assets/revillion-logo.png";
 import bassbetLogo from "@/assets/Bassbet-partner.png";
 import rabonaLogo from "@/assets/Rabona-partner.png";
 import spinitLogo from "@/assets/Spinit-partner.png";
@@ -60,9 +61,11 @@ const Index = () => {
       <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div className="text-3xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">
-              REVILLION
-            </div>
+            <img 
+              src={revillionLogo} 
+              alt="Revillion Logo" 
+              className="h-12 w-auto"
+            />
             
             {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8">
@@ -1000,9 +1003,11 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
         <div className="container mx-auto px-4 text-center">
-          <div className="text-3xl font-black mb-6 text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">
-            REVILLION
-          </div>
+          <img 
+            src={revillionLogo} 
+            alt="Revillion Logo" 
+            className="h-12 w-auto mx-auto mb-6"
+          />
           <p className="text-gray-400 text-lg">
             © 2025 Revillion. All rights reserved. Professional iGaming Affiliate Network.
           </p>
