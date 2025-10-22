@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { trackCTAClick } from "@/lib/analytics";
 import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock } from "lucide-react";
 import revillionLogo from "@/assets/revillion-logo.png";
 import bassbetLogo from "@/assets/Bassbet-partner.png";
@@ -24,31 +23,6 @@ import spinangaLogo from "@/assets/spinanga-partner.png";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    website: '',
-    trafficSource: '',
-    geoInterest: '',
-    contact: '',
-    socialPlatforms: '',
-    message: ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert('Thank you for your interest! We will contact you within 24 hours to discuss partnership opportunities.');
-    setFormData({ 
-      fullName: '', 
-      email: '', 
-      website: '', 
-      trafficSource: '',
-      geoInterest: '',
-      contact: '',
-      socialPlatforms: '',
-      message: '' 
-    });
-  };
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
@@ -97,13 +71,6 @@ const Index = () => {
                 Offers
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
-              <button 
-                onClick={() => scrollToSection('contact')}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                Contact
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </button>
             </nav>
 
             {/* Mobile Menu Button */}
@@ -143,12 +110,6 @@ const Index = () => {
                 >
                   Offers
                 </button>
-                <button 
-                  onClick={() => scrollToSection('contact')}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  Contact
-                </button>
               </div>
             </nav>
           )}
@@ -181,13 +142,18 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
-            <Button 
-              onClick={() => scrollToSection('contact')}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-orange-500/25"
+            <a 
+              href="https://dashboard.revillion.com/en/registration"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCTAClick('hero_section')}
+              className="inline-block"
             >
-              Become an Affiliate
-              <TrendingUp className="ml-2 w-5 h-5" />
-            </Button>
+              <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-orange-500/25">
+                Become an Affiliate
+                <TrendingUp className="ml-2 w-5 h-5" />
+              </Button>
+            </a>
             <Button 
               onClick={() => scrollToSection('why-join')}
               variant="outline"
@@ -249,6 +215,8 @@ const Index = () => {
                     src={bassbetLogo} 
                     alt="BassBet - Licensed iGaming Partner Casino" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -262,6 +230,8 @@ const Index = () => {
                     src={rabonaLogo} 
                     alt="Rabona - Premium Online Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -275,6 +245,8 @@ const Index = () => {
                     src={spinitLogo} 
                     alt="Spinit - Licensed Casino Affiliate Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -288,6 +260,8 @@ const Index = () => {
                     src={onlyspinsLogo} 
                     alt="OnlySpins - Trusted iGaming Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -301,6 +275,8 @@ const Index = () => {
                     src={bet22Logo} 
                     alt="22Bet - Global Casino & Sports Betting Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -314,6 +290,8 @@ const Index = () => {
                     src={azurslotLogo} 
                     alt="Azurslot - Premium Slot Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -327,6 +305,8 @@ const Index = () => {
                     src={safecasinoLogo} 
                     alt="SafeCasino - Secure Licensed iGaming Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -340,6 +320,8 @@ const Index = () => {
                     src={robocatLogo} 
                     alt="Robocat - Innovative Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -353,6 +335,8 @@ const Index = () => {
                     src={betlabelLogo} 
                     alt="Betlabel - Licensed Betting Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -366,6 +350,8 @@ const Index = () => {
                     src={cazeusLogo} 
                     alt="Cazeus - Premium iGaming Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -379,6 +365,8 @@ const Index = () => {
                     src={burancasinoLogo} 
                     alt="Buran Casino - Trusted Online Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -392,6 +380,8 @@ const Index = () => {
                     src={casiniaLogo} 
                     alt="Casinia - Licensed Casino Affiliate Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -405,6 +395,8 @@ const Index = () => {
                     src={librabetLogo} 
                     alt="Librabet - Premium Betting & Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -418,6 +410,8 @@ const Index = () => {
                     src={nominiLogo} 
                     alt="Nomini - Trusted iGaming Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -431,6 +425,8 @@ const Index = () => {
                     src={tikitakaLogo} 
                     alt="Tikitaka - Licensed Sports & Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -444,6 +440,8 @@ const Index = () => {
                     src={spinangaLogo} 
                     alt="Spinanga - Premium Online Casino Partner" 
                     className="h-16 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -667,13 +665,18 @@ const Index = () => {
             </div>
 
             <div className="text-center">
-              <Button 
-                onClick={() => scrollToSection('contact')}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl"
+              <a 
+                href="https://dashboard.revillion.com/en/registration"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCTAClick('dashboard_section')}
+                className="inline-block"
               >
-                Access Your Dashboard
-                <BarChart3 className="ml-2 w-5 h-5" />
-              </Button>
+                <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                  Access Your Dashboard
+                  <BarChart3 className="ml-2 w-5 h-5" />
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -734,13 +737,18 @@ const Index = () => {
               </div>
             </div>
             
-            <Button 
-              onClick={() => scrollToSection('contact')}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            <a 
+              href="https://dashboard.revillion.com/en/registration"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCTAClick('offers_section')}
+              className="inline-block"
             >
-              Explore Our Offers
-              <Globe className="ml-2 w-5 h-5" />
-            </Button>
+              <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                Explore Our Offers
+                <Globe className="ml-2 w-5 h-5" />
+              </Button>
+            </a>
           </div>
         </div>
       </section>
@@ -833,169 +841,18 @@ const Index = () => {
           </div>
 
           <div className="text-center">
-            <Button 
-              onClick={() => scrollToSection('contact')}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            <a 
+              href="https://dashboard.revillion.com/en/registration"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCTAClick('social_media_section')}
+              className="inline-block"
             >
-              Get Your Short URLs
-              <Share2 className="ml-2 w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Form Section */}
-      <section id="contact" className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12 md:mb-16">
-              <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
-                <span className="text-orange-600 font-semibold text-sm">GET STARTED</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-                Ready to Get <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Started</span>?
-              </h2>
-              <p className="text-xl text-gray-600 leading-relaxed">
-                Contact us today and start earning with Revillion's premium affiliate program
-              </p>
-            </div>
-
-            <Card className="shadow-2xl border-0 bg-white relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-orange-600"></div>
-              <CardContent className="p-10">
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="fullName" className="block text-sm font-bold text-gray-800 mb-3">
-                        Full Name *
-                      </label>
-                      <Input
-                        id="fullName"
-                        type="text"
-                        required
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-bold text-gray-800 mb-3">
-                        Email Address *
-                      </label>
-                      <Input
-                        id="email"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                        placeholder="Enter your email address"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="website" className="block text-sm font-bold text-gray-800 mb-3">
-                        Website/Traffic Source *
-                      </label>
-                      <Input
-                        id="website"
-                        type="url"
-                        required
-                        value={formData.website}
-                        onChange={(e) => setFormData({...formData, website: e.target.value})}
-                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                        placeholder="https://your-website.com"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="trafficSource" className="block text-sm font-bold text-gray-800 mb-3">
-                        Primary Traffic Source *
-                      </label>
-                      <Input
-                        id="trafficSource"
-                        type="text"
-                        required
-                        value={formData.trafficSource}
-                        onChange={(e) => setFormData({...formData, trafficSource: e.target.value})}
-                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                        placeholder="Social Media, PPC, Email, SEO, etc."
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="geoInterest" className="block text-sm font-bold text-gray-800 mb-3">
-                        GEOs of Interest
-                      </label>
-                      <Input
-                        id="geoInterest"
-                        type="text"
-                        value={formData.geoInterest}
-                        onChange={(e) => setFormData({...formData, geoInterest: e.target.value})}
-                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                        placeholder="UK, Germany, Brazil, etc."
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="contact" className="block text-sm font-bold text-gray-800 mb-3">
-                        Telegram/Phone Contact
-                      </label>
-                      <Input
-                        id="contact"
-                        type="text"
-                        value={formData.contact}
-                        onChange={(e) => setFormData({...formData, contact: e.target.value})}
-                        className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                        placeholder="Telegram: @username or Phone: +1234567890"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="socialPlatforms" className="block text-sm font-bold text-gray-800 mb-3">
-                      Social Media Platforms Used
-                    </label>
-                    <Input
-                      id="socialPlatforms"
-                      type="text"
-                      value={formData.socialPlatforms}
-                      onChange={(e) => setFormData({...formData, socialPlatforms: e.target.value})}
-                      className="w-full h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                      placeholder="Telegram, Twitter, Instagram, TikTok, etc."
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-bold text-gray-800 mb-3">
-                      Additional Information
-                    </label>
-                    <Textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-lg text-lg"
-                      rows={5}
-                      placeholder="Tell us about your experience with affiliate marketing, preferred commission structure, or any specific requirements..."
-                    />
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 text-lg rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-xl"
-                  >
-                    Submit Application
-                    <Star className="ml-2 w-5 h-5" />
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+              <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                Get Your Short URLs
+                <Share2 className="ml-2 w-5 h-5" />
+              </Button>
+            </a>
           </div>
         </div>
       </section>
