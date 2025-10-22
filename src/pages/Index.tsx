@@ -4,7 +4,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock } from "lucide-react";
+import bassbetLogo from "@/assets/bassbet-logo.png";
+import rabonaLogo from "@/assets/rabona-logo.png";
+import spinitLogo from "@/assets/spinit-logo.png";
+import onlyspinsLogo from "@/assets/onlyspins-logo.png";
 import bet22Logo from "@/assets/22bet-logo-180x80.png";
+import azurslotLogo from "@/assets/azurslot-logo.png";
+import safecasinoLogo from "@/assets/safecasino-logo.png";
+import robocatLogo from "@/assets/robocat-logo.png";
+import betlabelLogo from "@/assets/betlabel-logo.png";
+import cazeusLogo from "@/assets/cazeus-logo.png";
+import burancasinoLogo from "@/assets/burancasino-logo.png";
+import casiniaLogo from "@/assets/casinia-logo.png";
+import librabetLogo from "@/assets/librabet-logo.png";
+import nominiLogo from "@/assets/nomini-logo.png";
+import tikitakaLogo from "@/assets/tikitaka-logo.png";
+import spinangaLogo from "@/assets/spinanga-logo.png";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -222,93 +237,210 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 mb-8">
-            {/* 22BET Casino */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {/* BassBet */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={bassbetLogo} 
+                    alt="BassBet Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Rabona */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={rabonaLogo} 
+                    alt="Rabona Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Spinit */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={spinitLogo} 
+                    alt="Spinit Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Only spins */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={onlyspinsLogo} 
+                    alt="Only spins Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 22Bet */}
             <div className="group">
               <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={bet22Logo} 
-                    alt="22BET Casino Logo" 
+                    alt="22Bet Casino Logo" 
                     className="h-20 w-auto object-contain"
-                    onLoad={(e) => console.log("22BET logo dimensions:", e.currentTarget.naturalWidth + "x" + e.currentTarget.naturalHeight)}
                   />
                 </div>
               </div>
             </div>
 
-            {/* BET LABEL Casino */}
+            {/* Azurslot */}
             <div className="group">
               <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
-                    src="/lovable-uploads/be924c2e-ec55-4121-9248-f7f8f414b94c.png" 
-                    alt="BET LABEL Casino Logo" 
-                    className="max-h-16 max-w-full object-contain"
-                    style={{ minHeight: '40px', minWidth: '60px' }}
-                    onError={(e) => {
-                      console.log('Error loading BET LABEL logo');
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
-                    }}
-                  />
-                  <div className="text-gray-500 font-bold text-sm hidden">BET LABEL</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 365BET Casino */}
-            <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
-                  <img 
-                    src="/lovable-uploads/cbc05380-1b10-42f0-9662-1d9088bd6157.png" 
-                    alt="365BET Casino Logo" 
-                    className="max-h-16 max-w-full object-contain"
-                    style={{ minHeight: '40px', minWidth: '60px' }}
-                    onError={(e) => {
-                      console.log('Error loading 365BET logo');
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
-                    }}
-                  />
-                  <div className="text-gray-500 font-bold text-sm hidden">365BET</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Placeholder Partners */}
-            <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
-                  <img 
-                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Casino Partner Logo" 
-                    className="max-h-16 max-w-full object-contain"
+                    src={azurslotLogo} 
+                    alt="Azurslot Casino Logo" 
+                    className="h-20 w-auto object-contain"
                   />
                 </div>
               </div>
             </div>
 
+            {/* SafeCasino */}
             <div className="group">
               <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
-                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Casino Partner Logo" 
-                    className="max-h-16 max-w-full object-contain"
+                    src={safecasinoLogo} 
+                    alt="SafeCasino Logo" 
+                    className="h-20 w-auto object-contain"
                   />
                 </div>
               </div>
             </div>
 
+            {/* Robocat */}
             <div className="group">
               <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
-                    src="/lovable-uploads/8cb37106-3ef0-4f88-ac04-cab7c431b071.png" 
-                    alt="Casino Partner Logo" 
-                    className="max-h-16 max-w-full object-contain"
+                    src={robocatLogo} 
+                    alt="Robocat Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Betlabel */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={betlabelLogo} 
+                    alt="Betlabel Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Cazeus */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={cazeusLogo} 
+                    alt="Cazeus Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* BuranCasino */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={burancasinoLogo} 
+                    alt="BuranCasino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Casinia */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={casiniaLogo} 
+                    alt="Casinia Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Librabet */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={librabetLogo} 
+                    alt="Librabet Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Nomini */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={nominiLogo} 
+                    alt="Nomini Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tikitaka */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={tikitakaLogo} 
+                    alt="Tikitaka Casino Logo" 
+                    className="h-20 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Spinanga */}
+            <div className="group">
+              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={spinangaLogo} 
+                    alt="Spinanga Casino Logo" 
+                    className="h-20 w-auto object-contain"
                   />
                 </div>
               </div>
