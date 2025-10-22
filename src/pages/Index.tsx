@@ -77,6 +77,9 @@ const Index = () => {
             <button 
               className="md:hidden text-gray-800 hover:text-orange-500 transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -84,7 +87,7 @@ const Index = () => {
 
           {/* Mobile Navigation */}
           {isMenuOpen && (
-            <nav className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
+            <nav id="mobile-navigation" className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
               <div className="flex flex-col space-y-4">
                 <button 
                   onClick={() => scrollToSection('hero')}
