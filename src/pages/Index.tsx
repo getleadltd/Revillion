@@ -240,12 +240,12 @@ const Index = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
             {/* BassBet */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={bassbetLogo} 
                     alt="BassBet Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -253,12 +253,12 @@ const Index = () => {
 
             {/* Rabona */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={rabonaLogo} 
                     alt="Rabona Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -266,12 +266,12 @@ const Index = () => {
 
             {/* Spinit */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={spinitLogo} 
                     alt="Spinit Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -279,12 +279,12 @@ const Index = () => {
 
             {/* Only spins */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={onlyspinsLogo} 
                     alt="Only spins Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -292,12 +292,12 @@ const Index = () => {
 
             {/* 22Bet */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={bet22Logo} 
                     alt="22Bet Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -305,12 +305,12 @@ const Index = () => {
 
             {/* Azurslot */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={azurslotLogo} 
                     alt="Azurslot Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -318,12 +318,12 @@ const Index = () => {
 
             {/* SafeCasino */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={safecasinoLogo} 
                     alt="SafeCasino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -331,12 +331,12 @@ const Index = () => {
 
             {/* Robocat */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={robocatLogo} 
                     alt="Robocat Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -344,12 +344,12 @@ const Index = () => {
 
             {/* Betlabel */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={betlabelLogo} 
                     alt="Betlabel Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -357,12 +357,12 @@ const Index = () => {
 
             {/* Cazeus */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={cazeusLogo} 
                     alt="Cazeus Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -370,12 +370,12 @@ const Index = () => {
 
             {/* BuranCasino */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={burancasinoLogo} 
                     alt="BuranCasino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -383,12 +383,12 @@ const Index = () => {
 
             {/* Casinia */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={casiniaLogo} 
                     alt="Casinia Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -396,12 +396,12 @@ const Index = () => {
 
             {/* Librabet */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={librabetLogo} 
                     alt="Librabet Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -409,12 +409,12 @@ const Index = () => {
 
             {/* Nomini */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={nominiLogo} 
                     alt="Nomini Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -422,12 +422,12 @@ const Index = () => {
 
             {/* Tikitaka */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={tikitakaLogo} 
                     alt="Tikitaka Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
@@ -435,12 +435,12 @@ const Index = () => {
 
             {/* Spinanga */}
             <div className="group">
-              <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-2xl p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="h-16 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
                     src={spinangaLogo} 
                     alt="Spinanga Casino Logo" 
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 </div>
               </div>
