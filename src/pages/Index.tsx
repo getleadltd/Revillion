@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock } from "lucide-react";
-import bet22Logo from "@/assets/22bet-logo.png";
+import bet22Logo from "@/assets/22bet-logo-180x80.png";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -230,7 +230,8 @@ const Index = () => {
                   <img 
                     src={bet22Logo} 
                     alt="22BET Casino Logo" 
-                    className="max-h-20 w-auto object-contain"
+                    className="h-20 w-auto object-contain"
+                    onLoad={(e) => console.log("22BET logo dimensions:", e.currentTarget.naturalWidth + "x" + e.currentTarget.naturalHeight)}
                   />
                 </div>
               </div>
