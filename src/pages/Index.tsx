@@ -119,7 +119,8 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
+      <main>
+        {/* Hero Section */}
       <section id="hero" className="relative bg-gradient-to-br from-black via-gray-900 to-black text-white py-16 md:py-24 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -912,6 +913,7 @@ const Index = () => {
           </p>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
