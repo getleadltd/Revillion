@@ -857,6 +857,59 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Final CTA Section */}
+      <section className="bg-gradient-to-br from-orange-500 via-orange-600 to-black py-20 md:py-32 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-orange-300 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
+            Ready to Start Earning?
+          </h2>
+          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Join hundreds of successful affiliates already earning with Revillion's premium casino brands. 
+            Start tracking your links and maximizing your commissions today.
+          </p>
+          
+          {/* Stats or benefits */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="text-4xl font-bold text-white mb-2">16+</div>
+              <div className="text-white/80">Premium Brands</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="text-4xl font-bold text-white mb-2">Real-Time</div>
+              <div className="text-white/80">Tracking & Stats</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="text-4xl font-bold text-white mb-2">24/7</div>
+              <div className="text-white/80">Support Available</div>
+            </div>
+          </div>
+          
+          {/* Main CTA */}
+          <a 
+            href="https://dashboard.revillion.com/en/registration"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackCTAClick('final_cta_section')}
+            className="inline-block"
+          >
+            <Button className="bg-white text-orange-600 hover:bg-gray-100 font-bold py-6 px-12 text-xl rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-white/25">
+              Become an Affiliate Now
+              <TrendingUp className="ml-3 w-6 h-6" />
+            </Button>
+          </a>
+          
+          <p className="text-white/70 text-sm mt-6">
+            No setup fees • Free to join • Start earning today
+          </p>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
         <div className="container mx-auto px-4 text-center">
