@@ -230,7 +230,7 @@ const Index = () => {
                   <img 
                     src={bet22Logo} 
                     alt="22BET Casino Logo" 
-                    className="max-h-16 max-w-full object-contain"
+                    className="max-h-20 w-auto object-contain"
                   />
                 </div>
               </div>
