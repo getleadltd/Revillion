@@ -13,11 +13,11 @@ import azurslotLogo from "@/assets/azurslot-partner.png";
 import safecasinoLogo from "@/assets/safecasino-partner.png";
 import robocatLogo from "@/assets/robocat-partner.png";
 import betlabelLogo from "@/assets/betlabel-partner.png";
-import cazeusLogo from "@/assets/cazeus-logo.png";
-import burancasinoLogo from "@/assets/burancasino-logo.png";
-import casiniaLogo from "@/assets/casinia-logo.png";
-import librabetLogo from "@/assets/librabet-logo.png";
-import nominiLogo from "@/assets/nomini-logo.png";
+import cazeusLogo from "@/assets/cazeus-partner.png";
+import burancasinoLogo from "@/assets/burancasino-partner.png";
+import casiniaLogo from "@/assets/casinia-partner.png";
+import librabetLogo from "@/assets/librabet-partner.png";
+import nominiLogo from "@/assets/nomini-partner.png";
 import tikitakaLogo from "@/assets/tikitaka-logo.png";
 import spinangaLogo from "@/assets/spinanga-logo.png";
 
