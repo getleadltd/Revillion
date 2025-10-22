@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock } from "lucide-react";
+import bet22Logo from "@/assets/22bet-logo.png";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -228,17 +228,10 @@ const Index = () => {
               <div className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
                 <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg">
                   <img 
-                    src="/lovable-uploads/4f35ff1a-f28b-4a51-a003-39b0894a6f22.png" 
+                    src={bet22Logo} 
                     alt="22BET Casino Logo" 
                     className="max-h-16 max-w-full object-contain"
-                    style={{ minHeight: '40px', minWidth: '60px' }}
-                    onError={(e) => {
-                      console.log('Error loading 22BET logo');
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling?.setAttribute('style', 'display: block');
-                    }}
                   />
-                  <div className="text-gray-500 font-bold text-sm hidden">22BET</div>
                 </div>
               </div>
             </div>
