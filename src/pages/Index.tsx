@@ -18,8 +18,8 @@ import burancasinoLogo from "@/assets/burancasino-partner.png";
 import casiniaLogo from "@/assets/casinia-partner.png";
 import librabetLogo from "@/assets/librabet-partner.png";
 import nominiLogo from "@/assets/nomini-partner.png";
-import tikitakaLogo from "@/assets/tikitaka-logo.png";
-import spinangaLogo from "@/assets/spinanga-logo.png";
+import tikitakaLogo from "@/assets/tikitaka-partner.png";
+import spinangaLogo from "@/assets/spinanga-partner.png";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
