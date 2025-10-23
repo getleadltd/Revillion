@@ -39,6 +39,8 @@ const Index = () => {
             <img 
               src={revillionLogo} 
               alt="Revillion Logo" 
+              width="170"
+              height="48"
               className="h-12 w-auto"
             />
             
@@ -232,6 +234,8 @@ const Index = () => {
                   <img 
                     src={bassbetLogo} 
                     alt="BassBet - Licensed iGaming Partner Casino" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -247,6 +251,8 @@ const Index = () => {
                   <img 
                     src={rabonaLogo} 
                     alt="Rabona - Premium Online Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -262,6 +268,8 @@ const Index = () => {
                   <img 
                     src={spinitLogo} 
                     alt="Spinit - Licensed Casino Affiliate Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -277,6 +285,8 @@ const Index = () => {
                   <img 
                     src={onlyspinsLogo} 
                     alt="OnlySpins - Trusted iGaming Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -292,6 +302,8 @@ const Index = () => {
                   <img 
                     src={bet22Logo} 
                     alt="22Bet - Global Casino & Sports Betting Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -307,6 +319,8 @@ const Index = () => {
                   <img 
                     src={azurslotLogo} 
                     alt="Azurslot - Premium Slot Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -322,6 +336,8 @@ const Index = () => {
                   <img 
                     src={safecasinoLogo} 
                     alt="SafeCasino - Secure Licensed iGaming Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -337,6 +353,8 @@ const Index = () => {
                   <img 
                     src={robocatLogo} 
                     alt="Robocat - Innovative Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -352,6 +370,8 @@ const Index = () => {
                   <img 
                     src={betlabelLogo} 
                     alt="Betlabel - Licensed Betting Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -367,6 +387,8 @@ const Index = () => {
                   <img 
                     src={cazeusLogo} 
                     alt="Cazeus - Premium iGaming Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -382,6 +404,8 @@ const Index = () => {
                   <img 
                     src={burancasinoLogo} 
                     alt="Buran Casino - Trusted Online Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -397,6 +421,8 @@ const Index = () => {
                   <img 
                     src={casiniaLogo} 
                     alt="Casinia - Licensed Casino Affiliate Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -412,6 +438,8 @@ const Index = () => {
                   <img 
                     src={librabetLogo} 
                     alt="Librabet - Premium Betting & Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -427,6 +455,8 @@ const Index = () => {
                   <img 
                     src={nominiLogo} 
                     alt="Nomini - Trusted iGaming Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -442,6 +472,8 @@ const Index = () => {
                   <img 
                     src={tikitakaLogo} 
                     alt="Tikitaka - Licensed Sports & Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
@@ -457,6 +489,8 @@ const Index = () => {
                   <img 
                     src={spinangaLogo} 
                     alt="Spinanga - Premium Online Casino Partner" 
+                    width="150"
+                    height="64"
                     className="h-16 w-auto object-contain"
                     loading="lazy"
                     decoding="async"
