@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { trackCTAClick } from "@/lib/analytics";
-import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock } from "lucide-react";
+import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock, HelpCircle } from "lucide-react";
 import revillionLogo from "@/assets/revillion-logo.png?format=webp&quality=85&w=170";
 import bassbetLogo from "@/assets/Bassbet-partner.png?partner";
 import rabonaLogo from "@/assets/Rabona-partner.png?partner";
@@ -71,6 +72,13 @@ const Index = () => {
                 Offers
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
+              <button 
+                onClick={() => scrollToSection('faq')}
+                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
+              >
+                FAQ
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+              </button>
             </nav>
 
             {/* Mobile Menu Button */}
@@ -112,6 +120,12 @@ const Index = () => {
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   Offers
+                </button>
+                <button 
+                  onClick={() => scrollToSection('faq')}
+                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
+                >
+                  FAQ
                 </button>
               </div>
             </nav>
@@ -911,6 +925,73 @@ const Index = () => {
           <p className="text-white/70 text-sm mt-6">
             No setup fees • Free to join • Start earning today
           </p>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+              <HelpCircle className="w-4 h-4 text-orange-600 mr-2" />
+              <span className="text-orange-600 font-semibold text-sm">FAQ</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
+              Frequently Asked <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Questions</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Find answers to common questions about joining Revillion Partners
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="item-1" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
+                <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
+                  What is Revillion Partners?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600 leading-relaxed">
+                  Revillion Partners is a premier iGaming affiliate network offering high CPA commissions for promoting 16+ top casino brands including 22Bet, Rabona, Spinit, and more. We provide dedicated affiliate support, real-time tracking, and multiple payment options.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
+                <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
+                  How much can I earn as a Revillion affiliate?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600 leading-relaxed">
+                  Affiliates earn premium CPA (Cost Per Acquisition) commissions with competitive rates depending on the brand and geographic region. We offer flexible payment terms and transparent tracking to maximize your earnings potential.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
+                <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
+                  What payment methods does Revillion offer?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600 leading-relaxed">
+                  We support multiple payment methods including bank transfers, e-wallets, and cryptocurrency payments. Payments are processed regularly with transparent reporting through our affiliate dashboard.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
+                <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
+                  How do I get started with Revillion Partners?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600 leading-relaxed">
+                  Getting started is simple: visit our dashboard at dashboard.revillion.com, register your affiliate account, get your unique tracking links, and start promoting our premium casino brands immediately. Our dedicated support team is available to help you succeed.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
+                <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
+                  Which casino brands can I promote?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600 leading-relaxed">
+                  You can promote 16+ top-tier casino brands including 22Bet, Rabona, Spinit, Nomini, Casinia, Librabet, BetLabel, SafeCasino, Spinanga, RoboCat, Onlyspins, Bassbet, TikiTaka, Burancasino, Cazeus, and AzurSlot. Each brand offers unique features and targets different markets.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </div>
       </section>
       </main>
