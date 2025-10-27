@@ -9,6 +9,10 @@ export const SEOHead = () => {
       title: "Revillion Partners - High CPA Casino Affiliate Network | $10M+ Paid",
       description: "Join 800+ affiliates earning high CPA commissions. Premium iGaming offers across 40+ markets. $10M+ paid to partners. Real-time tracking & dedicated support."
     },
+    de: {
+      title: "Revillion Partners - Casino-Affiliate-Netzwerk mit hohem CPA | $10M+ Ausgezahlt",
+      description: "Schließen Sie sich 800+ Affiliates an, die hohe CPA-Provisionen verdienen. Premium-iGaming-Angebote in 40+ Märkten. $10M+ an Partner ausgezahlt. Echtzeit-Tracking & engagierter Support."
+    },
     it: {
       title: "Revillion Partners - Network Affiliazione Casino Alto CPA | $10M+ Pagati",
       description: "Unisciti a 800+ affiliati che guadagnano alte commissioni CPA. Offerte iGaming premium in 40+ mercati. $10M+ pagati ai partner. Tracking in tempo reale e supporto dedicato."
@@ -27,6 +31,7 @@ export const SEOHead = () => {
   
   const localeMap: Record<string, string> = {
     en: 'en_US',
+    de: 'de_DE',
     it: 'it_IT',
     pt: 'pt_BR',
     es: 'es_ES'
@@ -34,6 +39,7 @@ export const SEOHead = () => {
 
   const keywords: Record<string, string> = {
     en: "casino affiliate, high CPA, iGaming partners, affiliate network, casino commissions",
+    de: "Casino-Affiliate, hohes CPA, iGaming-Partner, Affiliate-Netzwerk, Casino-Provisionen",
     it: "affiliazione casino, CPA alto, partner iGaming, network affiliazione, commissioni casino",
     pt: "afiliados cassino, CPA alto, parceiros iGaming, rede afiliados, comissões cassino",
     es: "afiliados casino, CPA alto, socios iGaming, red afiliados, comisiones casino"
@@ -58,6 +64,7 @@ export const SEOHead = () => {
       
       {/* Alternate languages */}
       <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en" />
+      <link rel="alternate" hrefLang="de" href="https://revillion-partners.com/de" />
       <link rel="alternate" hrefLang="it" href="https://revillion-partners.com/it" />
       <link rel="alternate" hrefLang="pt" href="https://revillion-partners.com/pt" />
       <link rel="alternate" hrefLang="es" href="https://revillion-partners.com/es" />

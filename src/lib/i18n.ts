@@ -6,6 +6,7 @@ import enTranslation from '@/locales/en/translation.json';
 import itTranslation from '@/locales/it/translation.json';
 import ptTranslation from '@/locales/pt/translation.json';
 import esTranslation from '@/locales/es/translation.json';
+import deTranslation from '@/locales/de/translation.json';
 
 i18n
   .use(LanguageDetector)
@@ -15,7 +16,8 @@ i18n
       en: { translation: enTranslation },
       it: { translation: itTranslation },
       pt: { translation: ptTranslation },
-      es: { translation: esTranslation }
+      es: { translation: esTranslation },
+      de: { translation: deTranslation }
     },
     fallbackLng: 'en',
     interpolation: {

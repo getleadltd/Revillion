@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "home": "Home",
+    "whyJoin": "Warum beitreten",
+    "tools": "Tools",
+    "offers": "Angebote",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "title": "Treten Sie dem Revillion Affiliate-Netzwerk bei",
+    "descriptionLine1": "Verdienen Sie",
+    "descriptionHighlight": "hohe CPA-Provisionen",
+    "descriptionLine2": "mit Premium-Casino-Partnern in 40+ globalen Märkten.",
+    "descriptionLine3": "800+ Affiliates vertrauen uns bereits.",
+    "cta": "Jetzt Affiliate werden",
+    "secondary": "Angebote ansehen"
+  },
+  "stats": {
+    "paid": "An Affiliates ausgezahlt",
+    "affiliates": "Aktive Affiliates",
+    "markets": "Globale Märkte"
+  },
+  "partners": {
+    "title": "Unsere Premium-Casino-Partner",
+    "subtitle": "Arbeiten Sie mit führenden iGaming-Marken zusammen"
+  },
+  "whyJoin": {
+    "title": "Warum Revillion Partners wählen?",
+    "subtitle": "Ihre vertrauenswürdige iGaming-Affiliate-Plattform",
+    "globalOffers": {
+      "title": "Globale Angebote",
+      "description": "Zugriff auf Premium-Casino-Angebote in 40+ Märkten weltweit mit lokalisierten Landingpages"
+    },
+    "highCommissions": {
+      "title": "Hohe CPA-Provisionen",
+      "description": "Verdienen Sie bis zu 800 € CPA pro qualifiziertem Spieler mit transparenten Auszahlungsbedingungen"
+    },
+    "dedicatedSupport": {
+      "title": "Engagierter Support",
+      "description": "24/7 Account-Manager und technischer Support, um Ihre Konversionen zu maximieren"
+    }
+  },
+  "tools": {
+    "title": "Fortschrittliche Affiliate-Tools",
+    "subtitle": "Alles, was Sie brauchen, um erfolgreich zu sein",
+    "realTimeTracking": {
+      "title": "Echtzeit-Tracking",
+      "description": "Überwachen Sie Klicks, Konversionen und Einnahmen in Echtzeit mit unserem fortschrittlichen Dashboard"
+    },
+    "smartUrls": {
+      "title": "Intelligente Kurz-URLs",
+      "description": "Benutzerdefinierte Tracking-Links, die sich automatisch an das Gerät und den Standort des Benutzers anpassen"
+    },
+    "postbackIntegration": {
+      "title": "Postback-Integration",
+      "description": "Nahtlose Integration mit allen wichtigen Tracking-Plattformen über Postback-URLs"
+    },
+    "reportingAnalytics": {
+      "title": "Berichterstattung & Analysen",
+      "description": "Detaillierte Berichte mit Einblicken zur Optimierung Ihrer Kampagnenleistung"
+    }
+  },
+  "dashboard": {
+    "title": "Echtzeit-Affiliate-Dashboard",
+    "liveMetrics": "Live-Metriken",
+    "recentActivity": "Letzte Aktivität",
+    "totalClicks": "Gesamt Klicks",
+    "conversions": "Konversionen",
+    "earnings": "Einnahmen",
+    "liveClicks": "Live-Klicks",
+    "realTime": "Echtzeit",
+    "newReg": "Neue Registrierung",
+    "ftd": "Erste Einzahlung",
+    "withdrawal": "Auszahlung verarbeitet"
+  },
+  "offers": {
+    "title": "Top iGaming-Angebote",
+    "subtitle": "Aktualisiert am 27.10.2025",
+    "casinoName": "Casino-Name",
+    "cpa": "CPA",
+    "markets": "Märkte",
+    "conversion": "Konversion",
+    "details": "Details anzeigen",
+    "marketsData": {
+      "europe": "🇪🇺 Europa: UK, Deutschland, Italien, Spanien, Portugal, Frankreich",
+      "latam": "🌎 LATAM: Brasilien, Mexiko, Argentinien, Chile, Peru",
+      "asia": "🌏 Asien: Japan, Südkorea, Thailand, Vietnam, Philippinen",
+      "global": "🌍 Global: 40+ Länder weltweit"
+    }
+  },
+  "socialMedia": {
+    "title": "Für Social Media optimiert",
+    "subtitle": "Maßgeschneiderte Tools für Ihre Social-Media-Kanäle",
+    "instagramStories": {
+      "title": "Instagram Stories Links",
+      "description": "Spezielle Tracking-Links, die für Instagram Stories optimiert sind"
+    },
+    "tiktokPromos": {
+      "title": "TikTok-Promo-Codes",
+      "description": "Exklusive Promo-Codes, die perfekt für TikTok-Bio-Links sind"
+    },
+    "youtubeReady": {
+      "title": "YouTube-Ready-Assets",
+      "description": "Video-Assets und Banner für Ihre YouTube-Content-Erstellung"
+    },
+    "twitterThreads": {
+      "title": "Twitter/X-Thread-Vorlagen",
+      "description": "Vorgefertigte Thread-Vorlagen mit Tracking-Links für maximale Reichweite"
+    },
+    "facebookGroups": {
+      "title": "Facebook-Gruppen-Kits",
+      "description": "Gruppenverwaltungs-Tools und Community-ready Inhalte"
+    },
+    "linkedinPosts": {
+      "title": "LinkedIn B2B-Tools",
+      "description": "Professionelle Assets für B2B-iGaming-Networking und Content"
+    }
+  },
+  "cta": {
+    "title": "Bereit, Ihre Einnahmen zu maximieren?",
+    "subtitle": "Treten Sie noch heute den 800+ erfolgreichen Affiliates bei",
+    "button": "Jetzt starten"
+  },
+  "finalCta": {
+    "title": "Werden Sie noch heute ein Revillion Affiliate",
+    "benefit1": "Hohe CPA-Raten",
+    "benefit2": "Globale Märkte",
+    "benefit3": "24/7 Support",
+    "button": "Jetzt Partner werden"
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "q1": {
+      "question": "Wie hoch sind die Provisionssätze?",
+      "answer": "Wir bieten wettbewerbsfähige CPA-Raten von bis zu 800 € pro qualifiziertem Spieler, abhängig vom Markt und Casino-Partner. Revenue-Share-Modelle sind ebenfalls verfügbar."
+    },
+    "q2": {
+      "question": "Wann und wie werde ich bezahlt?",
+      "answer": "Auszahlungen erfolgen monatlich mit einer Mindestausschüttung von 100 €. Wir unterstützen Banküberweisungen, Skrill, Neteller und Kryptowährungen."
+    },
+    "q3": {
+      "question": "Welche Tracking-Systeme unterstützen Sie?",
+      "answer": "Wir unterstützen alle wichtigen Tracking-Plattformen über Postback-URLs, einschließlich Voluum, Binom, RedTrack und benutzerdefinierte Lösungen."
+    },
+    "q4": {
+      "question": "Gibt es eine Mindestverkehrsanforderung?",
+      "answer": "Nein, wir akzeptieren Affiliates aller Größenordnungen. Ob Sie gerade erst anfangen oder ein etablierter Partner sind, Sie sind willkommen, unserem Netzwerk beizutreten."
+    },
+    "q5": {
+      "question": "Wie kann ich das Programm bewerben?",
+      "answer": "Sie können alle Traffic-Quellen nutzen, einschließlich Social Media, SEO, PPC und Content-Marketing. Wir stellen alle notwendigen Marketing-Materialien und Richtlinien zur Verfügung."
+    }
+  },
+  "footer": {
+    "description": "Ihr vertrauenswürdiges iGaming-Affiliate-Netzwerk mit hohen CPA-Raten, globalen Angeboten und engagiertem Support.",
+    "quickLinks": "Schnelllinks",
+    "resources": "Ressourcen",
+    "legal": "Rechtliches",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "blog": "Blog",
+    "affiliateDashboard": "Affiliate-Dashboard",
+    "marketingMaterials": "Marketing-Materialien",
+    "apiDocs": "API-Dokumentation",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie",
+    "responsible": "Verantwortungsvolles Spielen",
+    "copyright": "© 2025 Revillion Partners. Alle Rechte vorbehalten.",
+    "disclaimer": "18+. Verantwortungsvoll spielen. Es gelten die AGB."
+  }
+}
