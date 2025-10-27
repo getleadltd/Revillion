@@ -1,20 +1,20 @@
 {
   "nav": {
     "home": "Home",
-    "whyJoin": "Warum beitreten",
+    "whyJoin": "Warum mitmachen",
     "tools": "Tools",
     "offers": "Angebote",
     "faq": "FAQ"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate-Netzwerk",
-    "title": "Treten Sie dem Revillion Affiliate-Netzwerk bei",
+    "title": "Werde Teil des Revillion Affiliate-Netzwerks",
     "titleHighlight": "Revillion",
-    "description": "Treten Sie Revillion Partners bei, dem führenden iGaming-Affiliate-Netzwerk, und verdienen Sie",
+    "description": "Werde Teil von Revillion Partners, dem führenden iGaming-Affiliate-Netzwerk, und verdiene",
     "descriptionHighlight": "hohe CPA-Provisionen",
-    "descriptionEnd": "durch die Bewerbung von Premium-Casino-Angeboten auf globalen Märkten",
-    "cta": "Affiliate werden",
-    "learnMore": "Mehr erfahren"
+    "descriptionEnd": "durch die Promotion von Premium-Casino-Angeboten in globalen Märkten",
+    "cta": "Jetzt Partner werden",
+    "learnMore": "Erfahre mehr"
   },
   "stats": {
     "paid": "An Affiliates ausgezahlt",
@@ -44,8 +44,8 @@
       "description": "Verdienen Sie branchenführende CPA-Provisionen auf Ersteinzahlungen mit transparentem Tracking und ohne versteckte Gebühren oder Abzüge."
     },
     "dedicatedSupport": {
-      "title": "Engagierter Support",
-      "description": "Erhalten Sie persönliche Unterstützung von unseren erfahrenen Affiliate-Managern, die rund um die Uhr helfen, Ihre Kampagnen zu optimieren und Ihr Verdienstpotenzial zu maximieren."
+      "title": "Persönlicher Support",
+      "description": "Erhalte persönliche Unterstützung von unseren erfahrenen Affiliate-Managern, die rund um die Uhr helfen, deine Kampagnen zu optimieren und dein Verdienstpotenzial zu maximieren."
     }
   },
   "tools": {
@@ -93,7 +93,7 @@
     "deposits": "Einzahlungen",
     "earned": "$4.250 verdient",
     "realtimeUpdate": "Echtzeit-Postback-Aktualisierungen",
-    "accessButton": "Zugriff auf Ihr Dashboard"
+    "accessButton": "Zum Dashboard"
   },
   "offers": {
     "badge": "TOP-ANGEBOTE",
@@ -103,7 +103,7 @@
     "cpaRange": "CPA",
     "markets": "Märkte",
     "conversionRate": "Konversionsrate",
-    "viewOffer": "Angebot ansehen",
+    "viewOffer": "Angebot entdecken",
     "marketsTitle": "Verfügbare Märkte umfassen:",
     "marketsData": {
       "europe": "🇪🇺 Europa: UK, Deutschland, Italien, Spanien, Portugal, Frankreich",
@@ -152,21 +152,21 @@
     "getUrlsButton": "Holen Sie sich Ihre Kurz-URLs"
   },
   "cta": {
-    "title": "Bereit anzufangen zu verdienen?",
-    "subtitle": "Treten Sie noch heute Revillion Partners bei und beginnen Sie, Premium-Casino-Angebote mit hohen CPA-Provisionen zu bewerben",
-    "button": "Jetzt Affiliate werden",
+    "title": "Bereit, loszulegen?",
+    "subtitle": "Werde noch heute Teil von Revillion Partners und beginne, Premium-Casino-Angebote mit hohen CPA-Provisionen zu promoten",
+    "button": "Jetzt starten",
     "earnings": "Durchschnittliche Affiliate-Einnahmen",
     "perMonth": "/Monat"
   },
   "finalCta": {
-    "title": "Bereit anzufangen zu verdienen?",
-    "subtitle": "Treten Sie Tausenden von Affiliates bei, die hohe Provisionen durch die Bewerbung von Premium-Casino-Marken verdienen",
+    "title": "Bereit, loszulegen?",
+    "subtitle": "Werde Teil von Tausenden Affiliates, die hohe Provisionen durch die Promotion von Premium-Casino-Marken verdienen",
     "stat1": "Premium-Marken",
     "stat2Value": "Echtzeit",
     "stat2": "Tracking & Statistiken",
     "stat3": "Support verfügbar",
-    "button": "Jetzt Affiliate werden",
-    "footer": "Keine Einrichtungsgebühren • Kostenloser Beitritt • Beginnen Sie noch heute zu verdienen"
+    "button": "Jetzt Partner werden",
+    "footer": "Keine Einrichtungsgebühr • Kostenlos beitreten • Jetzt starten"
   },
   "faq": {
     "badge": "FAQ",

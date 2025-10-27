@@ -1,19 +1,19 @@
 {
   "nav": {
     "home": "Home",
-    "whyJoin": "Perché Unirsi",
+    "whyJoin": "Perché Sceglierci",
     "tools": "Strumenti",
     "offers": "Offerte",
     "faq": "FAQ"
   },
   "hero": {
     "badge": "#1 Network Affiliazione iGaming",
-    "title": "Unisciti a Revillion Affiliate Network",
+    "title": "Entra nel Network di Affiliazione Revillion",
     "titleHighlight": "Revillion",
-    "description": "Unisciti a Revillion Partners, il network di affiliazione iGaming leader, e guadagna",
+    "description": "Entra in Revillion Partners, il network di affiliazione iGaming leader, e guadagna",
     "descriptionHighlight": "alte commissioni CPA",
     "descriptionEnd": "promuovendo offerte casino premium nei mercati globali",
-    "cta": "Diventa Affiliato",
+    "cta": "Diventa Partner Ora",
     "learnMore": "Scopri di Più"
   },
   "stats": {
@@ -103,7 +103,7 @@
     "cpaRange": "CPA",
     "markets": "Mercati",
     "conversionRate": "Tasso di Conversione",
-    "viewOffer": "Visualizza Offerta",
+    "viewOffer": "Vedi l'Offerta",
     "marketsTitle": "Mercati Disponibili Includono:",
     "marketsData": {
       "europe": "🇪🇺 Europa: UK, Germania, Italia, Spagna, Portogallo, Francia",
@@ -152,21 +152,21 @@
     "getUrlsButton": "Ottieni i Tuoi URL Brevi"
   },
   "cta": {
-    "title": "Pronto a Iniziare a Guadagnare?",
-    "subtitle": "Unisciti a Revillion Partners oggi e inizia a promuovere offerte casino premium con alte commissioni CPA",
-    "button": "Diventa Affiliato Ora",
+    "title": "Pronto a Guadagnare?",
+    "subtitle": "Entra in Revillion Partners oggi e inizia a promuovere offerte casino premium con alte commissioni CPA",
+    "button": "Diventa Partner Ora",
     "earnings": "Guadagni Medi Affiliati",
     "perMonth": "/mese"
   },
   "finalCta": {
-    "title": "Pronto a Iniziare a Guadagnare?",
-    "subtitle": "Unisciti a migliaia di affiliati che guadagnano alte commissioni promuovendo brand casino premium",
+    "title": "Pronto a Guadagnare?",
+    "subtitle": "Entra nella community di migliaia di affiliati che guadagnano alte commissioni promuovendo brand casino premium",
     "stat1": "Brand Premium",
     "stat2Value": "Tempo Reale",
     "stat2": "Tracking & Statistiche",
     "stat3": "Supporto Disponibile",
-    "button": "Diventa Affiliato Ora",
-    "footer": "Nessuna tassa di setup • Gratis per aderire • Inizia a guadagnare oggi"
+    "button": "Diventa Partner Ora",
+    "footer": "Nessun costo di attivazione • Iscrizione gratuita • Inizia subito"
   },
   "faq": {
     "badge": "FAQ",

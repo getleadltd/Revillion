@@ -10,12 +10,12 @@ export const SEOHead = () => {
       description: "Join 800+ affiliates earning high CPA commissions. Premium iGaming offers across 40+ markets. $10M+ paid to partners. Real-time tracking & dedicated support."
     },
     de: {
-      title: "Revillion Partners - Casino-Affiliate-Netzwerk mit hohem CPA | $10M+ Ausgezahlt",
-      description: "Schließen Sie sich 800+ Affiliates an, die hohe CPA-Provisionen verdienen. Premium-iGaming-Angebote in 40+ Märkten. $10M+ an Partner ausgezahlt. Echtzeit-Tracking & engagierter Support."
+      title: "Revillion Partners - Casino Affiliate-Netzwerk mit Top CPA | $10M+ Ausgezahlt",
+      description: "Werde Teil von 800+ Affiliates und verdiene hohe CPA-Provisionen. Premium iGaming-Angebote in 40+ Märkten. $10M+ an Partner ausgezahlt. Echtzeit-Tracking & persönlicher Support."
     },
     it: {
       title: "Revillion Partners - Network Affiliazione Casino Alto CPA | $10M+ Pagati",
-      description: "Unisciti a 800+ affiliati che guadagnano alte commissioni CPA. Offerte iGaming premium in 40+ mercati. $10M+ pagati ai partner. Tracking in tempo reale e supporto dedicato."
+      description: "Entra nel network: 800+ affiliati guadagnano alte commissioni CPA. Offerte iGaming premium in 40+ mercati. $10M+ pagati ai partner. Tracking real-time e supporto dedicato."
     },
     pt: {
       title: "Revillion Partners - Rede Afiliados Casino Alto CPA | $10M+ Pagos",
