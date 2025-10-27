@@ -6,6 +6,7 @@
   <!-- English -->
   <url>
     <loc>https://revillion-partners.com/en</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
     <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
@@ -23,6 +24,7 @@
   <!-- German -->
   <url>
     <loc>https://revillion-partners.com/de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
     <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
@@ -36,6 +38,7 @@
   <!-- Italian -->
   <url>
     <loc>https://revillion-partners.com/it</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
     <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
     <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
@@ -49,6 +52,7 @@
   <!-- Portuguese -->
   <url>
     <loc>https://revillion-partners.com/pt</loc>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
     <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
@@ -62,6 +66,7 @@
   <!-- Spanish -->
   <url>
     <loc>https://revillion-partners.com/es</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
     <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
     <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
