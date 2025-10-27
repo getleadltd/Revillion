@@ -7,13 +7,14 @@
     "faq": "FAQ"
   },
   "hero": {
+    "badge": "#1 iGaming Affiliate-Netzwerk",
     "title": "Treten Sie dem Revillion Affiliate-Netzwerk bei",
-    "descriptionLine1": "Verdienen Sie",
+    "titleHighlight": "Revillion",
+    "description": "Treten Sie Revillion Partners bei, dem führenden iGaming-Affiliate-Netzwerk, und verdienen Sie",
     "descriptionHighlight": "hohe CPA-Provisionen",
-    "descriptionLine2": "mit Premium-Casino-Partnern in 40+ globalen Märkten.",
-    "descriptionLine3": "800+ Affiliates vertrauen uns bereits.",
-    "cta": "Jetzt Affiliate werden",
-    "secondary": "Angebote ansehen"
+    "descriptionEnd": "durch die Bewerbung von Premium-Casino-Angeboten auf globalen Märkten",
+    "cta": "Affiliate werden",
+    "learnMore": "Mehr erfahren"
   },
   "stats": {
     "paid": "An Affiliates ausgezahlt",
@@ -21,151 +22,183 @@
     "markets": "Globale Märkte"
   },
   "partners": {
-    "title": "Unsere Premium-Casino-Partner",
-    "subtitle": "Arbeiten Sie mit führenden iGaming-Marken zusammen"
+    "badge": "PREMIUM-PARTNER",
+    "title": "Vertrauenswürdige",
+    "titleHighlight": "Casino",
+    "titleEnd": "Partner",
+    "subtitle": "Arbeiten Sie mit branchenführenden Casino-Marken zusammen, die außergewöhnliche Konversionsraten und Spielerbindung bieten",
+    "licensed": "Alle Partner sind lizenziert und reguliert",
+    "description": "Jeder Casino-Partner im iGaming-Affiliate-Netzwerk von Revillion ist vollständig lizenziert, reguliert und auf Qualität geprüft, um sicherzustellen, dass Ihr Traffic mit vertrauenswürdigen Marken konvertiert, die Spieler lieben."
   },
   "whyJoin": {
-    "title": "Warum Revillion Partners wählen?",
-    "subtitle": "Ihre vertrauenswürdige iGaming-Affiliate-Plattform",
+    "badge": "WARUM UNS WÄHLEN",
+    "title": "Warum",
+    "titleHighlight": "Revillion",
+    "subtitle": "Schließen Sie sich Tausenden erfolgreichen Partnern im iGaming-Affiliate-Netzwerk von Revillion an für maximales Umsatzpotenzial",
     "globalOffers": {
       "title": "Globale Angebote",
-      "description": "Zugriff auf Premium-Casino-Angebote in 40+ Märkten weltweit mit lokalisierten Landingpages"
+      "description": "Zugriff auf Premium-Casino- und iGaming-Angebote über mehrere GEOs mit hohen Konversionsraten und wettbewerbsfähigen Auszahlungen in jedem wichtigen Markt weltweit."
     },
     "highCommissions": {
       "title": "Hohe CPA-Provisionen",
-      "description": "Verdienen Sie bis zu 800 € CPA pro qualifiziertem Spieler mit transparenten Auszahlungsbedingungen"
+      "description": "Verdienen Sie branchenführende CPA-Provisionen auf Ersteinzahlungen mit transparentem Tracking und ohne versteckte Gebühren oder Abzüge."
     },
     "dedicatedSupport": {
       "title": "Engagierter Support",
-      "description": "24/7 Account-Manager und technischer Support, um Ihre Konversionen zu maximieren"
+      "description": "Erhalten Sie persönliche Unterstützung von unseren erfahrenen Affiliate-Managern, die rund um die Uhr helfen, Ihre Kampagnen zu optimieren und Ihr Verdienstpotenzial zu maximieren."
     }
   },
   "tools": {
-    "title": "Fortschrittliche Affiliate-Tools",
-    "subtitle": "Alles, was Sie brauchen, um erfolgreich zu sein",
-    "realTimeTracking": {
-      "title": "Echtzeit-Tracking",
-      "description": "Überwachen Sie Klicks, Konversionen und Einnahmen in Echtzeit mit unserem fortschrittlichen Dashboard"
-    },
+    "badge": "ERWEITERTE TOOLS",
+    "title": "Leistungsstarke",
+    "titleHighlight": "Tools",
+    "titleEnd": "& Features",
+    "subtitle": "Erweiterte Tracking-Tools und Echtzeit-Analysen zur Maximierung Ihres Affiliate-Erfolgs",
     "smartUrls": {
       "title": "Intelligente Kurz-URLs",
-      "description": "Benutzerdefinierte Tracking-Links, die sich automatisch an das Gerät und den Standort des Benutzers anpassen"
+      "description": "Benutzerdefinierte Kurz-URLs, die das Teilen auf sozialen Plattformen erleichtern und die Merkfähigkeit von Inhalten auf Telegram, Twitter und Instagram verbessern."
     },
-    "postbackIntegration": {
-      "title": "Postback-Integration",
-      "description": "Nahtlose Integration mit allen wichtigen Tracking-Plattformen über Postback-URLs"
+    "analytics": {
+      "title": "Echtzeit-Analysen",
+      "description": "Erweiterte Dashboard mit Echtzeit-Datentracking über Postback-System. Überwachen Sie Registrierungen, Einzahlungen und Konversionen sofort."
     },
-    "reportingAnalytics": {
-      "title": "Berichterstattung & Analysen",
-      "description": "Detaillierte Berichte mit Einblicken zur Optimierung Ihrer Kampagnenleistung"
+    "postback": {
+      "title": "Sofortiges Postback",
+      "description": "Nahezu-Echtzeit-Postback-System liefert Konversionsdaten sofort und ermöglicht Ihnen, Kampagnen zu optimieren und die Leistung unmittelbar zu verfolgen."
+    },
+    "tracking": {
+      "title": "Erweitertes Tracking",
+      "description": "Umfassendes Tracking-System überwacht jeden Schritt von der Registrierung bis zur Einzahlung und bietet detaillierte Einblicke zur Kampagnenoptimierung."
     }
   },
   "dashboard": {
-    "title": "Echtzeit-Affiliate-Dashboard",
-    "liveMetrics": "Live-Metriken",
-    "recentActivity": "Letzte Aktivität",
-    "totalClicks": "Gesamt Klicks",
-    "conversions": "Konversionen",
-    "earnings": "Einnahmen",
+    "badge": "LIVE-DASHBOARD",
+    "title": "Sehen Sie Ihre",
+    "titleHighlight": "Performance",
+    "titleEnd": "Live",
+    "subtitle": "Überwachen Sie Ihre Kampagnen mit unserem erweiterten Dashboard mit Echtzeit-Metriken, sofortigen Postback-Daten und umfassenden Analysen.",
     "liveClicks": "Live-Klicks",
     "realTime": "Echtzeit",
-    "newReg": "Neue Registrierung",
-    "ftd": "Erste Einzahlung",
-    "withdrawal": "Auszahlung verarbeitet"
+    "conversions": "Konversionen",
+    "todayEarnings": "Heutige Einnahmen",
+    "postbackUpdates": "Postback-Aktualisierungen",
+    "updates": "Aktualisierungen",
+    "recentActivity": "Letzte Aktivität",
+    "newRegistration": "Neue Registrierung aus Brasilien",
+    "firstDeposit": "Erste Einzahlung - $125 CPA verdient",
+    "justNow": "Gerade eben",
+    "minutesAgo": "Vor 2 Min.",
+    "registrations": "Registrierungen",
+    "today": "heute",
+    "deposits": "Einzahlungen",
+    "earned": "$4.250 verdient",
+    "realtimeUpdate": "Echtzeit-Postback-Aktualisierungen",
+    "accessButton": "Zugriff auf Ihr Dashboard"
   },
   "offers": {
-    "title": "Top iGaming-Angebote",
-    "subtitle": "Aktualisiert am 27.10.2025",
-    "casinoName": "Casino-Name",
-    "cpa": "CPA",
+    "badge": "TOP-ANGEBOTE",
+    "title": "Premium-iGaming",
+    "titleHighlight": "Angebote",
+    "subtitle": "Bewerben Sie hoch konvertierende Casino-Marken mit bewährter Leistung auf globalen Märkten",
+    "cpaRange": "CPA",
     "markets": "Märkte",
-    "conversion": "Konversion",
-    "details": "Details anzeigen",
+    "conversionRate": "Konversionsrate",
+    "viewOffer": "Angebot ansehen",
+    "marketsTitle": "Verfügbare Märkte umfassen:",
     "marketsData": {
       "europe": "🇪🇺 Europa: UK, Deutschland, Italien, Spanien, Portugal, Frankreich",
-      "latam": "🌎 LATAM: Brasilien, Mexiko, Argentinien, Chile, Peru",
-      "asia": "🌏 Asien: Japan, Südkorea, Thailand, Vietnam, Philippinen",
-      "global": "🌍 Global: 40+ Länder weltweit"
-    }
+      "latam": "🌎 Lateinamerika: Brasilien, Mexiko, Argentinien, Chile, Peru",
+      "asiaPacific": "🌏 Asien-Pazifik: Indien, Japan, Südkorea, Australien",
+      "northAmerica": "🇺🇸 Nordamerika: USA, Kanada",
+      "africa": "🌍 Afrika: Südafrika, Nigeria, Kenia",
+      "moreMarkets": "📍 Und über 30 weitere Märkte weltweit"
+    },
+    "exploreButton": "Unsere Angebote erkunden"
   },
   "socialMedia": {
-    "title": "Für Social Media optimiert",
-    "subtitle": "Maßgeschneiderte Tools für Ihre Social-Media-Kanäle",
-    "instagramStories": {
-      "title": "Instagram Stories Links",
-      "description": "Spezielle Tracking-Links, die für Instagram Stories optimiert sind"
+    "badge": "SOCIAL-MEDIA-OPTIMIERUNG",
+    "title": "Maximieren Sie Ihre",
+    "titleHighlight": "Social",
+    "titleEnd": "Reichweite",
+    "subtitle": "Nutzen Sie unsere optimierten Tools und Inhalte für maximales Engagement auf allen sozialen Plattformen",
+    "optimizedContent": {
+      "title": "Optimierte Inhalte",
+      "description": "Vorgefertigte Creatives und Texte, optimiert für jede soziale Plattform - Instagram, Twitter, Telegram und mehr."
     },
-    "tiktokPromos": {
-      "title": "TikTok-Promo-Codes",
-      "description": "Exklusive Promo-Codes, die perfekt für TikTok-Bio-Links sind"
+    "instantSharing": {
+      "title": "Sofortiges Teilen",
+      "description": "Ein-Klick-Sharing-Tools mit benutzerdefiniertem UTM-Tracking für genaue Leistungsmessung über alle Kanäle hinweg."
     },
-    "youtubeReady": {
-      "title": "YouTube-Ready-Assets",
-      "description": "Video-Assets und Banner für Ihre YouTube-Content-Erstellung"
+    "engagement": {
+      "title": "Hohes Engagement",
+      "description": "Bewährte Content-Vorlagen und Strategien, die Klicks, Gespräche und Konversionen in sozialen Medien fördern."
     },
-    "twitterThreads": {
-      "title": "Twitter/X-Thread-Vorlagen",
-      "description": "Vorgefertigte Thread-Vorlagen mit Tracking-Links für maximale Reichweite"
+    "telegram": {
+      "title": "Telegram-Ready",
+      "description": "Perfekte Kurz-URLs für Telegram-Kanäle und -Gruppen. Leicht zu merken und mit Ihrer Community zu teilen."
     },
-    "facebookGroups": {
-      "title": "Facebook-Gruppen-Kits",
-      "description": "Gruppenverwaltungs-Tools und Community-ready Inhalte"
+    "twitter": {
+      "title": "Twitter-optimiert",
+      "description": "Maximieren Sie den Zeichenplatz auf Twitter/X mit unseren kompakten Kurz-Links, die professionell aussehen und Klicks generieren."
     },
-    "linkedinPosts": {
-      "title": "LinkedIn B2B-Tools",
-      "description": "Professionelle Assets für B2B-iGaming-Networking und Content"
-    }
+    "instagram": {
+      "title": "Instagram Stories",
+      "description": "Schöne Kurz-URLs für Instagram-Bio, Stories und Posts. Mobil-optimiert für perfektes Tracking."
+    },
+    "urlExamplesTitle": "Kurz-URL-Beispiele:",
+    "urlExample1": "Leicht zu merken",
+    "urlExample2": "Perfekt für Social Media",
+    "urlExample3": "Markenfreundlich",
+    "getUrlsButton": "Holen Sie sich Ihre Kurz-URLs"
   },
   "cta": {
-    "title": "Bereit, Ihre Einnahmen zu maximieren?",
-    "subtitle": "Treten Sie noch heute den 800+ erfolgreichen Affiliates bei",
-    "button": "Jetzt starten"
+    "title": "Bereit anzufangen zu verdienen?",
+    "subtitle": "Treten Sie noch heute Revillion Partners bei und beginnen Sie, Premium-Casino-Angebote mit hohen CPA-Provisionen zu bewerben",
+    "button": "Jetzt Affiliate werden",
+    "earnings": "Durchschnittliche Affiliate-Einnahmen",
+    "perMonth": "/Monat"
   },
   "finalCta": {
-    "title": "Werden Sie noch heute ein Revillion Affiliate",
-    "benefit1": "Hohe CPA-Raten",
-    "benefit2": "Globale Märkte",
-    "benefit3": "24/7 Support",
-    "button": "Jetzt Partner werden"
+    "title": "Bereit anzufangen zu verdienen?",
+    "subtitle": "Treten Sie Tausenden von Affiliates bei, die hohe Provisionen durch die Bewerbung von Premium-Casino-Marken verdienen",
+    "stat1": "Premium-Marken",
+    "stat2Value": "Echtzeit",
+    "stat2": "Tracking & Statistiken",
+    "stat3": "Support verfügbar",
+    "button": "Jetzt Affiliate werden",
+    "footer": "Keine Einrichtungsgebühren • Kostenloser Beitritt • Beginnen Sie noch heute zu verdienen"
   },
   "faq": {
+    "badge": "FAQ",
     "title": "Häufig gestellte Fragen",
+    "subtitle": "Alles, was Sie über den Beitritt zum Revillion Partners Affiliate-Netzwerk wissen müssen",
     "q1": {
       "question": "Wie hoch sind die Provisionssätze?",
-      "answer": "Wir bieten wettbewerbsfähige CPA-Raten von bis zu 800 € pro qualifiziertem Spieler, abhängig vom Markt und Casino-Partner. Revenue-Share-Modelle sind ebenfalls verfügbar."
+      "answer": "Wir bieten branchenführende CPA-Provisionen von $75 bis $300 pro Ersteinzahlung, abhängig vom GEO-Markt und der Casino-Marke. Zusätzliche RevShare- und Hybrid-Deals sind für Top-Performer verfügbar. Alle Tarife sind transparent ohne versteckte Gebühren oder Abzüge."
     },
     "q2": {
-      "question": "Wann und wie werde ich bezahlt?",
-      "answer": "Auszahlungen erfolgen monatlich mit einer Mindestausschüttung von 100 €. Wir unterstützen Banküberweisungen, Skrill, Neteller und Kryptowährungen."
+      "question": "Wann werde ich bezahlt?",
+      "answer": "Zahlungen werden monatlich verarbeitet, normalerweise bis zum 15. eines jeden Monats. Wir unterstützen mehrere Zahlungsmethoden einschließlich Banküberweisung, Skrill, Neteller und Kryptowährung. Die Mindestauszahlungsschwelle beträgt $100. Alle Einnahmen werden in Echtzeit über unser Dashboard verfolgt."
     },
     "q3": {
-      "question": "Welche Tracking-Systeme unterstützen Sie?",
-      "answer": "Wir unterstützen alle wichtigen Tracking-Plattformen über Postback-URLs, einschließlich Voluum, Binom, RedTrack und benutzerdefinierte Lösungen."
+      "question": "In welchen Märkten sind Sie tätig?",
+      "answer": "Wir sind in über 40 globalen Märkten tätig, darunter UK, Deutschland, Kanada, Brasilien, Indien und viele mehr. Jeder Markt hat lokalisierte Angebote, Zahlungsmethoden und Sprachunterstützung, um Ihre Konversionsraten zu maximieren. Unsere Affiliate-Manager können die besten GEOs für Ihren Traffic empfehlen."
     },
     "q4": {
-      "question": "Gibt es eine Mindestverkehrsanforderung?",
-      "answer": "Nein, wir akzeptieren Affiliates aller Größenordnungen. Ob Sie gerade erst anfangen oder ein etablierter Partner sind, Sie sind willkommen, unserem Netzwerk beizutreten."
+      "question": "Welche Tools und Support bieten Sie?",
+      "answer": "Sie erhalten Zugriff auf professionelle Banner, Landing Pages, E-Mail-Vorlagen, intelligente Kurz-URLs mit GEO-Targeting, sofortiges Postback-System, Echtzeit-Analyse-Dashboard und engagierte Affiliate-Manager, die bei der Optimierung Ihrer Kampagnen helfen. Wir bieten auch für soziale Medien optimierte Marketing-Materialien."
     },
     "q5": {
-      "question": "Wie kann ich das Programm bewerben?",
-      "answer": "Sie können alle Traffic-Quellen nutzen, einschließlich Social Media, SEO, PPC und Content-Marketing. Wir stellen alle notwendigen Marketing-Materialien und Richtlinien zur Verfügung."
+      "question": "Gibt es eine Anmeldegebühr?",
+      "answer": "Nein, der Beitritt zu Revillion Partners ist völlig kostenlos. Es gibt keine Anmeldegebühren, versteckten Kosten oder Mindestverkehrsanforderungen. Sie verdienen nur, wenn Sie Konversionen generieren. Wir heißen Affiliates aller Erfahrungsstufen willkommen und bieten umfassende Onboarding-Unterstützung."
     }
   },
   "footer": {
-    "description": "Ihr vertrauenswürdiges iGaming-Affiliate-Netzwerk mit hohen CPA-Raten, globalen Angeboten und engagiertem Support.",
+    "description": "Revillion Partners ist ein führendes iGaming-Affiliate-Netzwerk, das hohe Provisionen, Premium-Casino-Marken und engagierten Support für Affiliates weltweit bietet.",
     "quickLinks": "Schnelllinks",
-    "resources": "Ressourcen",
-    "legal": "Rechtliches",
-    "about": "Über uns",
-    "contact": "Kontakt",
-    "blog": "Blog",
-    "affiliateDashboard": "Affiliate-Dashboard",
-    "marketingMaterials": "Marketing-Materialien",
-    "apiDocs": "API-Dokumentation",
-    "terms": "Nutzungsbedingungen",
-    "privacy": "Datenschutzrichtlinie",
+    "socialMedia": "Social Media",
+    "rights": "Alle Rechte vorbehalten.",
     "responsible": "Verantwortungsvolles Spielen",
-    "copyright": "© 2025 Revillion Partners. Alle Rechte vorbehalten.",
-    "disclaimer": "18+. Verantwortungsvoll spielen. Es gelten die AGB."
+    "copyright": "© 2025 Revillion Partners. Alle Rechte vorbehalten."
   }
 }
