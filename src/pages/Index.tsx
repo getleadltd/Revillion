@@ -601,7 +601,7 @@ const Index = () => {
               <span className="text-orange-600 font-semibold text-sm">{t('tools.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-              {t('tools.title')}
+              {t('tools.title')} <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">{t('tools.titleHighlight')}</span> {t('tools.titleEnd')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               {t('tools.subtitle')}

@@ -87,7 +87,13 @@
     "newRegistration": "Nuevo registro desde Brasil",
     "firstDeposit": "Primer depósito - $125 CPA ganados",
     "justNow": "Justo ahora",
-    "minutesAgo": "hace 2 min"
+    "minutesAgo": "hace 2 min",
+    "registrations": "Registros",
+    "today": "hoy",
+    "deposits": "Depósitos",
+    "earned": "$4,250 ganados",
+    "realtimeUpdate": "Actualizaciones de postback en tiempo real",
+    "accessButton": "Accede a Tu Dashboard"
   },
   "offers": {
     "badge": "TOP OFERTAS",
@@ -97,7 +103,17 @@
     "cpaRange": "CPA",
     "markets": "Mercados",
     "conversionRate": "Tasa de Conversión",
-    "viewOffer": "Ver Oferta"
+    "viewOffer": "Ver Oferta",
+    "marketsTitle": "Mercados Disponibles Incluyen:",
+    "marketsData": {
+      "europe": "🇪🇺 Europa: Reino Unido, Alemania, Italia, España, Portugal, Francia",
+      "latam": "🌎 América Latina: Brasil, México, Argentina, Chile, Perú",
+      "asiaPacific": "🌏 Asia-Pacífico: India, Japón, Corea del Sur, Australia",
+      "northAmerica": "🇺🇸 América del Norte: EE.UU., Canadá",
+      "africa": "🌍 África: Sudáfrica, Nigeria, Kenia",
+      "moreMarkets": "📍 Y más de 30 mercados en todo el mundo"
+    },
+    "exploreButton": "Explora Nuestras Ofertas"
   },
   "socialMedia": {
     "badge": "OPTIMIZACIÓN DE REDES SOCIALES",
@@ -116,7 +132,24 @@
     "engagement": {
       "title": "Alto Engagement",
       "description": "Templates de contenido y estrategias probadas que generan clics, conversaciones y conversiones en redes sociales."
-    }
+    },
+    "telegram": {
+      "title": "Listo para Telegram",
+      "description": "URLs cortas perfectas para canales y grupos de Telegram. Fáciles de recordar y compartir con tu comunidad."
+    },
+    "twitter": {
+      "title": "Optimizado para Twitter",
+      "description": "Maximiza el espacio de caracteres en Twitter/X con nuestros enlaces cortos compactos que se ven profesionales y generan clics."
+    },
+    "instagram": {
+      "title": "Historias de Instagram",
+      "description": "URLs cortas hermosas para bio, historias y posts de Instagram. Optimizadas para móvil para rastreo perfecto."
+    },
+    "urlExamplesTitle": "Ejemplos de URLs Cortas:",
+    "urlExample1": "Fácil de recordar",
+    "urlExample2": "Perfecto para redes",
+    "urlExample3": "Amigable con la marca",
+    "getUrlsButton": "Obtén Tus URLs Cortas"
   },
   "cta": {
     "title": "¿Listo para Empezar a Ganar?",
@@ -124,6 +157,16 @@
     "button": "Hazte Afiliado Ahora",
     "earnings": "Ganancias Promedio de Afiliados",
     "perMonth": "/mes"
+  },
+  "finalCta": {
+    "title": "¿Listo para Empezar a Ganar?",
+    "subtitle": "Únete a miles de afiliados ganando altas comisiones promocionando marcas de casino premium",
+    "stat1": "Marcas Premium",
+    "stat2Value": "Tiempo Real",
+    "stat2": "Rastreo & Estadísticas",
+    "stat3": "Soporte Disponible",
+    "button": "Hazte Afiliado Ahora",
+    "footer": "Sin tarifas de configuración • Gratis unirse • Empieza a ganar hoy"
   },
   "faq": {
     "badge": "FAQ",
@@ -155,6 +198,7 @@
     "quickLinks": "Enlaces Rápidos",
     "socialMedia": "Redes Sociales",
     "rights": "Todos los derechos reservados.",
-    "responsible": "Juego Responsable"
+    "responsible": "Juego Responsable",
+    "copyright": "© 2025 Revillion Partners. Todos los derechos reservados."
   }
 }

@@ -87,7 +87,13 @@
     "newRegistration": "New registration from Brazil",
     "firstDeposit": "First deposit - $125 CPA earned",
     "justNow": "Just now",
-    "minutesAgo": "2 min ago"
+    "minutesAgo": "2 min ago",
+    "registrations": "Registrations",
+    "today": "today",
+    "deposits": "Deposits",
+    "earned": "$4,250 earned",
+    "realtimeUpdate": "Real-time postback updates",
+    "accessButton": "Access Your Dashboard"
   },
   "offers": {
     "badge": "TOP OFFERS",
@@ -97,7 +103,17 @@
     "cpaRange": "CPA",
     "markets": "Markets",
     "conversionRate": "Conversion Rate",
-    "viewOffer": "View Offer"
+    "viewOffer": "View Offer",
+    "marketsTitle": "Available Markets Include:",
+    "marketsData": {
+      "europe": "🇪🇺 Europe: UK, Germany, Italy, Spain, Portugal, France",
+      "latam": "🌎 Latin America: Brazil, Mexico, Argentina, Chile, Peru",
+      "asiaPacific": "🌏 Asia-Pacific: India, Japan, South Korea, Australia",
+      "northAmerica": "🇺🇸 North America: USA, Canada",
+      "africa": "🌍 Africa: South Africa, Nigeria, Kenya",
+      "moreMarkets": "📍 And 30+ more markets worldwide"
+    },
+    "exploreButton": "Explore Our Offers"
   },
   "socialMedia": {
     "badge": "SOCIAL MEDIA OPTIMIZATION",
@@ -116,7 +132,24 @@
     "engagement": {
       "title": "High Engagement",
       "description": "Proven content templates and strategies that drive clicks, conversations, and conversions on social media."
-    }
+    },
+    "telegram": {
+      "title": "Telegram Ready",
+      "description": "Perfect short URLs for Telegram channels and groups. Easy to remember and share with your community."
+    },
+    "twitter": {
+      "title": "Twitter Optimized",
+      "description": "Maximize character space on Twitter/X with our compact short links that look professional and drive clicks."
+    },
+    "instagram": {
+      "title": "Instagram Stories",
+      "description": "Beautiful short URLs for Instagram bio, stories, and posts. Mobile-optimized for perfect tracking."
+    },
+    "urlExamplesTitle": "Short URL Examples:",
+    "urlExample1": "Easy to remember",
+    "urlExample2": "Perfect for social",
+    "urlExample3": "Brand-friendly",
+    "getUrlsButton": "Get Your Short URLs"
   },
   "cta": {
     "title": "Ready to Start Earning?",
@@ -124,6 +157,16 @@
     "button": "Become an Affiliate Now",
     "earnings": "Average Affiliate Earnings",
     "perMonth": "/month"
+  },
+  "finalCta": {
+    "title": "Ready to Start Earning?",
+    "subtitle": "Join thousands of affiliates earning high commissions promoting premium casino brands",
+    "stat1": "Premium Brands",
+    "stat2Value": "Real-Time",
+    "stat2": "Tracking & Stats",
+    "stat3": "Support Available",
+    "button": "Become an Affiliate Now",
+    "footer": "No setup fees • Free to join • Start earning today"
   },
   "faq": {
     "badge": "FAQ",
@@ -155,6 +198,7 @@
     "quickLinks": "Quick Links",
     "socialMedia": "Social Media",
     "rights": "All rights reserved.",
-    "responsible": "Responsible Gaming"
+    "responsible": "Responsible Gaming",
+    "copyright": "© 2025 Revillion Partners. All rights reserved."
   }
 }
