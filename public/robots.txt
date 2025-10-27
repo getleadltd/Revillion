@@ -1,5 +1,6 @@
 User-agent: Googlebot
 Allow: /en/
+Allow: /de/
 Allow: /it/
 Allow: /pt/
 Allow: /es/
@@ -11,6 +12,7 @@ Allow: /*.webp
 
 User-agent: Bingbot
 Allow: /en/
+Allow: /de/
 Allow: /it/
 Allow: /pt/
 Allow: /es/
@@ -23,6 +25,7 @@ Allow: /
 
 User-agent: *
 Allow: /en/
+Allow: /de/
 Allow: /it/
 Allow: /pt/
 Allow: /es/

@@ -6,6 +6,7 @@
   <!-- English -->
   <url>
     <loc>https://revillion-partners.com/en</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
     <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
@@ -19,10 +20,24 @@
     </image:image>
   </url>
 
+  <!-- German -->
+  <url>
+    <loc>https://revillion-partners.com/de</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
   <!-- Italian -->
   <url>
     <loc>https://revillion-partners.com/it</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
     <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
@@ -35,6 +50,7 @@
   <url>
     <loc>https://revillion-partners.com/pt</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
     <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
@@ -47,6 +63,7 @@
   <url>
     <loc>https://revillion-partners.com/es</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://revillion-partners.com/de" />
     <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
@@ -154,6 +171,32 @@
   </url>
   <url>
     <loc>https://revillion-partners.com/es#faq</loc>
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- German Sections -->
+  <url>
+    <loc>https://revillion-partners.com/de#why-join</loc>
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://revillion-partners.com/de#tools</loc>
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://revillion-partners.com/de#offers</loc>
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://revillion-partners.com/de#faq</loc>
     <lastmod>2025-10-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
