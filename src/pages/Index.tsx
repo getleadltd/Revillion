@@ -771,29 +771,29 @@ const Index = () => {
                 <ul className="space-y-4">
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    {t('offers.markets.europe')}
+                    {t('offers.marketsData.europe')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    {t('offers.markets.latam')}
+                    {t('offers.marketsData.latam')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    {t('offers.markets.asiaPacific')}
+                    {t('offers.marketsData.asiaPacific')}
                   </li>
                 </ul>
                 <ul className="space-y-4">
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    {t('offers.markets.northAmerica')}
+                    {t('offers.marketsData.northAmerica')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    {t('offers.markets.africa')}
+                    {t('offers.marketsData.africa')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    {t('offers.markets.moreMarkets')}
+                    {t('offers.marketsData.moreMarkets')}
                   </li>
                 </ul>
               </div>
