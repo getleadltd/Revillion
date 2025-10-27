@@ -1,8 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- English -->
   <url>
-    <loc>https://revillion-partners.com/</loc>
-    <lastmod>2025-10-22</lastmod>
+    <loc>https://revillion-partners.com/en</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Italian -->
+  <url>
+    <loc>https://revillion-partners.com/it</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Portuguese -->
+  <url>
+    <loc>https://revillion-partners.com/pt</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://revillion-partners.com/es" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
+    <lastmod>2025-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Spanish -->
+  <url>
+    <loc>https://revillion-partners.com/es</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://revillion-partners.com/en" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://revillion-partners.com/it" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://revillion-partners.com/pt" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://revillion-partners.com/en" />
+    <lastmod>2025-10-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

@@ -1,0 +1,160 @@
+{
+  "nav": {
+    "home": "Home",
+    "whyJoin": "Why Join",
+    "tools": "Tools",
+    "offers": "Offers",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "badge": "#1 iGaming Affiliate Network",
+    "title": "Join Revillion Affiliate Network",
+    "titleHighlight": "Revillion",
+    "description": "Join Revillion Partners, the leading iGaming affiliate network, and earn",
+    "descriptionHighlight": "high CPA commissions",
+    "descriptionEnd": "promoting premium casino offers across global markets",
+    "cta": "Become an Affiliate",
+    "learnMore": "Learn More"
+  },
+  "stats": {
+    "paid": "Paid to Affiliates",
+    "affiliates": "Active Affiliates",
+    "markets": "Global Markets"
+  },
+  "partners": {
+    "badge": "PREMIUM PARTNERS",
+    "title": "Trusted",
+    "titleHighlight": "Casino",
+    "titleEnd": "Partners",
+    "subtitle": "Work with industry-leading casino brands that deliver exceptional conversion rates and player retention",
+    "licensed": "All partners are licensed and regulated",
+    "description": "Every casino partner in Revillion's iGaming affiliate network is fully licensed, regulated, and vetted for quality, ensuring your traffic converts with trusted brands that players love."
+  },
+  "whyJoin": {
+    "badge": "WHY CHOOSE US",
+    "title": "Why Choose",
+    "titleHighlight": "Revillion",
+    "subtitle": "Join thousands of successful partners in Revillion's iGaming affiliate network for maximum revenue potential",
+    "globalOffers": {
+      "title": "Global Offers",
+      "description": "Access premium casino and iGaming offers across multiple GEOs with high conversion rates and competitive payouts in every major market worldwide."
+    },
+    "highCommissions": {
+      "title": "High CPA Commissions",
+      "description": "Earn industry-leading CPA commissions on First-Time Deposits with transparent tracking and no hidden fees or deductions."
+    },
+    "dedicatedSupport": {
+      "title": "Dedicated Support",
+      "description": "Get personalized support from our experienced affiliate managers who help optimize your campaigns and maximize your earning potential 24/7."
+    }
+  },
+  "tools": {
+    "badge": "ADVANCED TOOLS",
+    "title": "Powerful",
+    "titleHighlight": "Tools",
+    "titleEnd": "& Features",
+    "subtitle": "Advanced tracking tools and real-time analytics to maximize your affiliate success",
+    "smartUrls": {
+      "title": "Smart Short URLs",
+      "description": "Custom short URLs that make sharing on social platforms easier and improve content memorability across Telegram, Twitter & Instagram."
+    },
+    "analytics": {
+      "title": "Real-Time Analytics",
+      "description": "Advanced dashboard with real-time data tracking via postback system. Monitor registrations, deposits, and conversions instantly."
+    },
+    "postback": {
+      "title": "Instant Postback",
+      "description": "Near real-time postback system delivers conversion data instantly, allowing you to optimize campaigns and track performance immediately."
+    },
+    "tracking": {
+      "title": "Advanced Tracking",
+      "description": "Comprehensive tracking system monitors every step from registration to deposit, providing detailed insights for campaign optimization."
+    }
+  },
+  "dashboard": {
+    "badge": "LIVE DASHBOARD",
+    "title": "See Your",
+    "titleHighlight": "Performance",
+    "titleEnd": "Live",
+    "subtitle": "Monitor your campaigns with our advanced dashboard featuring real-time metrics, instant postback data, and comprehensive analytics.",
+    "liveClicks": "Live Clicks",
+    "realTime": "Real-time",
+    "conversions": "Conversions",
+    "todayEarnings": "Today's Earnings",
+    "postbackUpdates": "Postback Updates",
+    "updates": "updates",
+    "recentActivity": "Recent Activity",
+    "newRegistration": "New registration from Brazil",
+    "firstDeposit": "First deposit - $125 CPA earned",
+    "justNow": "Just now",
+    "minutesAgo": "2 min ago"
+  },
+  "offers": {
+    "badge": "TOP OFFERS",
+    "title": "Premium iGaming",
+    "titleHighlight": "Offers",
+    "subtitle": "Promote high-converting casino brands with proven performance across global markets",
+    "cpaRange": "CPA",
+    "markets": "Markets",
+    "conversionRate": "Conversion Rate",
+    "viewOffer": "View Offer"
+  },
+  "socialMedia": {
+    "badge": "SOCIAL MEDIA OPTIMIZATION",
+    "title": "Maximize Your",
+    "titleHighlight": "Social",
+    "titleEnd": "Reach",
+    "subtitle": "Leverage our optimized tools and content for maximum engagement across all social platforms",
+    "optimizedContent": {
+      "title": "Optimized Content",
+      "description": "Pre-made creatives and copy optimized for each social platform - Instagram, Twitter, Telegram, and more."
+    },
+    "instantSharing": {
+      "title": "Instant Sharing",
+      "description": "One-click sharing tools with custom UTM tracking for accurate performance measurement across channels."
+    },
+    "engagement": {
+      "title": "High Engagement",
+      "description": "Proven content templates and strategies that drive clicks, conversations, and conversions on social media."
+    }
+  },
+  "cta": {
+    "title": "Ready to Start Earning?",
+    "subtitle": "Join Revillion Partners today and start promoting premium casino offers with high CPA commissions",
+    "button": "Become an Affiliate Now",
+    "earnings": "Average Affiliate Earnings",
+    "perMonth": "/month"
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about joining Revillion Partners affiliate network",
+    "q1": {
+      "question": "What are the commission rates?",
+      "answer": "We offer industry-leading CPA commissions ranging from $75 to $300 per First-Time Deposit, depending on the GEO market and casino brand. Additional RevShare and hybrid deals are available for top performers. All rates are transparent with no hidden fees or deductions."
+    },
+    "q2": {
+      "question": "When do I get paid?",
+      "answer": "Payments are processed monthly, typically by the 15th of each month. We support multiple payment methods including bank transfer, Skrill, Neteller, and cryptocurrency. Minimum payout threshold is $100. All earnings are tracked in real-time via our dashboard."
+    },
+    "q3": {
+      "question": "What markets do you operate in?",
+      "answer": "We operate in 40+ global markets including UK, Germany, Canada, Brazil, India, and many more. Each market has localized offers, payment methods, and language support to maximize your conversion rates. Our affiliate managers can recommend the best GEOs for your traffic."
+    },
+    "q4": {
+      "question": "What tools and support do you provide?",
+      "answer": "You get access to professional banners, landing pages, email templates, smart short URLs with GEO-targeting, instant postback system, real-time analytics dashboard, and dedicated affiliate managers who help optimize your campaigns. We also provide marketing materials optimized for social media platforms."
+    },
+    "q5": {
+      "question": "Is there a signup fee?",
+      "answer": "No, joining Revillion Partners is completely free. There are no signup fees, hidden costs, or minimum traffic requirements. You only earn when you generate conversions. We welcome affiliates of all experience levels and provide comprehensive onboarding support."
+    }
+  },
+  "footer": {
+    "description": "Revillion Partners is a leading iGaming affiliate network offering high commissions, premium casino brands, and dedicated support to affiliates worldwide.",
+    "quickLinks": "Quick Links",
+    "socialMedia": "Social Media",
+    "rights": "All rights reserved.",
+    "responsible": "Responsible Gaming"
+  }
+}

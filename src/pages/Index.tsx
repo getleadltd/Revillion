@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { trackCTAClick } from "@/lib/analytics";
 import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock, HelpCircle } from "lucide-react";
+import { useTranslation } from 'react-i18next';
+import { useParams, useNavigate } from 'react-router-dom';
+import { SEOHead } from "@/components/SEOHead";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import revillionLogo from "@/assets/revillion-logo.png?format=webp&quality=85&w=170";
 import bassbetLogo from "@/assets/Bassbet-partner.png?partner";
 import rabonaLogo from "@/assets/Rabona-partner.png?partner";
@@ -24,6 +28,15 @@ import spinangaLogo from "@/assets/spinanga-partner.png?partner";
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+  const { lang } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (lang && i18n.language !== lang) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang, i18n]);
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
@@ -32,6 +45,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead />
       {/* Header */}
       <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
         <div className="container mx-auto px-4 py-4">
@@ -45,42 +59,43 @@ const Index = () => {
             />
             
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden md:flex space-x-8 items-center">
               <button 
                 onClick={() => scrollToSection('hero')}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
-                Home
+                {t('nav.home')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
               <button 
                 onClick={() => scrollToSection('why-join')}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
-                Why Join
+                {t('nav.whyJoin')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
               <button 
                 onClick={() => scrollToSection('tools')}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
-                Tools
+                {t('nav.tools')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
               <button 
                 onClick={() => scrollToSection('offers')}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
-                Offers
+                {t('nav.offers')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
               <button 
                 onClick={() => scrollToSection('faq')}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
-                FAQ
+                {t('nav.faq')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
+              <LanguageSwitcher />
             </nav>
 
             {/* Mobile Menu Button */}
@@ -103,32 +118,35 @@ const Index = () => {
                   onClick={() => scrollToSection('hero')}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
-                  Home
+                  {t('nav.home')}
                 </button>
                 <button 
                   onClick={() => scrollToSection('why-join')}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
-                  Why Join
+                  {t('nav.whyJoin')}
                 </button>
                 <button 
                   onClick={() => scrollToSection('tools')}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
-                  Tools
+                  {t('nav.tools')}
                 </button>
                 <button 
                   onClick={() => scrollToSection('offers')}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
-                  Offers
+                  {t('nav.offers')}
                 </button>
                 <button 
                   onClick={() => scrollToSection('faq')}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
-                  FAQ
+                  {t('nav.faq')}
                 </button>
+                <div className="pt-2">
+                  <LanguageSwitcher />
+                </div>
               </div>
             </nav>
           )}
@@ -147,18 +165,17 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-6 py-2 mb-6 md:mb-8 animate-fade-in">
             <Star className="w-4 h-4 text-orange-500 mr-2" />
-            <span className="text-orange-400 font-medium">#1 iGaming Affiliate Network</span>
+            <span className="text-orange-400 font-medium">{t('hero.badge')}</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-black mb-6 animate-fade-in leading-tight">
-            Join <span className="text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">Revillion</span>
-            <br />Affiliate Network
+            {t('hero.title').split('Revillion')[0]}<span className="text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">{t('hero.titleHighlight')}</span>
+            <br />{t('hero.title').split('Revillion')[1]}
           </h1>
           
           <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-4xl mx-auto animate-fade-in leading-relaxed">
-            Join Revillion Partners, the leading iGaming affiliate network, and earn 
-            <span className="text-orange-400 font-bold"> high CPA commissions</span> promoting 
-            premium casino offers across global markets
+            {t('hero.description')}{' '}
+            <span className="text-orange-400 font-bold">{t('hero.descriptionHighlight')}</span> {t('hero.descriptionEnd')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
@@ -170,7 +187,7 @@ const Index = () => {
               className="inline-block"
             >
               <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-orange-500/25">
-                Become an Affiliate
+                {t('hero.cta')}
                 <TrendingUp className="ml-2 w-5 h-5" />
               </Button>
             </a>
@@ -179,7 +196,7 @@ const Index = () => {
               variant="outline"
               className="border-2 border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 bg-transparent"
             >
-              Learn More
+              {t('hero.learnMore')}
             </Button>
           </div>
         </div>
@@ -193,19 +210,19 @@ const Index = () => {
               <div className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text mb-2">
                 $10M+
               </div>
-              <p className="text-gray-600 font-semibold">Paid to Affiliates</p>
+              <p className="text-gray-600 font-semibold">{t('stats.paid')}</p>
             </div>
             <div className="group">
               <div className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text mb-2">
                 800
               </div>
-              <p className="text-gray-600 font-semibold">Active Affiliates</p>
+              <p className="text-gray-600 font-semibold">{t('stats.affiliates')}</p>
             </div>
             <div className="group">
               <div className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text mb-2">
                 40+
               </div>
-              <p className="text-gray-600 font-semibold">Global Markets</p>
+              <p className="text-gray-600 font-semibold">{t('stats.markets')}</p>
             </div>
           </div>
         </div>
@@ -216,13 +233,13 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-600 font-semibold text-sm">PREMIUM PARTNERS</span>
+              <span className="text-orange-600 font-semibold text-sm">{t('partners.badge')}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
-              Trusted <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Casino</span> Partners
+              {t('partners.title')} <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">{t('partners.titleHighlight')}</span> {t('partners.titleEnd')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Work with industry-leading casino brands that deliver exceptional conversion rates and player retention
+              {t('partners.subtitle')}
             </p>
           </div>
 
@@ -503,11 +520,10 @@ const Index = () => {
           <div className="text-center mt-12">
             <div className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-6 py-3 mb-6">
               <Shield className="w-5 h-5 text-green-600 mr-2" />
-              <span className="text-green-700 font-semibold">All partners are licensed and regulated</span>
+              <span className="text-green-700 font-semibold">{t('partners.licensed')}</span>
             </div>
             <p className="text-gray-600 max-w-3xl mx-auto">
-              Every casino partner in Revillion's iGaming affiliate network is fully licensed, regulated, and vetted for quality, 
-              ensuring your traffic converts with trusted brands that players love.
+              {t('partners.description')}
             </p>
           </div>
         </div>
@@ -518,13 +534,13 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-20">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-600 font-semibold text-sm">WHY CHOOSE US</span>
+              <span className="text-orange-600 font-semibold text-sm">{t('whyJoin.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-              Why Choose <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Revillion</span>?
+              {t('whyJoin.title')} <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">{t('whyJoin.titleHighlight')}</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Join thousands of successful partners in Revillion's iGaming affiliate network for maximum revenue potential
+              {t('whyJoin.subtitle')}
             </p>
           </div>
 
@@ -535,12 +551,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-orange-100 to-orange-200 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Globe className="w-10 h-10 text-orange-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Global Offers</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t('whyJoin.globalOffers.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Access premium casino and iGaming offers across multiple GEOs with high conversion rates 
-                  and competitive payouts in every major market worldwide.
+                  {t('whyJoin.globalOffers.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -551,12 +566,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <DollarSign className="w-10 h-10 text-green-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">High CPA Commissions</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t('whyJoin.highCommissions.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Earn industry-leading CPA commissions on First-Time Deposits with transparent tracking 
-                  and no hidden fees or deductions.
+                  {t('whyJoin.highCommissions.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -567,12 +581,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-blue-100 to-blue-200 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Users className="w-10 h-10 text-blue-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Dedicated Support</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t('whyJoin.dedicatedSupport.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Get personalized support from our experienced affiliate managers who help optimize 
-                  your campaigns and maximize your earning potential 24/7.
+                  {t('whyJoin.dedicatedSupport.description')}
                 </CardDescription>
               </CardContent>
             </Card>

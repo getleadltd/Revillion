@@ -1,0 +1,160 @@
+{
+  "nav": {
+    "home": "Início",
+    "whyJoin": "Por Que Se Juntar",
+    "tools": "Ferramentas",
+    "offers": "Ofertas",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "badge": "#1 Rede de Afiliados iGaming",
+    "title": "Junte-se à Rede de Afiliados Revillion",
+    "titleHighlight": "Revillion",
+    "description": "Junte-se à Revillion Partners, a rede de afiliados iGaming líder, e ganhe",
+    "descriptionHighlight": "altas comissões CPA",
+    "descriptionEnd": "promovendo ofertas de cassino premium em mercados globais",
+    "cta": "Torne-se Afiliado",
+    "learnMore": "Saiba Mais"
+  },
+  "stats": {
+    "paid": "Pagos aos Afiliados",
+    "affiliates": "Afiliados Ativos",
+    "markets": "Mercados Globais"
+  },
+  "partners": {
+    "badge": "PARCEIROS PREMIUM",
+    "title": "Parceiros de",
+    "titleHighlight": "Cassino",
+    "titleEnd": "Confiáveis",
+    "subtitle": "Trabalhe com marcas de cassino líderes do setor que entregam taxas de conversão excepcionais e retenção de jogadores",
+    "licensed": "Todos os parceiros são licenciados e regulamentados",
+    "description": "Cada parceiro de cassino na rede de afiliados iGaming da Revillion é totalmente licenciado, regulamentado e verificado quanto à qualidade, garantindo que seu tráfego converta com marcas confiáveis que os jogadores amam."
+  },
+  "whyJoin": {
+    "badge": "POR QUE NOS ESCOLHER",
+    "title": "Por Que Escolher a",
+    "titleHighlight": "Revillion",
+    "subtitle": "Junte-se a milhares de parceiros bem-sucedidos na rede de afiliados iGaming da Revillion para potencial máximo de receita",
+    "globalOffers": {
+      "title": "Ofertas Globais",
+      "description": "Acesse ofertas premium de cassino e iGaming em múltiplas GEOs com altas taxas de conversão e pagamentos competitivos em todos os principais mercados mundiais."
+    },
+    "highCommissions": {
+      "title": "Altas Comissões CPA",
+      "description": "Ganhe comissões CPA líderes do setor em Primeiros Depósitos com rastreamento transparente e sem taxas ocultas ou deduções."
+    },
+    "dedicatedSupport": {
+      "title": "Suporte Dedicado",
+      "description": "Obtenha suporte personalizado de nossos gerentes de afiliados experientes que ajudam a otimizar suas campanhas e maximizar seu potencial de ganhos 24/7."
+    }
+  },
+  "tools": {
+    "badge": "FERRAMENTAS AVANÇADAS",
+    "title": "Poderosas",
+    "titleHighlight": "Ferramentas",
+    "titleEnd": "& Recursos",
+    "subtitle": "Ferramentas de rastreamento avançadas e análises em tempo real para maximizar seu sucesso como afiliado",
+    "smartUrls": {
+      "title": "URLs Curtas Inteligentes",
+      "description": "URLs curtas personalizadas que facilitam o compartilhamento em plataformas sociais e melhoram a memorização do conteúdo no Telegram, Twitter e Instagram."
+    },
+    "analytics": {
+      "title": "Análises em Tempo Real",
+      "description": "Dashboard avançado com rastreamento de dados em tempo real via sistema de postback. Monitore registros, depósitos e conversões instantaneamente."
+    },
+    "postback": {
+      "title": "Postback Instantâneo",
+      "description": "Sistema de postback quase em tempo real entrega dados de conversão instantaneamente, permitindo que você otimize campanhas e rastreie desempenho imediatamente."
+    },
+    "tracking": {
+      "title": "Rastreamento Avançado",
+      "description": "Sistema de rastreamento abrangente monitora cada etapa do registro ao depósito, fornecendo insights detalhados para otimização de campanhas."
+    }
+  },
+  "dashboard": {
+    "badge": "DASHBOARD AO VIVO",
+    "title": "Veja Seu",
+    "titleHighlight": "Desempenho",
+    "titleEnd": "Ao Vivo",
+    "subtitle": "Monitore suas campanhas com nosso dashboard avançado apresentando métricas em tempo real, dados de postback instantâneos e análises abrangentes.",
+    "liveClicks": "Cliques Ao Vivo",
+    "realTime": "Tempo real",
+    "conversions": "Conversões",
+    "todayEarnings": "Ganhos de Hoje",
+    "postbackUpdates": "Atualizações Postback",
+    "updates": "atualizações",
+    "recentActivity": "Atividade Recente",
+    "newRegistration": "Novo registro do Brasil",
+    "firstDeposit": "Primeiro depósito - $125 CPA ganhos",
+    "justNow": "Agora mesmo",
+    "minutesAgo": "2 min atrás"
+  },
+  "offers": {
+    "badge": "TOP OFERTAS",
+    "title": "Ofertas iGaming",
+    "titleHighlight": "Premium",
+    "subtitle": "Promova marcas de cassino de alta conversão com desempenho comprovado em mercados globais",
+    "cpaRange": "CPA",
+    "markets": "Mercados",
+    "conversionRate": "Taxa de Conversão",
+    "viewOffer": "Ver Oferta"
+  },
+  "socialMedia": {
+    "badge": "OTIMIZAÇÃO DE MÍDIAS SOCIAIS",
+    "title": "Maximize Seu",
+    "titleHighlight": "Alcance",
+    "titleEnd": "Social",
+    "subtitle": "Aproveite nossas ferramentas e conteúdo otimizados para máximo engajamento em todas as plataformas sociais",
+    "optimizedContent": {
+      "title": "Conteúdo Otimizado",
+      "description": "Criativos e textos pré-fabricados otimizados para cada plataforma social - Instagram, Twitter, Telegram e mais."
+    },
+    "instantSharing": {
+      "title": "Compartilhamento Instantâneo",
+      "description": "Ferramentas de compartilhamento com um clique com rastreamento UTM personalizado para medição precisa de desempenho em todos os canais."
+    },
+    "engagement": {
+      "title": "Alto Engajamento",
+      "description": "Templates de conteúdo e estratégias comprovadas que geram cliques, conversas e conversões nas mídias sociais."
+    }
+  },
+  "cta": {
+    "title": "Pronto para Começar a Ganhar?",
+    "subtitle": "Junte-se à Revillion Partners hoje e comece a promover ofertas de cassino premium com altas comissões CPA",
+    "button": "Torne-se Afiliado Agora",
+    "earnings": "Ganhos Médios de Afiliados",
+    "perMonth": "/mês"
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Perguntas Frequentes",
+    "subtitle": "Tudo que você precisa saber sobre se juntar à rede de afiliados Revillion Partners",
+    "q1": {
+      "question": "Quais são as taxas de comissão?",
+      "answer": "Oferecemos comissões CPA líderes do setor variando de $75 a $300 por Primeiro Depósito, dependendo do mercado GEO e da marca de cassino. Acordos RevShare e híbridos adicionais estão disponíveis para os melhores performers. Todas as taxas são transparentes sem taxas ocultas ou deduções."
+    },
+    "q2": {
+      "question": "Quando eu recebo o pagamento?",
+      "answer": "Os pagamentos são processados mensalmente, tipicamente até o dia 15 de cada mês. Suportamos múltiplos métodos de pagamento incluindo transferência bancária, Skrill, Neteller e criptomoedas. O limite mínimo de pagamento é $100. Todos os ganhos são rastreados em tempo real via nosso dashboard."
+    },
+    "q3": {
+      "question": "Em quais mercados vocês operam?",
+      "answer": "Operamos em mais de 40 mercados globais incluindo Reino Unido, Alemanha, Canadá, Brasil, Índia e muitos outros. Cada mercado tem ofertas localizadas, métodos de pagamento e suporte em idiomas para maximizar suas taxas de conversão. Nossos gerentes de afiliados podem recomendar as melhores GEOs para seu tráfego."
+    },
+    "q4": {
+      "question": "Quais ferramentas e suporte vocês fornecem?",
+      "answer": "Você obtém acesso a banners profissionais, landing pages, templates de email, URLs curtas inteligentes com GEO-targeting, sistema de postback instantâneo, dashboard de análises em tempo real e gerentes de afiliados dedicados que ajudam a otimizar suas campanhas. Também fornecemos materiais de marketing otimizados para plataformas de mídias sociais."
+    },
+    "q5": {
+      "question": "Há uma taxa de inscrição?",
+      "answer": "Não, juntar-se à Revillion Partners é completamente gratuito. Não há taxas de inscrição, custos ocultos ou requisitos mínimos de tráfego. Você só ganha quando gera conversões. Damos as boas-vindas a afiliados de todos os níveis de experiência e fornecemos suporte abrangente de integração."
+    }
+  },
+  "footer": {
+    "description": "Revillion Partners é uma rede de afiliados iGaming líder oferecendo altas comissões, marcas de cassino premium e suporte dedicado a afiliados em todo o mundo.",
+    "quickLinks": "Links Rápidos",
+    "socialMedia": "Mídias Sociais",
+    "rights": "Todos os direitos reservados.",
+    "responsible": "Jogo Responsável"
+  }
+}

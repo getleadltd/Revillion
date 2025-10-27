@@ -1,0 +1,160 @@
+{
+  "nav": {
+    "home": "Home",
+    "whyJoin": "Perché Unirsi",
+    "tools": "Strumenti",
+    "offers": "Offerte",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "badge": "#1 Network Affiliazione iGaming",
+    "title": "Unisciti a Revillion Affiliate Network",
+    "titleHighlight": "Revillion",
+    "description": "Unisciti a Revillion Partners, il network di affiliazione iGaming leader, e guadagna",
+    "descriptionHighlight": "alte commissioni CPA",
+    "descriptionEnd": "promuovendo offerte casino premium nei mercati globali",
+    "cta": "Diventa Affiliato",
+    "learnMore": "Scopri di Più"
+  },
+  "stats": {
+    "paid": "Pagati agli Affiliati",
+    "affiliates": "Affiliati Attivi",
+    "markets": "Mercati Globali"
+  },
+  "partners": {
+    "badge": "PARTNER PREMIUM",
+    "title": "Partner",
+    "titleHighlight": "Casino",
+    "titleEnd": "di Fiducia",
+    "subtitle": "Lavora con brand casino leader del settore che offrono tassi di conversione eccezionali e fidelizzazione dei giocatori",
+    "licensed": "Tutti i partner sono licenziati e regolamentati",
+    "description": "Ogni partner casino nel network di affiliazione iGaming di Revillion è completamente licenziato, regolamentato e verificato per la qualità, garantendo che il tuo traffico converta con brand fidati che i giocatori amano."
+  },
+  "whyJoin": {
+    "badge": "PERCHÉ SCEGLIERCI",
+    "title": "Perché Scegliere",
+    "titleHighlight": "Revillion",
+    "subtitle": "Unisciti a migliaia di partner di successo nel network di affiliazione iGaming di Revillion per il massimo potenziale di guadagno",
+    "globalOffers": {
+      "title": "Offerte Globali",
+      "description": "Accedi a offerte casino e iGaming premium in molteplici GEO con alti tassi di conversione e pagamenti competitivi in ogni mercato principale mondiale."
+    },
+    "highCommissions": {
+      "title": "Commissioni CPA Alte",
+      "description": "Guadagna commissioni CPA leader del settore sui Primi Depositi con tracking trasparente e nessun costo nascosto o deduzione."
+    },
+    "dedicatedSupport": {
+      "title": "Supporto Dedicato",
+      "description": "Ottieni supporto personalizzato dai nostri affiliate manager esperti che aiutano a ottimizzare le tue campagne e massimizzare il tuo potenziale di guadagno 24/7."
+    }
+  },
+  "tools": {
+    "badge": "STRUMENTI AVANZATI",
+    "title": "Potenti",
+    "titleHighlight": "Strumenti",
+    "titleEnd": "& Funzionalità",
+    "subtitle": "Strumenti di tracking avanzati e analytics in tempo reale per massimizzare il tuo successo come affiliato",
+    "smartUrls": {
+      "title": "URL Brevi Intelligenti",
+      "description": "URL brevi personalizzati che rendono la condivisione sulle piattaforme social più facile e migliorano la memorizzazione dei contenuti su Telegram, Twitter e Instagram."
+    },
+    "analytics": {
+      "title": "Analytics in Tempo Reale",
+      "description": "Dashboard avanzato con tracking dati in tempo reale tramite sistema postback. Monitora registrazioni, depositi e conversioni istantaneamente."
+    },
+    "postback": {
+      "title": "Postback Istantaneo",
+      "description": "Sistema postback quasi in tempo reale che fornisce dati di conversione istantaneamente, permettendoti di ottimizzare le campagne e tracciare le performance immediatamente."
+    },
+    "tracking": {
+      "title": "Tracking Avanzato",
+      "description": "Sistema di tracking completo che monitora ogni passo dalla registrazione al deposito, fornendo insights dettagliati per l'ottimizzazione delle campagne."
+    }
+  },
+  "dashboard": {
+    "badge": "DASHBOARD LIVE",
+    "title": "Visualizza le Tue",
+    "titleHighlight": "Performance",
+    "titleEnd": "Live",
+    "subtitle": "Monitora le tue campagne con il nostro dashboard avanzato che presenta metriche in tempo reale, dati postback istantanei e analytics completi.",
+    "liveClicks": "Click Live",
+    "realTime": "Tempo reale",
+    "conversions": "Conversioni",
+    "todayEarnings": "Guadagni di Oggi",
+    "postbackUpdates": "Aggiornamenti Postback",
+    "updates": "aggiornamenti",
+    "recentActivity": "Attività Recente",
+    "newRegistration": "Nuova registrazione dal Brasile",
+    "firstDeposit": "Primo deposito - $125 CPA guadagnati",
+    "justNow": "Proprio ora",
+    "minutesAgo": "2 min fa"
+  },
+  "offers": {
+    "badge": "TOP OFFERTE",
+    "title": "Offerte iGaming",
+    "titleHighlight": "Premium",
+    "subtitle": "Promuovi brand casino ad alta conversione con performance comprovate nei mercati globali",
+    "cpaRange": "CPA",
+    "markets": "Mercati",
+    "conversionRate": "Tasso di Conversione",
+    "viewOffer": "Visualizza Offerta"
+  },
+  "socialMedia": {
+    "badge": "OTTIMIZZAZIONE SOCIAL MEDIA",
+    "title": "Massimizza la Tua",
+    "titleHighlight": "Portata",
+    "titleEnd": "Social",
+    "subtitle": "Sfrutta i nostri strumenti e contenuti ottimizzati per il massimo engagement su tutte le piattaforme social",
+    "optimizedContent": {
+      "title": "Contenuti Ottimizzati",
+      "description": "Creatività e testi pre-fatti ottimizzati per ogni piattaforma social - Instagram, Twitter, Telegram e altro."
+    },
+    "instantSharing": {
+      "title": "Condivisione Istantanea",
+      "description": "Strumenti di condivisione con un click con tracking UTM personalizzato per misurazione accurata delle performance su tutti i canali."
+    },
+    "engagement": {
+      "title": "Alto Engagement",
+      "description": "Template di contenuti e strategie comprovate che guidano click, conversazioni e conversioni sui social media."
+    }
+  },
+  "cta": {
+    "title": "Pronto a Iniziare a Guadagnare?",
+    "subtitle": "Unisciti a Revillion Partners oggi e inizia a promuovere offerte casino premium con alte commissioni CPA",
+    "button": "Diventa Affiliato Ora",
+    "earnings": "Guadagni Medi Affiliati",
+    "perMonth": "/mese"
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Domande Frequenti",
+    "subtitle": "Tutto ciò che devi sapere per unirti al network di affiliazione Revillion Partners",
+    "q1": {
+      "question": "Quali sono i tassi di commissione?",
+      "answer": "Offriamo commissioni CPA leader del settore che vanno da $75 a $300 per Primo Deposito, a seconda del mercato GEO e del brand casino. Accordi RevShare e ibridi aggiuntivi sono disponibili per i top performer. Tutti i tassi sono trasparenti senza costi nascosti o deduzioni."
+    },
+    "q2": {
+      "question": "Quando vengo pagato?",
+      "answer": "I pagamenti sono elaborati mensilmente, tipicamente entro il 15 di ogni mese. Supportiamo molteplici metodi di pagamento inclusi bonifico bancario, Skrill, Neteller e criptovalute. La soglia minima di pagamento è $100. Tutti i guadagni sono tracciati in tempo reale tramite il nostro dashboard."
+    },
+    "q3": {
+      "question": "In quali mercati operate?",
+      "answer": "Operiamo in oltre 40 mercati globali inclusi UK, Germania, Canada, Brasile, India e molti altri. Ogni mercato ha offerte localizzate, metodi di pagamento e supporto linguistico per massimizzare i tuoi tassi di conversione. I nostri affiliate manager possono raccomandarti i migliori GEO per il tuo traffico."
+    },
+    "q4": {
+      "question": "Quali strumenti e supporto fornite?",
+      "answer": "Ottieni accesso a banner professionali, landing page, template email, URL brevi intelligenti con GEO-targeting, sistema postback istantaneo, dashboard analytics in tempo reale e affiliate manager dedicati che aiutano a ottimizzare le tue campagne. Forniamo anche materiali marketing ottimizzati per piattaforme social media."
+    },
+    "q5": {
+      "question": "C'è una tassa di iscrizione?",
+      "answer": "No, unirsi a Revillion Partners è completamente gratuito. Non ci sono tasse di iscrizione, costi nascosti o requisiti minimi di traffico. Guadagni solo quando generi conversioni. Diamo il benvenuto ad affiliati di tutti i livelli di esperienza e forniamo supporto completo all'onboarding."
+    }
+  },
+  "footer": {
+    "description": "Revillion Partners è un network di affiliazione iGaming leader che offre alte commissioni, brand casino premium e supporto dedicato agli affiliati in tutto il mondo.",
+    "quickLinks": "Link Rapidi",
+    "socialMedia": "Social Media",
+    "rights": "Tutti i diritti riservati.",
+    "responsible": "Gioco Responsabile"
+  }
+}
