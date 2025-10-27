@@ -1,8 +1,19 @@
 User-agent: Googlebot
-Allow: /
+Allow: /en/
+Allow: /it/
+Allow: /pt/
+Allow: /es/
+Allow: /*.js
+Allow: /*.css
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.webp
 
 User-agent: Bingbot
-Allow: /
+Allow: /en/
+Allow: /it/
+Allow: /pt/
+Allow: /es/
 
 User-agent: Twitterbot
 Allow: /
@@ -11,6 +22,11 @@ User-agent: facebookexternalhit
 Allow: /
 
 User-agent: *
-Allow: /
+Allow: /en/
+Allow: /it/
+Allow: /pt/
+Allow: /es/
+Disallow: /api/
+Disallow: /admin/
 
 Sitemap: https://revillion-partners.com/sitemap.xml

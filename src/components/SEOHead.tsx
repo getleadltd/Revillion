@@ -24,15 +24,44 @@ export const SEOHead = () => {
   };
 
   const currentMeta = meta[i18n.language as keyof typeof meta] || meta.en;
+  
+  const localeMap: Record<string, string> = {
+    en: 'en_US',
+    it: 'it_IT',
+    pt: 'pt_BR',
+    es: 'es_ES'
+  };
+
+  const keywords: Record<string, string> = {
+    en: "casino affiliate, high CPA, iGaming partners, affiliate network, casino commissions",
+    it: "affiliazione casino, CPA alto, partner iGaming, network affiliazione, commissioni casino",
+    pt: "afiliados cassino, CPA alto, parceiros iGaming, rede afiliados, comissões cassino",
+    es: "afiliados casino, CPA alto, socios iGaming, red afiliados, comisiones casino"
+  };
 
   return (
     <Helmet>
       <html lang={i18n.language} />
       <title>{currentMeta.title}</title>
       <meta name="description" content={currentMeta.description} />
+      <meta name="keywords" content={keywords[i18n.language as keyof typeof keywords] || keywords.en} />
+      
+      {/* OpenGraph */}
       <meta property="og:title" content={currentMeta.title} />
       <meta property="og:description" content={currentMeta.description} />
+      <meta property="og:locale" content={localeMap[i18n.language as keyof typeof localeMap] || 'en_US'} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={`https://revillion-partners.com/${i18n.language}`} />
+      
+      {/* Canonical */}
       <link rel="canonical" href={`https://revillion-partners.com/${i18n.language}`} />
+      
+      {/* Alternate languages */}
+      <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en" />
+      <link rel="alternate" hrefLang="it" href="https://revillion-partners.com/it" />
+      <link rel="alternate" hrefLang="pt" href="https://revillion-partners.com/pt" />
+      <link rel="alternate" hrefLang="es" href="https://revillion-partners.com/es" />
+      <link rel="alternate" hrefLang="x-default" href="https://revillion-partners.com/en" />
     </Helmet>
   );
 };

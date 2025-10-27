@@ -49,3 +49,25 @@ export const trackSectionView = (sectionName: string) => {
     event_label: sectionName
   });
 };
+
+/**
+ * Track page view with language
+ */
+export const trackPageView = (language: string) => {
+  trackEvent('page_view', {
+    event_category: 'engagement',
+    language: language,
+    page_path: window.location.pathname
+  });
+};
+
+/**
+ * Track language changes
+ */
+export const trackLanguageChange = (fromLang: string, toLang: string) => {
+  trackEvent('language_switch', {
+    event_category: 'engagement',
+    from_language: fromLang,
+    to_language: toLang
+  });
+};

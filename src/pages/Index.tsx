@@ -598,13 +598,13 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-20">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-600 font-semibold text-sm">ADVANCED TOOLS</span>
+              <span className="text-orange-600 font-semibold text-sm">{t('tools.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-              Powerful <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Tools</span> & Features
+              {t('tools.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Advanced tracking tools and real-time analytics to maximize your affiliate success
+              {t('tools.subtitle')}
             </p>
           </div>
 
@@ -615,11 +615,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-purple-100 to-purple-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Link className="w-8 h-8 text-purple-600" />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Smart Short URLs</CardTitle>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('tools.smartUrls.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-sm leading-relaxed">
-                  Custom short URLs that make sharing on social platforms easier and improve content memorability across Telegram, Twitter & Instagram.
+                  {t('tools.smartUrls.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -630,11 +630,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <BarChart3 className="w-8 h-8 text-blue-600" />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Real-Time Analytics</CardTitle>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('tools.analytics.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-sm leading-relaxed">
-                  Advanced dashboard with real-time data tracking via postback system. Monitor registrations, deposits, and conversions instantly.
+                  {t('tools.analytics.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -645,11 +645,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-green-100 to-green-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Zap className="w-8 h-8 text-green-600" />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Instant Postback</CardTitle>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('tools.postback.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-sm leading-relaxed">
-                  Near real-time postback system delivers conversion data instantly, allowing you to optimize campaigns and track performance immediately.
+                  {t('tools.postback.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -660,11 +660,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-red-100 to-red-200 p-4 rounded-2xl w-16 h-16 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Shield className="w-8 h-8 text-red-600" />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900 mb-2">Advanced Tracking</CardTitle>
+                <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('tools.tracking.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-sm leading-relaxed">
-                  Comprehensive tracking system monitors every step from registration to deposit, providing detailed insights for campaign optimization.
+                  {t('tools.tracking.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -681,14 +681,13 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12 md:mb-16">
             <div className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2">
-              <span className="text-orange-400 font-semibold text-sm">LIVE DASHBOARD</span>
+              <span className="text-orange-400 font-semibold text-sm">{t('dashboard.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              See Your <span className="text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text">Performance</span> Live
+              {t('dashboard.title')}
             </h2>
             <p className="text-xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Monitor your campaigns with our advanced dashboard featuring real-time metrics, 
-              instant postback data, and comprehensive analytics.
+              {t('dashboard.subtitle')}
             </p>
           </div>
 
@@ -697,26 +696,26 @@ const Index = () => {
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-2xl p-6 text-center">
                   <div className="text-3xl font-black text-orange-400 mb-2">1,247</div>
-                  <div className="text-gray-300 text-sm font-semibold">Live Clicks</div>
+                  <div className="text-gray-300 text-sm font-semibold">{t('dashboard.liveClicks')}</div>
                   <div className="flex items-center justify-center mt-2">
                     <Clock className="w-4 h-4 text-green-400 mr-1" />
-                    <span className="text-green-400 text-xs">Real-time</span>
+                    <span className="text-green-400 text-xs">{t('dashboard.realtime')}</span>
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-2xl p-6 text-center">
                   <div className="text-3xl font-black text-green-400 mb-2">89</div>
-                  <div className="text-gray-300 text-sm font-semibold">Registrations</div>
+                  <div className="text-gray-300 text-sm font-semibold">{t('dashboard.registrations')}</div>
                   <div className="flex items-center justify-center mt-2">
                     <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
-                    <span className="text-green-400 text-xs">+12% today</span>
+                    <span className="text-green-400 text-xs">+12% {t('dashboard.today')}</span>
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-2xl p-6 text-center">
                   <div className="text-3xl font-black text-blue-400 mb-2">34</div>
-                  <div className="text-gray-300 text-sm font-semibold">Deposits</div>
+                  <div className="text-gray-300 text-sm font-semibold">{t('dashboard.deposits')}</div>
                   <div className="flex items-center justify-center mt-2">
                     <DollarSign className="w-4 h-4 text-green-400 mr-1" />
-                    <span className="text-green-400 text-xs">$2,840 earned</span>
+                    <span className="text-green-400 text-xs">{t('dashboard.earned')}</span>
                   </div>
                 </div>
               </div>
@@ -724,7 +723,7 @@ const Index = () => {
               <div className="text-center">
                 <div className="inline-flex items-center bg-green-500/20 border border-green-500/30 rounded-full px-4 py-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-green-400 font-semibold text-sm">Data updated via postback in real-time</span>
+                  <span className="text-green-400 font-semibold text-sm">{t('dashboard.realtimeUpdate')}</span>
                 </div>
               </div>
             </div>
@@ -738,7 +737,7 @@ const Index = () => {
                 className="inline-block"
               >
                 <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                  Access Your Dashboard
+                  {t('dashboard.accessButton')}
                   <BarChart3 className="ml-2 w-5 h-5" />
                 </Button>
               </a>
@@ -752,51 +751,49 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-600 font-semibold text-sm">PREMIUM OFFERS</span>
+              <span className="text-orange-600 font-semibold text-sm">{t('offers.badge')}</span>
             </div>
             
             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              Premium <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">iGaming</span> Offers
+              {t('offers.title')}
             </h2>
             
             <p className="text-xl text-gray-600 mb-12 leading-relaxed">
-              Promote the best casino and iGaming brands across multiple GEOs with our extensive 
-              portfolio of high-converting offers. From slots and table games to live dealer experiences, 
-              we provide access to top-tier operators with proven track records.
+              {t('offers.subtitle')}
             </p>
             
             <div className="bg-gradient-to-br from-orange-500/5 to-orange-600/5 border border-orange-500/20 rounded-3xl p-10 mb-8 md:mb-12">
               <h3 className="text-3xl font-bold text-gray-900 mb-8 flex items-center justify-center">
                 <Shield className="w-8 h-8 text-orange-500 mr-3" />
-                Available Markets Include:
+                {t('offers.marketsTitle')}
               </h3>
               <div className="grid md:grid-cols-2 gap-6 text-left">
                 <ul className="space-y-4">
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    Europe (UK, Germany, Sweden, Norway)
+                    {t('offers.markets.europe')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    Latin America (Brazil, Mexico, Chile)
+                    {t('offers.markets.latam')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    Asia-Pacific (Japan, India, Australia)
+                    {t('offers.markets.asiaPacific')}
                   </li>
                 </ul>
                 <ul className="space-y-4">
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    North America (US, Canada)
+                    {t('offers.markets.northAmerica')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    Africa (South Africa, Nigeria, Kenya)
+                    {t('offers.markets.africa')}
                   </li>
                   <li className="flex items-center text-gray-700 text-lg">
                     <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mr-4"></div>
-                    And many more emerging markets
+                    {t('offers.markets.moreMarkets')}
                   </li>
                 </ul>
               </div>
@@ -810,7 +807,7 @@ const Index = () => {
               className="inline-block"
             >
               <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                Explore Our Offers
+                {t('offers.exploreButton')}
                 <Globe className="ml-2 w-5 h-5" />
               </Button>
             </a>
@@ -823,14 +820,13 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-16">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-600 font-semibold text-sm">SOCIAL MEDIA OPTIMIZED</span>
+              <span className="text-orange-600 font-semibold text-sm">{t('socialMedia.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight text-gray-900">
-              Perfect for <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Social Media</span>
+              {t('socialMedia.title')}
             </h2>
             <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Our smart short URLs and content tools are specifically designed for social media success 
-              across all major platforms.
+              {t('socialMedia.subtitle')}
             </p>
           </div>
 
@@ -841,12 +837,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <MessageCircle className="w-10 h-10 text-blue-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Telegram Ready</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t('socialMedia.telegram.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Short, memorable URLs perfect for Telegram channels and groups. Easy sharing with instant 
-                  tracking and analytics for your community engagement.
+                  {t('socialMedia.telegram.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -857,12 +852,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Twitter className="w-10 h-10 text-blue-500" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Twitter Optimized</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t('socialMedia.twitter.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Character-efficient short links that leave more room for engaging content. Track clicks, 
-                  engagement, and conversions from your Twitter campaigns effortlessly.
+                  {t('socialMedia.twitter.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -873,12 +867,11 @@ const Index = () => {
                 <div className="mx-auto bg-gradient-to-br from-pink-50 to-orange-50 p-6 rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Instagram className="w-10 h-10 text-pink-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Instagram Stories</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t('socialMedia.instagram.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 text-base leading-relaxed">
-                  Clean, professional short URLs perfect for Instagram bio links and stories. 
-                  Improve memorability and drive more traffic from your visual content.
+                  {t('socialMedia.instagram.description')}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -887,20 +880,20 @@ const Index = () => {
           <div className="bg-gradient-to-br from-orange-500/5 to-orange-600/5 border border-orange-500/20 rounded-3xl p-10 mb-8 md:mb-12 text-center">
             <h3 className="text-3xl font-bold text-gray-900 mb-6 flex items-center justify-center">
               <Share2 className="w-8 h-8 text-orange-500 mr-3" />
-              Short URL Examples:
+              {t('socialMedia.urlExamplesTitle')}
             </h3>
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/casino-win</div>
-                <div className="text-gray-600 text-sm">Perfect for social posts</div>
+                <div className="text-gray-600 text-sm">{t('socialMedia.urlExample1')}</div>
               </div>
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/slots-bonus</div>
-                <div className="text-gray-600 text-sm">Easy to remember</div>
+                <div className="text-gray-600 text-sm">{t('socialMedia.urlExample2')}</div>
               </div>
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/mega-jackpot</div>
-                <div className="text-gray-600 text-sm">Branded and clean</div>
+                <div className="text-gray-600 text-sm">{t('socialMedia.urlExample3')}</div>
               </div>
             </div>
           </div>
@@ -914,7 +907,7 @@ const Index = () => {
               className="inline-block"
             >
               <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                Get Your Short URLs
+                {t('socialMedia.getUrlsButton')}
                 <Share2 className="ml-2 w-5 h-5" />
               </Button>
             </a>
@@ -932,26 +925,25 @@ const Index = () => {
         
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
-            Ready to Start Earning?
+            {t('finalCta.title')}
           </h2>
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Join hundreds of successful partners already earning with Revillion's iGaming affiliate network and premium casino brands. 
-            Start tracking your links and maximizing your commissions today.
+            {t('finalCta.subtitle')}
           </p>
           
           {/* Stats or benefits */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <div className="text-4xl font-bold text-white mb-2">16+</div>
-              <div className="text-white/80">Premium Brands</div>
+              <div className="text-white/80">{t('finalCta.stat1')}</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <div className="text-4xl font-bold text-white mb-2">Real-Time</div>
-              <div className="text-white/80">Tracking & Stats</div>
+              <div className="text-4xl font-bold text-white mb-2">{t('finalCta.stat2Value')}</div>
+              <div className="text-white/80">{t('finalCta.stat2')}</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <div className="text-4xl font-bold text-white mb-2">24/7</div>
-              <div className="text-white/80">Support Available</div>
+              <div className="text-white/80">{t('finalCta.stat3')}</div>
             </div>
           </div>
           
@@ -964,13 +956,13 @@ const Index = () => {
             className="inline-block"
           >
             <Button className="bg-white text-orange-600 hover:bg-gray-100 font-bold py-6 px-12 text-xl rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-white/25">
-              Become an Affiliate Now
+              {t('finalCta.button')}
               <TrendingUp className="ml-3 w-6 h-6" />
             </Button>
           </a>
           
           <p className="text-white/70 text-sm mt-6">
-            No setup fees • Free to join • Start earning today
+            {t('finalCta.footer')}
           </p>
         </div>
       </section>
@@ -981,13 +973,13 @@ const Index = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
               <HelpCircle className="w-4 h-4 text-orange-600 mr-2" />
-              <span className="text-orange-600 font-semibold text-sm">FAQ</span>
+              <span className="text-orange-600 font-semibold text-sm">{t('faq.badge')}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
-              Frequently Asked <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">Questions</span>
+              {t('faq.title')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Find answers to common questions about joining Revillion Partners
+              {t('faq.subtitle')}
             </p>
           </div>
 
@@ -995,46 +987,46 @@ const Index = () => {
             <Accordion type="single" collapsible className="space-y-4">
               <AccordionItem value="item-1" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
                 <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
-                  What is Revillion Partners?
+                  {t('faq.q1.question')}
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-600 leading-relaxed">
-                  Revillion Partners is a premier iGaming affiliate network offering high CPA commissions for promoting 16+ top casino brands including 22Bet, Rabona, Spinit, and more. We provide dedicated affiliate support, real-time tracking, and multiple payment options.
+                  {t('faq.q1.answer')}
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-2" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
                 <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
-                  How much can I earn as a Revillion affiliate?
+                  {t('faq.q2.question')}
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-600 leading-relaxed">
-                  Affiliates earn premium CPA (Cost Per Acquisition) commissions with competitive rates depending on the brand and geographic region. We offer flexible payment terms and transparent tracking to maximize your earnings potential.
+                  {t('faq.q2.answer')}
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-3" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
                 <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
-                  What payment methods does Revillion offer?
+                  {t('faq.q3.question')}
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-600 leading-relaxed">
-                  We support multiple payment methods including bank transfers, e-wallets, and cryptocurrency payments. Payments are processed regularly with transparent reporting through our affiliate dashboard.
+                  {t('faq.q3.answer')}
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-4" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
                 <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
-                  How do I get started with Revillion Partners?
+                  {t('faq.q4.question')}
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-600 leading-relaxed">
-                  Getting started is simple: visit our dashboard at dashboard.revillion.com, register your affiliate account, get your unique tracking links, and start promoting our premium casino brands immediately. Our dedicated support team is available to help you succeed.
+                  {t('faq.q4.answer')}
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-5" className="bg-white rounded-xl shadow-md border border-gray-100 px-6">
                 <AccordionTrigger className="text-left font-semibold text-gray-900 hover:text-orange-600 transition-colors">
-                  Which casino brands can I promote?
+                  {t('faq.q5.question')}
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-600 leading-relaxed">
-                  You can promote 16+ top-tier casino brands including 22Bet, Rabona, Spinit, Nomini, Casinia, Librabet, BetLabel, SafeCasino, Spinanga, RoboCat, Onlyspins, Bassbet, TikiTaka, Burancasino, Cazeus, and AzurSlot. Each brand offers unique features and targets different markets.
+                  {t('faq.q5.answer')}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -1052,7 +1044,7 @@ const Index = () => {
             className="h-12 w-auto mx-auto mb-6"
           />
           <p className="text-gray-400 text-lg">
-            © 2025 Revillion Partners. All rights reserved. Professional iGaming Affiliate Network.
+            {t('footer.copyright')}
           </p>
         </div>
       </footer>
