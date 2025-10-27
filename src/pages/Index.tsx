@@ -98,16 +98,19 @@ const Index = () => {
               <LanguageSwitcher />
             </nav>
 
-            {/* Mobile Menu Button */}
-            <button 
-              className="md:hidden text-gray-800 hover:text-orange-500 transition-colors"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-              aria-expanded={isMenuOpen}
-              aria-controls="mobile-navigation"
-            >
-              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
+            {/* Mobile: Language Switcher + Menu Button */}
+            <div className="flex md:hidden items-center gap-3">
+              <LanguageSwitcher />
+              <button 
+                className="text-gray-800 hover:text-orange-500 transition-colors"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={isMenuOpen}
+                aria-controls="mobile-navigation"
+              >
+                {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation */}
@@ -144,9 +147,6 @@ const Index = () => {
                 >
                   {t('nav.faq')}
                 </button>
-                <div className="pt-2">
-                  <LanguageSwitcher />
-                </div>
               </div>
             </nav>
           )}
