@@ -699,7 +699,7 @@ const Index = () => {
                   <div className="text-gray-300 text-sm font-semibold">{t('dashboard.liveClicks')}</div>
                   <div className="flex items-center justify-center mt-2">
                     <Clock className="w-4 h-4 text-green-400 mr-1" />
-                    <span className="text-green-400 text-xs">{t('dashboard.realtime')}</span>
+                    <span className="text-green-400 text-xs">{t('dashboard.realTime')}</span>
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-2xl p-6 text-center">
