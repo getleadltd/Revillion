@@ -684,7 +684,7 @@ const Index = () => {
               <span className="text-orange-400 font-semibold text-sm">{t('dashboard.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              {t('dashboard.title')}
+              {t('dashboard.title')} <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">{t('dashboard.titleHighlight')}</span> {t('dashboard.titleEnd')}
             </h2>
             <p className="text-xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
               {t('dashboard.subtitle')}
@@ -755,7 +755,7 @@ const Index = () => {
             </div>
             
             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              {t('offers.title')}
+              {t('offers.title')} <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">{t('offers.titleHighlight')}</span>
             </h2>
             
             <p className="text-xl text-gray-600 mb-12 leading-relaxed">
@@ -823,7 +823,7 @@ const Index = () => {
               <span className="text-orange-600 font-semibold text-sm">{t('socialMedia.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight text-gray-900">
-              {t('socialMedia.title')}
+              {t('socialMedia.title')} <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">{t('socialMedia.titleHighlight')}</span> {t('socialMedia.titleEnd')}
             </h2>
             <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
               {t('socialMedia.subtitle')}
