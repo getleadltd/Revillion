@@ -4,8 +4,7 @@
     "whyJoin": "Warum mitmachen",
     "tools": "Tools",
     "offers": "Angebote",
-    "faq": "FAQ",
-    "blog": "Blog"
+    "faq": "FAQ"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate-Netzwerk",
@@ -200,39 +199,6 @@
     "socialMedia": "Social Media",
     "rights": "Alle Rechte vorbehalten.",
     "responsible": "Verantwortungsvolles Spielen",
-    "copyright": "© 2025 Revillion Partners. Alle Rechte vorbehalten.",
-    "blog": "Blog"
-  },
-  "blog": {
-    "title": "Blog",
-    "subtitle": "Experten-Einblicke zu Affiliate-Marketing und der Casino-Branche",
-    "readMore": "Artikel lesen",
-    "readingTime": "Min. Lesezeit",
-    "publishedOn": "Veröffentlicht am",
-    "featuredBadge": "Hervorgehoben",
-    "allPosts": "Alle Beiträge",
-    "categories": {
-      "affiliate-tips": "Affiliate-Tipps",
-      "industry-news": "Branchennews",
-      "success-stories": "Erfolgsgeschichten",
-      "tools": "Tools & Ressourcen",
-      "seo": "SEO & Traffic"
-    },
-    "author": {
-      "by": "Von",
-      "bio": "Das Revillion Partners Team teilt Expertenwissen zu Affiliate-Marketing, Casino-Branchentrends und bewährten Strategien, um Affiliates dabei zu helfen, ihre Einnahmen zu maximieren."
-    },
-    "share": {
-      "title": "Artikel teilen",
-      "copied": "Link kopiert!"
-    },
-    "relatedPosts": "Verwandte Artikel",
-    "tableOfContents": "Inhaltsverzeichnis",
-    "backToBlog": "Zurück zum Blog",
-    "latestInsights": {
-      "badge": "NEUESTE EINBLICKE",
-      "title": "Aus unserem Blog",
-      "viewAll": "Alle Artikel anzeigen"
-    }
+    "copyright": "© 2025 Revillion Partners. Alle Rechte vorbehalten."
   }
 }

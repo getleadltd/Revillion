@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { trackCTAClick } from "@/lib/analytics";
-import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock, HelpCircle, ArrowRight } from "lucide-react";
+import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock, HelpCircle } from "lucide-react";
 import { useTranslation } from 'react-i18next';
-import { blogPosts } from "@/data/blogPosts";
-import { BlogCard } from "@/components/blog/BlogCard";
 import { useParams, useNavigate } from 'react-router-dom';
 import { SEOHead } from "@/components/SEOHead";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -97,13 +95,6 @@ const Index = () => {
                 {t('nav.faq')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </button>
-              <button 
-                onClick={() => navigate(`/${lang}/blog`)}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                {t('nav.blog')}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </button>
               <LanguageSwitcher />
             </nav>
 
@@ -155,15 +146,6 @@ const Index = () => {
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   {t('nav.faq')}
-                </button>
-                <button 
-                  onClick={() => {
-                    navigate(`/${lang}/blog`);
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  {t('nav.blog')}
                 </button>
               </div>
             </nav>
@@ -933,36 +915,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Latest Insights Section */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
-              <span className="text-orange-600 font-semibold text-sm">{t('blog.latestInsights.badge')}</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
-              {t('blog.latestInsights.title')}
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {blogPosts.slice(0, 3).map(post => (
-              <BlogCard key={post.slug} post={post} lang={lang || 'en'} />
-            ))}
-          </div>
-          
-          <div className="text-center mt-12">
-            <Button 
-              onClick={() => navigate(`/${lang}/blog`)}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-lg rounded-full transition-all duration-300 transform hover:scale-105"
-            >
-              {t('blog.latestInsights.viewAll')}
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA Section */}
       <section className="bg-gradient-to-br from-orange-500 via-orange-600 to-black py-20 md:py-32 relative overflow-hidden">
         {/* Decorative elements */}
@@ -1084,109 +1036,16 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-12 md:py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            {/* Logo & Description */}
-            <div className="md:col-span-2">
-              <img 
-                src={revillionLogo} 
-                alt="Revillion Logo" 
-                className="h-12 w-auto mb-4"
-              />
-              <p className="text-gray-400 leading-relaxed">
-                {t('footer.description')}
-              </p>
-            </div>
-            
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-bold text-lg mb-4">{t('footer.quickLinks')}</h3>
-              <ul className="space-y-2">
-                <li>
-                  <button 
-                    onClick={() => scrollToSection('why-join')}
-                    className="text-gray-400 hover:text-orange-500 transition-colors"
-                  >
-                    {t('nav.whyJoin')}
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => scrollToSection('tools')}
-                    className="text-gray-400 hover:text-orange-500 transition-colors"
-                  >
-                    {t('nav.tools')}
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => scrollToSection('offers')}
-                    className="text-gray-400 hover:text-orange-500 transition-colors"
-                  >
-                    {t('nav.offers')}
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => scrollToSection('faq')}
-                    className="text-gray-400 hover:text-orange-500 transition-colors"
-                  >
-                    {t('nav.faq')}
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => navigate(`/${lang}/blog`)}
-                    className="text-gray-400 hover:text-orange-500 transition-colors"
-                  >
-                    {t('footer.blog')}
-                  </button>
-                </li>
-              </ul>
-            </div>
-            
-            {/* Social Media */}
-            <div>
-              <h3 className="font-bold text-lg mb-4">{t('footer.socialMedia')}</h3>
-              <div className="flex gap-4">
-                <a 
-                  href="https://t.me/revillion" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-orange-500 transition-colors"
-                  aria-label="Telegram"
-                >
-                  <MessageCircle className="w-6 h-6" />
-                </a>
-                <a 
-                  href="https://twitter.com/revillion" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-orange-500 transition-colors"
-                  aria-label="Twitter"
-                >
-                  <Twitter className="w-6 h-6" />
-                </a>
-                <a 
-                  href="https://instagram.com/revillion" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-orange-500 transition-colors"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-6 h-6" />
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          {/* Copyright */}
-          <div className="border-t border-gray-800 pt-6 text-center">
-            <p className="text-gray-400">
-              {t('footer.copyright')}
-            </p>
-          </div>
+      <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
+        <div className="container mx-auto px-4 text-center">
+          <img 
+            src={revillionLogo} 
+            alt="Revillion Logo" 
+            className="h-12 w-auto mx-auto mb-6"
+          />
+          <p className="text-gray-400 text-lg">
+            {t('footer.copyright')}
+          </p>
         </div>
       </footer>
     </div>

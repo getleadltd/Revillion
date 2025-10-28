@@ -4,8 +4,7 @@
     "whyJoin": "Por Que Se Juntar",
     "tools": "Ferramentas",
     "offers": "Ofertas",
-    "faq": "FAQ",
-    "blog": "Blog"
+    "faq": "FAQ"
   },
   "hero": {
     "badge": "#1 Rede de Afiliados iGaming",
@@ -200,39 +199,6 @@
     "socialMedia": "Mídias Sociais",
     "rights": "Todos os direitos reservados.",
     "responsible": "Jogo Responsável",
-    "copyright": "© 2025 Revillion Partners. Todos os direitos reservados.",
-    "blog": "Blog"
-  },
-  "blog": {
-    "title": "Blog",
-    "subtitle": "Insights de especialistas sobre marketing de afiliados e indústria de cassino",
-    "readMore": "Ler artigo",
-    "readingTime": "min de leitura",
-    "publishedOn": "Publicado em",
-    "featuredBadge": "Destaque",
-    "allPosts": "Todos os artigos",
-    "categories": {
-      "affiliate-tips": "Dicas para Afiliados",
-      "industry-news": "Notícias da Indústria",
-      "success-stories": "Histórias de Sucesso",
-      "tools": "Ferramentas & Recursos",
-      "seo": "SEO & Tráfego"
-    },
-    "author": {
-      "by": "Por",
-      "bio": "A equipe da Revillion Partners compartilha insights especializados sobre marketing de afiliados, tendências da indústria de cassino e estratégias comprovadas para ajudar afiliados a maximizar seus ganhos."
-    },
-    "share": {
-      "title": "Compartilhar este artigo",
-      "copied": "Link copiado!"
-    },
-    "relatedPosts": "Artigos relacionados",
-    "tableOfContents": "Índice",
-    "backToBlog": "Voltar ao Blog",
-    "latestInsights": {
-      "badge": "ÚLTIMOS INSIGHTS",
-      "title": "Do nosso Blog",
-      "viewAll": "Ver todos os artigos"
-    }
+    "copyright": "© 2025 Revillion Partners. Todos os direitos reservados."
   }
 }
