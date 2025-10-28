@@ -4,7 +4,8 @@
     "whyJoin": "Why Join",
     "tools": "Tools",
     "offers": "Offers",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "blog": "Blog"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate Network",
@@ -199,6 +200,39 @@
     "socialMedia": "Social Media",
     "rights": "All rights reserved.",
     "responsible": "Responsible Gaming",
-    "copyright": "© 2025 Revillion Partners. All rights reserved."
+    "copyright": "© 2025 Revillion Partners. All rights reserved.",
+    "blog": "Blog"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Expert insights on affiliate marketing and casino industry",
+    "readMore": "Read Article",
+    "readingTime": "min read",
+    "publishedOn": "Published on",
+    "featuredBadge": "Featured",
+    "allPosts": "All Posts",
+    "categories": {
+      "affiliate-tips": "Affiliate Tips",
+      "industry-news": "Industry News",
+      "success-stories": "Success Stories",
+      "tools": "Tools & Resources",
+      "seo": "SEO & Traffic"
+    },
+    "author": {
+      "by": "By",
+      "bio": "Revillion Partners team shares expert insights on affiliate marketing, casino industry trends, and proven strategies to help affiliates maximize their earnings."
+    },
+    "share": {
+      "title": "Share this article",
+      "copied": "Link copied!"
+    },
+    "relatedPosts": "Related Articles",
+    "tableOfContents": "Table of Contents",
+    "backToBlog": "Back to Blog",
+    "latestInsights": {
+      "badge": "LATEST INSIGHTS",
+      "title": "From Our Blog",
+      "viewAll": "View All Articles"
+    }
   }
 }

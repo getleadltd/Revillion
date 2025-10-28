@@ -71,3 +71,63 @@ export const trackLanguageChange = (fromLang: string, toLang: string) => {
     to_language: toLang
   });
 };
+
+/**
+ * Track blog post view
+ */
+export const trackBlogPostView = (slug: string, category: string, lang: string, readingTime: number) => {
+  trackEvent('blog_post_view', {
+    event_category: 'blog',
+    article_slug: slug,
+    category: category,
+    language: lang,
+    reading_time: readingTime
+  });
+};
+
+/**
+ * Track blog CTA clicks
+ */
+export const trackBlogCTAClick = (location: string, slug: string, lang: string) => {
+  trackEvent('blog_cta_click', {
+    event_category: 'blog',
+    cta_location: location,
+    article_slug: slug,
+    language: lang
+  });
+};
+
+/**
+ * Track blog article share
+ */
+export const trackBlogShare = (platform: string, slug: string, lang: string) => {
+  trackEvent('blog_share', {
+    event_category: 'blog',
+    platform: platform,
+    article_slug: slug,
+    language: lang
+  });
+};
+
+/**
+ * Track related post clicks
+ */
+export const trackRelatedPostClick = (fromSlug: string, toSlug: string, lang: string) => {
+  trackEvent('blog_related_click', {
+    event_category: 'blog',
+    from_article: fromSlug,
+    to_article: toSlug,
+    language: lang
+  });
+};
+
+/**
+ * Track blog category filter
+ */
+export const trackBlogCategoryFilter = (category: string, lang: string) => {
+  trackEvent('blog_category_filter', {
+    event_category: 'blog',
+    category: category,
+    language: lang
+  });
+};
