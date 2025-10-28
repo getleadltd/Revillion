@@ -6,24 +6,24 @@ export const SEOHead = () => {
   
   const meta: Record<string, { title: string; description: string }> = {
     en: {
-      title: "Revillion Partners - High CPA Casino Affiliate Network | $10M+ Paid",
-      description: "Join 800+ affiliates earning high CPA commissions. Premium iGaming offers across 40+ markets. $10M+ paid to partners. Real-time tracking & dedicated support."
+      title: "Revillion Partners - iGaming Affiliate Program",
+      description: "Join Revillion's elite affiliate network. Earn premium CPA commissions promoting 16+ casino brands with dedicated support & real-time tracking."
     },
     de: {
-      title: "Revillion Partners - Casino Affiliate-Netzwerk mit Top CPA | $10M+ Ausgezahlt",
-      description: "Werde Teil von 800+ Affiliates und verdiene hohe CPA-Provisionen. Premium iGaming-Angebote in 40+ Märkten. $10M+ an Partner ausgezahlt. Echtzeit-Tracking & persönlicher Support."
+      title: "Revillion Partners - iGaming-Partnerprogramm",
+      description: "Treten Sie Revillions Elite-Affiliate-Netzwerk bei. Verdienen Sie Premium-CPA-Provisionen mit 16+ Casino-Marken und dediziertem Support."
     },
     it: {
-      title: "Revillion Partners - Network Affiliazione Casino Alto CPA | $10M+ Pagati",
-      description: "Entra nel network: 800+ affiliati guadagnano alte commissioni CPA. Offerte iGaming premium in 40+ mercati. $10M+ pagati ai partner. Tracking real-time e supporto dedicato."
+      title: "Revillion Partners - Programma Affiliazione iGaming",
+      description: "Entra nella rete di affiliazione elite di Revillion. Guadagna commissioni CPA premium promuovendo 16+ brand di casino con supporto dedicato."
     },
     pt: {
-      title: "Revillion Partners - Rede Afiliados Casino Alto CPA | $10M+ Pagos",
-      description: "Junte-se a 800+ afiliados ganhando altas comissões CPA. Ofertas iGaming premium em 40+ mercados. $10M+ pagos aos parceiros. Rastreamento em tempo real e suporte dedicado."
+      title: "Revillion Partners - Programa de Afiliados iGaming",
+      description: "Junte-se à rede de afiliados elite da Revillion. Ganhe comissões CPA premium promovendo 16+ marcas de cassino com suporte dedicado."
     },
     es: {
-      title: "Revillion Partners - Red Afiliados Casino Alto CPA | $10M+ Pagados",
-      description: "Únete a 800+ afiliados ganando altas comisiones CPA. Ofertas iGaming premium en 40+ mercados. $10M+ pagados a socios. Seguimiento en tiempo real y soporte dedicado."
+      title: "Revillion Partners - Programa de Afiliados iGaming",
+      description: "Únete a la red de afiliados elite de Revillion. Gana comisiones CPA premium promocionando 16+ marcas de casino con soporte dedicado."
     }
   };
 
