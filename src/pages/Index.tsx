@@ -60,41 +60,61 @@ const Index = () => {
             
             {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8 items-center">
-              <button 
-                onClick={() => scrollToSection('hero')}
+              <a 
+                href={`/${lang}#hero`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('hero');
+                }}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
                 {t('nav.home')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-              <button 
-                onClick={() => scrollToSection('why-join')}
+              </a>
+              <a 
+                href={`/${lang}#why-join`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('why-join');
+                }}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
                 {t('nav.whyJoin')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-              <button 
-                onClick={() => scrollToSection('tools')}
+              </a>
+              <a 
+                href={`/${lang}#tools`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('tools');
+                }}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
                 {t('nav.tools')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-              <button 
-                onClick={() => scrollToSection('offers')}
+              </a>
+              <a 
+                href={`/${lang}#offers`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('offers');
+                }}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
                 {t('nav.offers')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-              <button 
-                onClick={() => scrollToSection('faq')}
+              </a>
+              <a 
+                href={`/${lang}#faq`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('faq');
+                }}
                 className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
               >
                 {t('nav.faq')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </button>
+              </a>
               <LanguageSwitcher />
             </nav>
 
@@ -117,36 +137,56 @@ const Index = () => {
           {isMenuOpen && (
             <nav id="mobile-navigation" className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
               <div className="flex flex-col space-y-4">
-                <button 
-                  onClick={() => scrollToSection('hero')}
+                <a 
+                  href={`/${lang}#hero`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection('hero');
+                  }}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   {t('nav.home')}
-                </button>
-                <button 
-                  onClick={() => scrollToSection('why-join')}
+                </a>
+                <a 
+                  href={`/${lang}#why-join`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection('why-join');
+                  }}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   {t('nav.whyJoin')}
-                </button>
-                <button 
-                  onClick={() => scrollToSection('tools')}
+                </a>
+                <a 
+                  href={`/${lang}#tools`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection('tools');
+                  }}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   {t('nav.tools')}
-                </button>
-                <button 
-                  onClick={() => scrollToSection('offers')}
+                </a>
+                <a 
+                  href={`/${lang}#offers`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection('offers');
+                  }}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   {t('nav.offers')}
-                </button>
-                <button 
-                  onClick={() => scrollToSection('faq')}
+                </a>
+                <a 
+                  href={`/${lang}#faq`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection('faq');
+                  }}
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   {t('nav.faq')}
-                </button>
+                </a>
               </div>
             </nav>
           )}
