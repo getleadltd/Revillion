@@ -51,6 +51,7 @@ export const SEOHead = () => {
       <title>{currentMeta.title}</title>
       <meta name="description" content={currentMeta.description} />
       <meta name="keywords" content={keywords[i18n.language as keyof typeof keywords] || keywords.en} />
+      <meta name="app-build" content={new Date().toISOString()} />
       
       {/* OpenGraph */}
       <meta property="og:title" content={currentMeta.title} />

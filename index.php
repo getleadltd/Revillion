@@ -18,11 +18,15 @@ if (file_exists($asset_manifest)) {
     
     // Load main JS file
     if (isset($manifest['src/main.tsx'])) {
+        $js_file = $manifest['src/main.tsx']['file'];
+        $js_path = get_template_directory() . '/dist/' . $js_file;
+        $js_version = file_exists($js_path) ? filemtime($js_path) : time();
+        
         wp_enqueue_script(
             'react-app-js',
-            get_template_directory_uri() . '/dist/' . $manifest['src/main.tsx']['file'],
+            get_template_directory_uri() . '/dist/' . $js_file,
             array(),
-            '1.0.0',
+            $js_version,
             true
         );
     }
@@ -30,11 +34,14 @@ if (file_exists($asset_manifest)) {
     // Load main CSS file
     if (isset($manifest['src/main.tsx']['css'])) {
         foreach ($manifest['src/main.tsx']['css'] as $css_file) {
+            $css_path = get_template_directory() . '/dist/' . $css_file;
+            $css_version = file_exists($css_path) ? filemtime($css_path) : time();
+            
             wp_enqueue_style(
                 'react-app-css',
                 get_template_directory_uri() . '/dist/' . $css_file,
                 array(),
-                '1.0.0'
+                $css_version
             );
         }
     }
