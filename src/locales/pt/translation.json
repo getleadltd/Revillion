@@ -203,5 +203,42 @@
     "socialMedia": "Mídias Sociais",
     "rights": "Todos os direitos reservados.",
     "copyright": "© 2025 Revillion Partners. Todos os direitos reservados."
+  },
+  "blog": {
+    "title": "Blog e Notícias",
+    "subtitle": "Últimas novidades do mundo das afiliações",
+    "readMore": "Ler Mais",
+    "categories": "Categorias",
+    "allPosts": "Todos os Posts",
+    "noPosts": "Nenhum post encontrado",
+    "latestPosts": "Últimos Posts",
+    "relatedPosts": "Você Também Pode Gostar",
+    "sharePost": "Compartilhar este artigo",
+    "readingTime": "min de leitura",
+    "views": "visualizações",
+    "publishedOn": "Publicado em",
+    "writtenBy": "Escrito por",
+    "postNotFound": "Post não encontrado",
+    "backToBlog": "Voltar ao Blog",
+    "categories.news": "Notícias",
+    "categories.casino-reviews": "Avaliações de Casino",
+    "categories.affiliate-tips": "Dicas para Afiliados",
+    "categories.industry-updates": "Atualizações da Indústria",
+    "categories.guides": "Guias",
+    "admin": {
+      "title": "Gestão do Blog",
+      "subtitle": "Gerencie seus posts e conteúdos",
+      "newPost": "Novo Post",
+      "noPosts": "Ainda não há posts",
+      "createFirst": "Crie seu primeiro post",
+      "table": {
+        "title": "Título",
+        "category": "Categoria",
+        "status": "Status",
+        "date": "Data",
+        "views": "Visualizações",
+        "actions": "Ações"
+      }
+    }
   }
 }
