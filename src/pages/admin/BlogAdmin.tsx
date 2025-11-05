@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
-import { useBlogPosts } from '@/hooks/useBlogPosts';
+import { useBlogPostsAdmin } from '@/hooks/useBlogPostsAdmin';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -19,13 +20,18 @@ import { formatDate } from '@/lib/blog';
 const BlogAdmin = () => {
   const { t } = useTranslation();
   const { lang = 'en' } = useParams();
-  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   
-  const { data: posts, isLoading } = useBlogPosts({
+  const { data: posts, isLoading } = useBlogPostsAdmin({
     page: 1,
     limit: 100,
     lang,
+    statusFilter,
   });
+
+  const publishedCount = posts?.filter(p => p.status === 'published').length || 0;
+  const draftCount = posts?.filter(p => p.status === 'draft').length || 0;
+  const totalCount = posts?.length || 0;
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -43,22 +49,34 @@ const BlogAdmin = () => {
           </Button>
         </div>
 
-        <Card className="p-6">
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : !posts || posts.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">{t('blog.admin.noPosts')}</p>
-              <Button asChild>
-                <Link to={`/${lang}/admin/blog/new`}>
-                  {t('blog.admin.createFirst')}
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <Table>
+        <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+          <TabsList>
+            <TabsTrigger value="all">Tutti ({totalCount})</TabsTrigger>
+            <TabsTrigger value="published">Pubblicati ({publishedCount})</TabsTrigger>
+            <TabsTrigger value="draft">Bozze ({draftCount})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value={statusFilter}>
+            <Card className="p-6">
+              {isLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : !posts || posts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">
+                    {statusFilter === 'draft' ? 'Nessuna bozza trovata' : 
+                     statusFilter === 'published' ? 'Nessun post pubblicato' : 
+                     t('blog.admin.noPosts')}
+                  </p>
+                  <Button asChild>
+                    <Link to={`/${lang}/admin/blog/new`}>
+                      {t('blog.admin.createFirst')}
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>{t('blog.admin.table.title')}</TableHead>
@@ -69,9 +87,9 @@ const BlogAdmin = () => {
                   <TableHead className="text-right">{t('blog.admin.table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+                  <TableBody>
                 {posts.map((post) => (
-                  <TableRow key={post.id}>
+                  <TableRow key={post.id} className={post.status === 'draft' ? 'bg-muted/30' : ''}>
                     <TableCell className="font-medium">{post.title_en}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">
@@ -80,7 +98,7 @@ const BlogAdmin = () => {
                     </TableCell>
                     <TableCell>
                       <Badge variant={post.status === 'published' ? 'default' : 'outline'}>
-                        {post.status}
+                        {post.status === 'published' ? '✅ Pubblicato' : '📝 Bozza'}
                       </Badge>
                     </TableCell>
                     <TableCell>{formatDate(post.published_at || post.created_at)}</TableCell>
@@ -101,8 +119,10 @@ const BlogAdmin = () => {
                 ))}
               </TableBody>
             </Table>
-          )}
-        </Card>
+              )}
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
