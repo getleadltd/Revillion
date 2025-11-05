@@ -16,7 +16,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { useBlogPostsAdmin } from '@/hooks/useBlogPostsAdmin';
-import logo from '@/assets/robocat-logo.png';
+import logo from '@/assets/revillion-logo.png';
 
 export function AdminSidebar() {
   const { lang = 'en' } = useParams();
