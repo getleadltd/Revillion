@@ -52,7 +52,7 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
       
       <CardHeader>
         <Badge className="w-fit mb-2" variant="secondary">
-          {t(`blog.categories.${post.category}`)}
+          {t(`blog.categories.${post.category}`) || post.category}
         </Badge>
         <h3 className="text-xl font-bold line-clamp-2 group-hover:text-primary transition-colors">
           {title}

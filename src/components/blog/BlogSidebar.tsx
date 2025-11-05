@@ -14,9 +14,9 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
 
   const allCategories = [
     { id: 'all', label: t('blog.allPosts') },
-    { id: 'guides', label: t('blog.categories.guides') || 'Guide' },
-    { id: 'news', label: t('blog.categories.news') || 'News' },
-    { id: 'casino-reviews', label: t('blog.categories.casino-reviews') || 'Recensioni Casino' },
+    { id: 'guides', label: t('blog.categories.guides') },
+    { id: 'news', label: t('blog.categories.news') },
+    { id: 'casino-reviews', label: t('blog.categories.casino-reviews') },
   ];
 
   return (
