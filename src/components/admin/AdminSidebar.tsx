@@ -16,6 +16,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { useBlogPostsAdmin } from '@/hooks/useBlogPostsAdmin';
+import logo from '@/assets/robocat-logo.png';
 
 export function AdminSidebar() {
   const { lang = 'en' } = useParams();
@@ -56,19 +57,22 @@ export function AdminSidebar() {
     >
       <SidebarHeader className="border-b border-[hsl(var(--border))] p-4">
         {!isCollapsed ? (
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded bg-[hsl(var(--primary))] flex items-center justify-center text-[hsl(var(--primary-foreground))] font-bold">
-              CB
-            </div>
+          <div className="flex items-center gap-3">
+            <img 
+              src={logo} 
+              alt="Casino Blog" 
+              className="h-10 w-auto object-contain"
+            />
             <div>
-              <h2 className="font-semibold text-sm">Casino Blog</h2>
-              <p className="text-xs text-[hsl(var(--muted-foreground))]">Admin Panel</p>
+              <h2 className="font-semibold text-sm">Admin Panel</h2>
             </div>
           </div>
         ) : (
-          <div className="h-8 w-8 rounded bg-[hsl(var(--primary))] flex items-center justify-center text-[hsl(var(--primary-foreground))] font-bold mx-auto">
-            CB
-          </div>
+          <img 
+            src={logo} 
+            alt="Logo" 
+            className="h-8 w-8 object-contain mx-auto"
+          />
         )}
       </SidebarHeader>
 
