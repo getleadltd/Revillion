@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { useBlogPost } from '@/hooks/useBlogPost';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
-import { formatDate, calculateReadingTime } from '@/lib/blog';
+import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog';
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 
@@ -43,6 +43,7 @@ const BlogPost = () => {
   const title = post[`title_${lang}` as keyof typeof post] as string || post.title_en;
   const content = post[`content_${lang}` as keyof typeof post] as string || post.content_en;
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
+  const formattedContent = formatHTMLContent(content);
 
   return (
     <Layout>
@@ -101,8 +102,17 @@ const BlogPost = () => {
 
             {/* Content */}
             <div 
-              className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-primary prose-img:rounded-lg"
-              dangerouslySetInnerHTML={{ __html: content }}
+              className="prose prose-lg max-w-none dark:prose-invert 
+                prose-headings:font-bold 
+                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
+                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                prose-p:mb-6 prose-p:leading-relaxed prose-p:text-justify
+                prose-strong:font-bold prose-strong:text-foreground
+                prose-li:my-2
+                prose-ul:my-6 prose-ol:my-6
+                prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                prose-img:rounded-lg prose-img:shadow-lg"
+              dangerouslySetInnerHTML={{ __html: formattedContent }}
             />
 
             {/* Share Buttons */}

@@ -100,4 +100,41 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Miglioramenti leggibilità articoli */
+  .prose h2 {
+    margin-top: 3rem !important;
+    margin-bottom: 1.5rem !important;
+    font-size: 2rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .prose h3 {
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    font-size: 1.5rem !important;
+  }
+
+  .prose p {
+    margin-bottom: 1.5rem !important;
+    line-height: 1.8 !important;
+    text-align: justify !important;
+  }
+
+  .prose strong,
+  .prose b {
+    font-weight: 700 !important;
+    color: inherit !important;
+  }
+
+  .prose ul,
+  .prose ol {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .prose li {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
 }

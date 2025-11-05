@@ -23,26 +23,29 @@ export const generateSlug = (title: string): string => {
 export const formatHTMLContent = (html: string): string => {
   if (!html) return html;
   
-  // Normalizza gli spazi multipli e le righe vuote
   let formatted = html.trim();
   
-  // Aggiungi spaziatura tra sezioni principali (due righe vuote prima di ogni H2)
-  formatted = formatted.replace(/<h2/g, '\n\n<h2');
+  // Aggiungi margini generosi prima degli H2 (sezioni principali)
+  formatted = formatted.replace(/<h2/g, '\n\n\n<h2');
   
-  // Aggiungi spaziatura dopo H2 e H3
-  formatted = formatted.replace(/<\/h2>/g, '</h2>\n');
+  // Spaziatura dopo headings
+  formatted = formatted.replace(/<\/h2>/g, '</h2>\n\n');
   formatted = formatted.replace(/<\/h3>/g, '</h3>\n');
   
-  // Aggiungi spaziatura tra paragrafi
-  formatted = formatted.replace(/<\/p>/g, '</p>\n');
+  // Doppio spazio tra paragrafi
+  formatted = formatted.replace(/<\/p>/g, '</p>\n\n');
   
-  // Aggiungi spaziatura dopo liste
-  formatted = formatted.replace(/<\/ul>/g, '</ul>\n');
-  formatted = formatted.replace(/<\/ol>/g, '</ol>\n');
+  // Spazio attorno alle liste
+  formatted = formatted.replace(/<ul/g, '\n<ul');
+  formatted = formatted.replace(/<ol/g, '\n<ol');
+  formatted = formatted.replace(/<\/ul>/g, '</ul>\n\n');
+  formatted = formatted.replace(/<\/ol>/g, '</ol>\n\n');
   
-  // Rimuovi righe vuote multiple (max 2 consecutive)
-  formatted = formatted.replace(/\n{3,}/g, '\n\n');
+  // Assicura che <strong> sia effettivamente bold
+  formatted = formatted.replace(/<strong>/g, '<strong class="font-bold">');
   
-  // Pulisci spazi all'inizio e alla fine
+  // Rimuovi eccessive righe vuote (max 3)
+  formatted = formatted.replace(/\n{4,}/g, '\n\n\n');
+  
   return formatted.trim();
 };
