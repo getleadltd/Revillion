@@ -15,7 +15,7 @@ export const Footer = () => {
             <img 
               src={revillionLogo} 
               alt="Revillion Partners" 
-              className="h-10 mb-4"
+              className="h-10 w-auto mb-4"
               width="170"
               height="48"
             />
