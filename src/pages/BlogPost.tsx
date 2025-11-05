@@ -66,7 +66,11 @@ const BlogPost = () => {
         {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
       </Helmet>
 
-      <BlogCTA />
+      <BlogCTA 
+        postSlug={slug} 
+        postTitle={title} 
+        postCategory={post.category} 
+      />
 
       <article className="bg-background">
         {/* Hero Image */}

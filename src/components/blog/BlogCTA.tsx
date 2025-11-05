@@ -1,13 +1,37 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
-export const BlogCTA = () => {
+interface BlogCTAProps {
+  postSlug?: string;
+  postTitle?: string;
+  postCategory?: string;
+}
+
+export const BlogCTA = ({ postSlug, postTitle, postCategory }: BlogCTAProps) => {
   const { t } = useTranslation();
 
   const handleCTAClick = () => {
-    // Scroll to homepage CTA section or navigate
-    window.location.href = '/#cta';
+    // Track evento specifico per blog CTA
+    trackEvent('blog_cta_click', {
+      event_category: 'blog_engagement',
+      event_label: postSlug || 'unknown',
+      post_title: postTitle,
+      post_category: postCategory,
+      cta_location: 'sticky_button',
+      value: 1
+    });
+    
+    // Costruire URL con parametri UTM
+    const utmParams = new URLSearchParams({
+      utm_source: 'blog',
+      utm_medium: 'cta_button',
+      utm_campaign: 'blog_conversion',
+      utm_content: postSlug || 'unknown'
+    });
+    
+    window.location.href = `/#cta?${utmParams.toString()}`;
   };
 
   return (
