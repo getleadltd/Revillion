@@ -16,6 +16,12 @@ const BlogPost = () => {
   const { lang = 'en', slug } = useParams();
   const { data: post, isLoading, incrementViews } = useBlogPost(slug!, lang);
 
+  // Track article view automatically
+  useEffect(() => {
+    if (post?.id) {
+      incrementViews();
+    }
+  }, [post?.id, incrementViews]);
 
   if (isLoading) {
     return (
