@@ -115,6 +115,13 @@ const Index = () => {
                 {t('nav.faq')}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
               </a>
+              <a 
+                href={`/${lang}/blog`}
+                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
+              >
+                Blog
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+              </a>
               <LanguageSwitcher />
             </nav>
 
@@ -186,6 +193,12 @@ const Index = () => {
                   className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 >
                   {t('nav.faq')}
+                </a>
+                <a 
+                  href={`/${lang}/blog`}
+                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
+                >
+                  Blog
                 </a>
               </div>
             </nav>
