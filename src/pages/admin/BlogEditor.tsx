@@ -15,6 +15,7 @@ import { generateSlug, formatHTMLContent } from "@/lib/blog";
 import { Loader2, Sparkles, Upload, ImagePlus } from "lucide-react";
 import { AIContentGeneratorDialog, type GeneratedContent } from "@/components/admin/AIContentGeneratorDialog";
 import { AIImageGeneratorDialog } from "@/components/admin/AIImageGeneratorDialog";
+import { AIContentImageProcessor } from "@/components/admin/AIContentImageProcessor";
 
 const schema = z.object({
   title_it: z.string().min(3, "Il titolo deve essere lungo almeno 3 caratteri"),
@@ -23,6 +24,7 @@ const schema = z.object({
   status: z.enum(["draft","published"]),
   slug: z.string().min(3, "Lo slug deve essere lungo almeno 3 caratteri"),
   featured_image_url: z.string().url().optional().or(z.literal("")),
+  featured_image_alt: z.string().optional().or(z.literal("")),
   meta_description_it: z.string().optional().or(z.literal("")),
 });
 
@@ -47,6 +49,7 @@ export default function BlogEditor() {
       status: "draft",
       slug: "",
       featured_image_url: "",
+      featured_image_alt: "",
       meta_description_it: "",
     },
   });
@@ -70,6 +73,7 @@ export default function BlogEditor() {
           status: (data.status as "draft"|"published") ?? "draft",
           slug: data.slug ?? "",
           featured_image_url: data.featured_image_url ?? "",
+          featured_image_alt: data.featured_image_alt ?? "",
           meta_description_it: data.meta_description_it ?? "",
         });
       }
@@ -104,11 +108,12 @@ export default function BlogEditor() {
     });
   };
 
-  const handleAIImageGenerated = (imageUrl: string) => {
+  const handleAIImageGenerated = (imageUrl: string, altText: string) => {
     form.setValue("featured_image_url", imageUrl);
+    form.setValue("featured_image_alt", altText);
     toast({
       title: "✅ Immagine aggiunta!",
-      description: "L'immagine in evidenza è stata caricata con successo.",
+      description: "L'immagine in evidenza è stata caricata con metadati SEO.",
     });
   };
 
@@ -173,6 +178,7 @@ export default function BlogEditor() {
         status: values.status,
         slug: values.slug,
         featured_image_url: values.featured_image_url || null,
+        featured_image_alt: values.featured_image_alt || null,
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
 
@@ -376,6 +382,26 @@ export default function BlogEditor() {
 
               <FormField
                 control={form.control}
+                name="featured_image_alt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Alt Text Immagine (SEO)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Descrizione alternativa per SEO" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">
+                      Descrizione dell'immagine per accessibilità e SEO
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="meta_description_it"
                 render={({ field }) => (
                   <FormItem>
@@ -394,13 +420,24 @@ export default function BlogEditor() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Contenuto (IT)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Inserisci il contenuto dell'articolo (HTML o testo semplice)" 
-                        className="min-h-[300px]"
-                        {...field} 
+                    <div className="space-y-3">
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Inserisci il contenuto dell'articolo (HTML o testo semplice). Usa [AI-IMAGE: descrizione] per inserire immagini AI." 
+                          className="min-h-[300px]"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <div className="text-xs text-muted-foreground p-2 bg-muted rounded">
+                        💡 <strong>Tip:</strong> Scrivi <code>[AI-IMAGE: descrizione immagine]</code> nel contenuto dove vuoi inserire immagini generate dall'AI
+                      </div>
+                      <AIContentImageProcessor
+                        content={field.value}
+                        onContentUpdate={field.onChange}
+                        articleTitle={form.watch("title_it")}
+                        articleSlug={form.watch("slug")}
                       />
-                    </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

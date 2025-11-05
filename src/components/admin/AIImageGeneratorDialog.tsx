@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +11,7 @@ import { Loader2, Sparkles, Upload } from "lucide-react";
 interface AIImageGeneratorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onImageGenerated: (imageUrl: string) => void;
+  onImageGenerated: (imageUrl: string, altText: string) => void;
   articleTitle?: string;
   articleCategory?: string;
 }
@@ -24,6 +25,7 @@ export function AIImageGeneratorDialog({
 }: AIImageGeneratorDialogProps) {
   const { toast } = useToast();
   const [prompt, setPrompt] = useState("");
+  const [altText, setAltText] = useState("");
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -119,16 +121,29 @@ export function AIImageGeneratorDialog({
       const base64Response = await fetch(generatedImage);
       const blob = await base64Response.blob();
 
-      // Genera nome file unico
-      const fileName = `blog-image-${Date.now()}.png`;
+      // Genera nome file basato su slug + timestamp per SEO
+      const slug = articleTitle ? articleTitle
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') : 'blog-image';
+      const fileName = `${slug}-featured-${Date.now()}.png`;
       const filePath = `${fileName}`;
 
-      // Upload a Supabase Storage
+      // Genera alt text intelligente se non fornito
+      const finalAltText = altText || (articleTitle ? `${articleTitle} - ${articleCategory}` : 'Blog image');
+
+      // Upload a Supabase Storage con metadata SEO
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('blog-images')
         .upload(filePath, blob, {
           contentType: 'image/png',
-          upsert: false
+          upsert: false,
+          metadata: {
+            alt: finalAltText,
+            title: articleTitle || '',
+            category: articleCategory || '',
+            generated_at: new Date().toISOString()
+          }
         });
 
       if (uploadError) throw uploadError;
@@ -142,16 +157,17 @@ export function AIImageGeneratorDialog({
         throw new Error('Impossibile ottenere URL pubblico');
       }
 
-      // Callback con URL
-      onImageGenerated(urlData.publicUrl);
+      // Callback con URL e alt text
+      onImageGenerated(urlData.publicUrl, finalAltText);
       
       toast({
         title: "✅ Immagine caricata!",
-        description: "L'immagine è stata salvata e aggiunta all'articolo."
+        description: "L'immagine è stata salvata con metadati SEO ottimizzati."
       });
 
       // Reset e chiudi
       setPrompt("");
+      setAltText("");
       setGeneratedImage(null);
       onOpenChange(false);
 
@@ -169,6 +185,7 @@ export function AIImageGeneratorDialog({
 
   const handleClose = () => {
     setPrompt("");
+    setAltText("");
     setGeneratedImage(null);
     onOpenChange(false);
   };
@@ -197,6 +214,20 @@ export function AIImageGeneratorDialog({
               className="min-h-[120px]"
               disabled={loading || uploading}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="altText">Alt Text (SEO)</Label>
+            <Input
+              id="altText"
+              placeholder="Descrizione alternativa per SEO (opzionale, verrà generata dal titolo)"
+              value={altText}
+              onChange={(e) => setAltText(e.target.value)}
+              disabled={loading || uploading}
+            />
+            <p className="text-xs text-muted-foreground">
+              Se lasciato vuoto, verrà generato automaticamente da titolo + categoria
+            </p>
           </div>
 
           <Button

@@ -65,7 +65,11 @@ const BlogPost = () => {
           <div className="w-full h-96 overflow-hidden">
             <img
               src={post.featured_image_url}
-              alt={title}
+              alt={post.featured_image_alt || title}
+              title={title}
+              loading="eager"
+              width={1200}
+              height={630}
               className="w-full h-full object-cover"
             />
           </div>
