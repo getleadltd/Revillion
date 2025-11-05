@@ -1,6 +1,6 @@
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,10 +20,17 @@ export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const { lang } = useParams();
+  const location = useLocation();
 
   const changeLanguage = (langCode: string) => {
     i18n.changeLanguage(langCode);
-    navigate(`/${langCode}`);
+    
+    // Estrai il percorso corrente senza la lingua
+    const currentPath = location.pathname;
+    const pathWithoutLang = currentPath.replace(`/${lang}`, '');
+    
+    // Naviga alla stessa pagina nella nuova lingua
+    navigate(`/${langCode}${pathWithoutLang}`);
   };
 
   const currentLang = languages.find(l => l.code === i18n.language) || languages[0];
