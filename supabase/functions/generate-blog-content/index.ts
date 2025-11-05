@@ -118,17 +118,28 @@ LUNGHEZZA TARGET: ${lengthGuide}
 
 ${keywords ? `KEYWORDS DA INCLUDERE NATURALMENTE: ${keywords}` : ''}
 
-LINK BUILDING INTERNO (CRITICO):
-- Inserisci 3-5 link interni ad articoli correlati durante la scrittura
-- I link devono essere contestualmente rilevanti e con anchor text naturale
-- Formato link: <a href="/blog/{slug}">anchor text descrittivo</a>
-- NON inserire il prefisso lingua (/it/, /en/, ecc.) nel link - solo /blog/{slug}
-- Scegli articoli pertinenti dalla lista fornita
-- Distribuisci i link in diverse sezioni dell'articolo
-- Usa anchor text che descrivono il contenuto linkato (es: "strategie di affiliate marketing" invece di "clicca qui")
+LINK BUILDING INTERNO (OBBLIGATORIO - NON OPZIONALE):
+✅ DEVI inserire ESATTAMENTE 3-5 link interni ad articoli correlati
+✅ QUESTO NON È OPZIONALE - È UN REQUISITO OBBLIGATORIO
+✅ DISTRIBUZIONE OBBLIGATORIA DEI LINK:
+   - 1 link nell'introduzione (primo o secondo paragrafo)
+   - 1 link nella prima sezione H2
+   - 1 link in una sezione centrale
+   - 1 link nella conclusione o ultima sezione
+   - (Opzionale) 1-2 link aggiuntivi in sezioni particolarmente rilevanti
+
+✅ FORMATO OBBLIGATORIO: <a href="/blog/{slug}">anchor text descrittivo e naturale</a>
+✅ NON inserire il prefisso lingua (/it/, /en/, ecc.) nel link - usa SOLO /blog/{slug}
+✅ ANCHOR TEXT: Deve essere contestuale e descrittivo (es: "strategie di affiliazione casino", "tecniche SEO per casino online", "metodi di pagamento sicuri")
+✅ EVITA: "clicca qui", "leggi di più", "scopri qui", "questo articolo"
+
+ESEMPIO DI LINK BEN FATTO:
+"Per massimizzare i profitti nel settore iGaming, è essenziale combinare queste tecniche con le <a href="/blog/strategie-promuovere-casino-online-affiliato">migliori strategie di promozione casino per affiliati</a> disponibili sul mercato."
 
 ${articlesForLinking.length > 0 ? `ARTICOLI DISPONIBILI PER LINKING INTERNO:
-${articlesForLinking.map((a: any) => `- [${a.category}] "${a.title_it}" → slug: ${a.slug}`).join('\n')}` : ''}
+${articlesForLinking.map((a: any) => `- [${a.category}] "${a.title_it}" → /blog/${a.slug}`).join('\n')}
+
+IMPORTANTE: Scegli gli articoli più pertinenti al topic e inserisci i link in modo naturale nel contesto. DEVI usare almeno 3 articoli dalla lista sopra.` : 'ATTENZIONE: Nessun articolo disponibile per linking interno. Procedi senza link interni.'}
 
 IMPORTANTE: Restituisci SOLO contenuto HTML ben formattato con spaziatura corretta, senza wrapper esterni come <html> o <body>. Inizia direttamente con <h2> per la prima sezione.`;
 
@@ -234,6 +245,21 @@ Genera:
     }
 
     const generatedContent = JSON.parse(toolCall.function.arguments);
+
+    // ✅ VALIDAZIONE POST-GENERAZIONE: Conta i link interni
+    const internalLinkRegex = /<a\s+href=["']\/blog\/[^"']+["'][^>]*>/gi;
+    const linkMatches = generatedContent.content_it.match(internalLinkRegex) || [];
+    const linkCount = linkMatches.length;
+    
+    console.log(`✅ Internal links validation: Found ${linkCount} internal links`);
+    
+    if (linkCount < 3) {
+      console.warn(`⚠️ WARNING: Only ${linkCount} internal links generated (expected 3-5)`);
+      console.warn('Links found:', linkMatches);
+      // Il contenuto viene comunque restituito, ma l'utente può vedere il warning nei log
+    } else {
+      console.log(`✅ Internal linking requirement met: ${linkCount} links generated`);
+    }
 
     return new Response(
       JSON.stringify({
