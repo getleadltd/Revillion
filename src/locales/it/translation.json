@@ -200,5 +200,50 @@
     "rights": "Tutti i diritti riservati.",
     "responsible": "Gioco Responsabile",
     "copyright": "© 2025 Revillion Partners. Tutti i diritti riservati."
+  },
+  "blog": {
+    "title": "Blog e Notizie",
+    "subtitle": "Le ultime novità dal mondo delle affiliazioni",
+    "readMore": "Leggi di più",
+    "categories": "Categorie",
+    "allPosts": "Tutti i Post",
+    "noPosts": "Nessun post trovato",
+    "latestPosts": "Ultimi Post",
+    "relatedPosts": "Potrebbe Interessarti",
+    "sharePost": "Condividi questo articolo",
+    "readingTime": "min di lettura",
+    "views": "visualizzazioni",
+    "publishedOn": "Pubblicato il",
+    "writtenBy": "Scritto da",
+    "postNotFound": "Post non trovato",
+    "backToBlog": "Torna al Blog",
+    "categories.news": "Notizie",
+    "categories.casino-reviews": "Recensioni Casinò",
+    "categories.affiliate-tips": "Consigli per Affiliati",
+    "categories.industry-updates": "Aggiornamenti di Settore",
+    "admin": {
+      "title": "Gestione Blog",
+      "subtitle": "Gestisci i tuoi post e contenuti",
+      "newPost": "Nuovo Post",
+      "noPosts": "Nessun post ancora",
+      "createFirst": "Crea il tuo primo post",
+      "table": {
+        "title": "Titolo",
+        "category": "Categoria",
+        "status": "Stato",
+        "date": "Data",
+        "views": "Visualizzazioni",
+        "actions": "Azioni"
+      }
+    }
+  },
+  "auth": {
+    "login": "Accedi",
+    "loginDescription": "Inserisci le tue credenziali per accedere al pannello admin",
+    "email": "Email",
+    "password": "Password",
+    "loginSuccess": "Accesso effettuato",
+    "welcome": "Bentornato!",
+    "loginError": "Accesso fallito"
   }
 }

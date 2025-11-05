@@ -200,5 +200,50 @@
     "rights": "All rights reserved.",
     "responsible": "Responsible Gaming",
     "copyright": "© 2025 Revillion Partners. All rights reserved."
+  },
+  "blog": {
+    "title": "Blog & News",
+    "subtitle": "Latest insights from the affiliate world",
+    "readMore": "Read More",
+    "categories": "Categories",
+    "allPosts": "All Posts",
+    "noPosts": "No posts found",
+    "latestPosts": "Latest Posts",
+    "relatedPosts": "You Might Also Like",
+    "sharePost": "Share this article",
+    "readingTime": "min read",
+    "views": "views",
+    "publishedOn": "Published on",
+    "writtenBy": "Written by",
+    "postNotFound": "Post not found",
+    "backToBlog": "Back to Blog",
+    "categories.news": "News",
+    "categories.casino-reviews": "Casino Reviews",
+    "categories.affiliate-tips": "Affiliate Tips",
+    "categories.industry-updates": "Industry Updates",
+    "admin": {
+      "title": "Blog Management",
+      "subtitle": "Manage your blog posts and content",
+      "newPost": "New Post",
+      "noPosts": "No posts yet",
+      "createFirst": "Create your first post",
+      "table": {
+        "title": "Title",
+        "category": "Category",
+        "status": "Status",
+        "date": "Date",
+        "views": "Views",
+        "actions": "Actions"
+      }
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "loginDescription": "Enter your credentials to access the admin panel",
+    "email": "Email",
+    "password": "Password",
+    "loginSuccess": "Login successful",
+    "welcome": "Welcome back!",
+    "loginError": "Login failed"
   }
 }
