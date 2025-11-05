@@ -132,7 +132,6 @@ const BlogAdmin = () => {
                         <TableHead>{t('blog.admin.table.category')}</TableHead>
                         <TableHead>{t('blog.admin.table.status')}</TableHead>
                         <TableHead>{t('blog.admin.table.date')}</TableHead>
-                        <TableHead>{t('blog.admin.table.views')}</TableHead>
                         <TableHead className="text-right">{t('blog.admin.table.actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -151,7 +150,6 @@ const BlogAdmin = () => {
                             </Badge>
                           </TableCell>
                           <TableCell>{formatDate(post.published_at || post.created_at)}</TableCell>
-                          <TableCell>{post.views}</TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
                               <Button variant="ghost" size="sm" asChild>

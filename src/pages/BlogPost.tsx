@@ -7,18 +7,13 @@ import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { formatDate, calculateReadingTime } from '@/lib/blog';
 import { Layout } from '@/components/layout/Layout';
-import { Loader2, Calendar, Clock, Eye } from 'lucide-react';
+import { Loader2, Calendar, Clock } from 'lucide-react';
 
 const BlogPost = () => {
   const { t } = useTranslation();
   const { lang = 'en', slug } = useParams();
   const { data: post, isLoading, incrementViews } = useBlogPost(slug!, lang);
 
-  useEffect(() => {
-    if (post) {
-      incrementViews();
-    }
-  }, [post, incrementViews]);
 
   if (isLoading) {
     return (
@@ -98,10 +93,6 @@ const BlogPost = () => {
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
                 {calculateReadingTime(content)} {t('blog.readingTime')}
-              </div>
-              <div className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                {post.views} {t('blog.views')}
               </div>
               <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs">
                 {t(`blog.categories.${post.category}`)}
