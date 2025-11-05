@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Layout } from "@/components/layout/Layout";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -216,19 +216,23 @@ export default function BlogEditor() {
 
   if (initialLoading) {
     return (
-      <Layout>
+      <AdminLayout>
         <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   return (
-    <Layout>
-      <div className="bg-background p-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">{id ? "Modifica Post" : "Nuovo Post"}</h1>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">{id ? "Modifica Post" : "Nuovo Post"}</h1>
+          <p className="text-[hsl(var(--muted-foreground))]">
+            {id ? "Modifica i campi e salva le modifiche" : "Crea un nuovo articolo per il blog"}
+          </p>
+        </div>
           
           <div className="mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
             <Button 
@@ -469,7 +473,6 @@ export default function BlogEditor() {
             articleCategory={form.watch("category")}
           />
         </div>
-      </div>
-    </Layout>
+    </AdminLayout>
   );
 }

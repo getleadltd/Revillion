@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useBlogPostsAdmin } from '@/hooks/useBlogPostsAdmin';
-import { Layout } from '@/components/layout/Layout';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -82,21 +82,20 @@ const BlogAdmin = () => {
   };
 
   return (
-    <Layout>
-      <div className="bg-background p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">{t('blog.admin.title')}</h1>
-              <p className="text-muted-foreground">{t('blog.admin.subtitle')}</p>
-            </div>
-            <Button asChild>
-              <Link to={`/${lang}/admin/blog/new`}>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('blog.admin.newPost')}
-              </Link>
-            </Button>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">{t('blog.admin.title')}</h1>
+            <p className="text-[hsl(var(--muted-foreground))]">{t('blog.admin.subtitle')}</p>
           </div>
+          <Button asChild>
+            <Link to={`/${lang}/admin/blog/new`}>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('blog.admin.newPost')}
+            </Link>
+          </Button>
+        </div>
 
           <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
             <TabsList>
@@ -200,9 +199,8 @@ const BlogAdmin = () => {
               </Card>
             </TabsContent>
           </Tabs>
-        </div>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 };
 
