@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
+import DOMPurify from 'dompurify';
 import { useBlogPost } from '@/hooks/useBlogPost';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
@@ -44,6 +45,15 @@ const BlogPost = () => {
   const content = post[`content_${lang}` as keyof typeof post] as string || post.content_en;
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
   const formattedContent = formatHTMLContent(content);
+  
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedContent = DOMPurify.sanitize(formattedContent, {
+    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'br', 'img', 'blockquote', 'code', 'pre', 'span', 'div'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height'],
+    ALLOW_DATA_ATTR: false,
+    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
+    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
+  });
 
   return (
     <Layout>
@@ -112,7 +122,7 @@ const BlogPost = () => {
                 prose-ul:my-6 prose-ol:my-6
                 prose-a:text-primary prose-a:no-underline hover:prose-a:underline
                 prose-img:rounded-lg prose-img:shadow-lg"
-              dangerouslySetInnerHTML={{ __html: formattedContent }}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
 
             {/* Share Buttons */}
