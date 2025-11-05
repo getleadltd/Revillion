@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -25,6 +26,27 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY non configurato');
     }
+
+    // Inizializza Supabase client per recuperare articoli esistenti
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Query articoli pubblicati per link building interno
+    console.log('Fetching existing articles for internal linking...');
+    const { data: existingArticles, error: articlesError } = await supabase
+      .from('blog_posts')
+      .select('slug, title_it, category')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(50); // Limita a 50 articoli più recenti
+
+    if (articlesError) {
+      console.error('Error fetching articles:', articlesError);
+    }
+
+    const articlesForLinking = existingArticles || [];
+    console.log(`Found ${articlesForLinking.length} articles for potential internal linking`);
 
     // Mapping lunghezza a parole target
     const lengthGuide = {
@@ -96,6 +118,18 @@ LUNGHEZZA TARGET: ${lengthGuide}
 
 ${keywords ? `KEYWORDS DA INCLUDERE NATURALMENTE: ${keywords}` : ''}
 
+LINK BUILDING INTERNO (CRITICO):
+- Inserisci 3-5 link interni ad articoli correlati durante la scrittura
+- I link devono essere contestualmente rilevanti e con anchor text naturale
+- Formato link: <a href="/blog/{slug}">anchor text descrittivo</a>
+- NON inserire il prefisso lingua (/it/, /en/, ecc.) nel link - solo /blog/{slug}
+- Scegli articoli pertinenti dalla lista fornita
+- Distribuisci i link in diverse sezioni dell'articolo
+- Usa anchor text che descrivono il contenuto linkato (es: "strategie di affiliate marketing" invece di "clicca qui")
+
+${articlesForLinking.length > 0 ? `ARTICOLI DISPONIBILI PER LINKING INTERNO:
+${articlesForLinking.map((a: any) => `- [${a.category}] "${a.title_it}" → slug: ${a.slug}`).join('\n')}` : ''}
+
 IMPORTANTE: Restituisci SOLO contenuto HTML ben formattato con spaziatura corretta, senza wrapper esterni come <html> o <body>. Inizia direttamente con <h2> per la prima sezione.`;
 
     const userPrompt = `Crea un articolo completo in italiano sull'argomento: "${topic}"
@@ -105,11 +139,12 @@ L'articolo deve essere:
 - Ottimizzato per SEO con le keywords fornite
 - Ben strutturato con H2 e H3
 - Scritto in HTML pulito (usa <h2>, <h3>, <p>, <strong>, <em>, <ul>, <ol>, <li>)
+- Includere 3-5 link interni ad articoli correlati dalla lista fornita (usa formato /blog/{slug} senza prefisso lingua)
 
 Genera:
 1. Un titolo accattivante (60-70 caratteri)
 2. Una meta description efficace (140-160 caratteri con CTA)
-3. Il contenuto HTML completo dell'articolo
+3. Il contenuto HTML completo dell'articolo con link interni contestualmente rilevanti
 4. Uno slug URL-friendly
 5. Keywords rilevanti (se non fornite, suggeriscile tu)`;
 
