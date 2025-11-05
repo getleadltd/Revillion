@@ -6,6 +6,7 @@ import DOMPurify from 'dompurify';
 import { useBlogPost } from '@/hooks/useBlogPost';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
+import { BlogCTA } from '@/components/blog/BlogCTA';
 import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog';
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
@@ -64,6 +65,8 @@ const BlogPost = () => {
         <meta property="og:description" content={metaDesc || title} />
         {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
       </Helmet>
+
+      <BlogCTA />
 
       <article className="bg-background">
         {/* Hero Image */}

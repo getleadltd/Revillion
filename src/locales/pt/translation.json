@@ -225,6 +225,9 @@
     "categories.affiliate-tips": "Dicas para Afiliados",
     "categories.industry-updates": "Atualizações da Indústria",
     "categories.guides": "Guias",
+    "cta": {
+      "button": "Torne-se Partner Agora"
+    },
     "admin": {
       "title": "Gestão do Blog",
       "subtitle": "Gerencie seus posts e conteúdos",
