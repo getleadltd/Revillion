@@ -194,11 +194,14 @@
     }
   },
   "footer": {
-    "description": "Revillion Partners ist ein führendes iGaming-Affiliate-Netzwerk, das hohe Provisionen, Premium-Casino-Marken und engagierten Support für Affiliates weltweit bietet.",
-    "quickLinks": "Schnelllinks",
+    "description": "Ihr vertrauenswürdiger Partner für Affiliate-Marketing im iGaming-Sektor. Treten Sie unserem globalen Netzwerk bei und maximieren Sie Ihre Einnahmen mit exklusiven Angeboten und dediziertem Support.",
+    "quickLinks": "Schnellzugriff",
+    "legal": "Rechtliche Informationen",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen",
+    "responsibleGaming": "Verantwortungsvolles Spielen",
     "socialMedia": "Social Media",
     "rights": "Alle Rechte vorbehalten.",
-    "responsible": "Verantwortungsvolles Spielen",
     "copyright": "© 2025 Revillion Partners. Alle Rechte vorbehalten."
   }
 }

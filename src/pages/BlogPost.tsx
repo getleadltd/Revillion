@@ -6,6 +6,7 @@ import { useBlogPost } from '@/hooks/useBlogPost';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { formatDate, calculateReadingTime } from '@/lib/blog';
+import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock, Eye } from 'lucide-react';
 
 const BlogPost = () => {
@@ -21,22 +22,26 @@ const BlogPost = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </Layout>
     );
   }
 
   if (!post) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">{t('blog.postNotFound')}</h1>
-          <Link to={`/${lang}/blog`} className="text-primary hover:underline">
-            {t('blog.backToBlog')}
-          </Link>
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">{t('blog.postNotFound')}</h1>
+            <Link to={`/${lang}/blog`} className="text-primary hover:underline">
+              {t('blog.backToBlog')}
+            </Link>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
@@ -45,7 +50,7 @@ const BlogPost = () => {
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
 
   return (
-    <>
+    <Layout>
       <Helmet>
         <title>{title} | Revillion Partners</title>
         <meta name="description" content={metaDesc || title} />
@@ -54,7 +59,7 @@ const BlogPost = () => {
         {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
       </Helmet>
 
-      <article className="min-h-screen bg-background">
+      <article className="bg-background">
         {/* Hero Image */}
         {post.featured_image_url && (
           <div className="w-full h-96 overflow-hidden">
@@ -118,7 +123,7 @@ const BlogPost = () => {
           </div>
         </div>
       </article>
-    </>
+    </Layout>
   );
 };
 

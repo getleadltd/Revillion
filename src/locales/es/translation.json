@@ -194,11 +194,14 @@
     }
   },
   "footer": {
-    "description": "Revillion Partners es una red de afiliados iGaming líder que ofrece altas comisiones, marcas de casino premium y soporte dedicado a afiliados en todo el mundo.",
+    "description": "Tu socio de confianza para el marketing de afiliación en el sector iGaming. Únete a nuestra red global y maximiza tus ganancias con ofertas exclusivas y soporte dedicado.",
     "quickLinks": "Enlaces Rápidos",
+    "legal": "Información Legal",
+    "privacyPolicy": "Política de Privacidad",
+    "termsOfService": "Términos de Servicio",
+    "responsibleGaming": "Juego Responsable",
     "socialMedia": "Redes Sociales",
     "rights": "Todos los derechos reservados.",
-    "responsible": "Juego Responsable",
     "copyright": "© 2025 Revillion Partners. Todos los derechos reservados."
   }
 }

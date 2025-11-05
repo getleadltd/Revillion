@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
+import { Layout } from "@/components/layout/Layout";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -209,225 +210,229 @@ export default function BlogEditor() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">{id ? "Modifica Post" : "Nuovo Post"}</h1>
-        
-        <div className="mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={() => setShowAIGenerator(true)}
-            className="gap-2"
-          >
-            <Sparkles className="h-4 w-4" />
-            ✨ Genera con AI
-          </Button>
-          <p className="text-sm text-muted-foreground">
-            Oppure compila manualmente i campi qui sotto
-          </p>
-        </div>
+    <Layout>
+      <div className="bg-background p-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6">{id ? "Modifica Post" : "Nuovo Post"}</h1>
+          
+          <div className="mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowAIGenerator(true)}
+              className="gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              ✨ Genera con AI
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              Oppure compila manualmente i campi qui sotto
+            </p>
+          </div>
 
-        <div className="mb-4 p-3 bg-primary/10 rounded-md border border-primary/20">
-          <p className="text-sm text-muted-foreground">
-            🌍 <strong>Traduzioni automatiche:</strong> Inserisci il contenuto in italiano, le traduzioni in EN, DE, ES, PT verranno generate automaticamente.
-          </p>
-        </div>
+          <div className="mb-4 p-3 bg-primary/10 rounded-md border border-primary/20">
+            <p className="text-sm text-muted-foreground">
+              🌍 <strong>Traduzioni automatiche:</strong> Inserisci il contenuto in italiano, le traduzioni in EN, DE, ES, PT verranno generate automaticamente.
+            </p>
+          </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="title_it"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Titolo (IT)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Inserisci il titolo dell'articolo" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl>
-                    <Input placeholder="slug-articolo" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoria</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="title_it"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Titolo (IT)</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleziona categoria" />
-                      </SelectTrigger>
+                      <Input placeholder="Inserisci il titolo dell'articolo" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="news">News</SelectItem>
-                      <SelectItem value="guides">Guide</SelectItem>
-                      <SelectItem value="reviews">Recensioni</SelectItem>
-                      <SelectItem value="tips">Suggerimenti</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Stato</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Slug</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleziona stato" />
-                      </SelectTrigger>
+                      <Input placeholder="slug-articolo" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="draft">Bozza</SelectItem>
-                      <SelectItem value="published">Pubblicato</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="featured_image_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Immagine in Evidenza</FormLabel>
-                  <div className="space-y-3">
-                    <FormControl>
-                      <Input placeholder="https://esempio.com/immagine.jpg" {...field} />
-                    </FormControl>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                        onClick={() => {
-                          const url = prompt("Inserisci l'URL dell'immagine:");
-                          if (url) field.onChange(url);
-                        }}
-                      >
-                        <Upload className="h-4 w-4" />
-                        📎 URL Manuale
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                        onClick={() => setShowAIImageGenerator(true)}
-                      >
-                        <ImagePlus className="h-4 w-4" />
-                        ✨ Genera con AI
-                      </Button>
-                    </div>
-                    {field.value && (
-                      <div className="border rounded-lg overflow-hidden bg-muted">
-                        <img 
-                          src={field.value} 
-                          alt="Preview" 
-                          className="w-full h-48 object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoria</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleziona categoria" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="news">News</SelectItem>
+                        <SelectItem value="guides">Guide</SelectItem>
+                        <SelectItem value="reviews">Recensioni</SelectItem>
+                        <SelectItem value="tips">Suggerimenti</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stato</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleziona stato" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="draft">Bozza</SelectItem>
+                        <SelectItem value="published">Pubblicato</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="featured_image_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Immagine in Evidenza</FormLabel>
+                    <div className="space-y-3">
+                      <FormControl>
+                        <Input placeholder="https://esempio.com/immagine.jpg" {...field} />
+                      </FormControl>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={() => {
+                            const url = prompt("Inserisci l'URL dell'immagine:");
+                            if (url) field.onChange(url);
                           }}
-                        />
+                        >
+                          <Upload className="h-4 w-4" />
+                          📎 URL Manuale
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={() => setShowAIImageGenerator(true)}
+                        >
+                          <ImagePlus className="h-4 w-4" />
+                          ✨ Genera con AI
+                        </Button>
                       </div>
-                    )}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      {field.value && (
+                        <div className="border rounded-lg overflow-hidden bg-muted">
+                          <img 
+                            src={field.value} 
+                            alt="Preview" 
+                            className="w-full h-48 object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="meta_description_it"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Meta Description (IT)</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Breve descrizione per SEO (massimo 160 caratteri)" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="meta_description_it"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Meta Description (IT)</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Breve descrizione per SEO (massimo 160 caratteri)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="content_it"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contenuto (IT)</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Inserisci il contenuto dell'articolo (HTML o testo semplice)" 
-                      className="min-h-[300px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="content_it"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contenuto (IT)</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Inserisci il contenuto dell'articolo (HTML o testo semplice)" 
+                        className="min-h-[300px]"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => navigate(`/${lang}/admin/blog`)} disabled={loading || translating}>
-                Annulla
-              </Button>
-              <Button type="submit" disabled={loading || translating}>
-                {translating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {translating ? "⚙️ Traduzione in corso..." : loading ? "Salvataggio..." : (id ? "Aggiorna" : "Crea") + " Post"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+              <div className="flex gap-4">
+                <Button type="button" variant="outline" onClick={() => navigate(`/${lang}/admin/blog`)} disabled={loading || translating}>
+                  Annulla
+                </Button>
+                <Button type="submit" disabled={loading || translating}>
+                  {translating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {translating ? "⚙️ Traduzione in corso..." : loading ? "Salvataggio..." : (id ? "Aggiorna" : "Crea") + " Post"}
+                </Button>
+              </div>
+            </form>
+          </Form>
 
-        <AIContentGeneratorDialog
-          open={showAIGenerator}
-          onOpenChange={setShowAIGenerator}
-          onContentGenerated={handleAIContentGenerated}
-        />
+          <AIContentGeneratorDialog
+            open={showAIGenerator}
+            onOpenChange={setShowAIGenerator}
+            onContentGenerated={handleAIContentGenerated}
+          />
 
-        <AIImageGeneratorDialog
-          open={showAIImageGenerator}
-          onOpenChange={setShowAIImageGenerator}
-          onImageGenerated={handleAIImageGenerated}
-          articleTitle={form.watch("title_it")}
-          articleCategory={form.watch("category")}
-        />
+          <AIImageGeneratorDialog
+            open={showAIImageGenerator}
+            onOpenChange={setShowAIImageGenerator}
+            onImageGenerated={handleAIImageGenerated}
+            articleTitle={form.watch("title_it")}
+            articleCategory={form.watch("category")}
+          />
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }

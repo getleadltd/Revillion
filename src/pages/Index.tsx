@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { trackCTAClick } from "@/lib/analytics";
-import { Globe, DollarSign, Users, Menu, X, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock, HelpCircle } from "lucide-react";
+import { Globe, DollarSign, Users, Star, TrendingUp, Shield, Link, BarChart3, Zap, Share2, MessageCircle, Instagram, Twitter, Clock, HelpCircle } from "lucide-react";
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { SEOHead } from "@/components/SEOHead";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import revillionLogo from "@/assets/revillion-logo.png?format=webp&quality=85&w=170";
+import { Layout } from "@/components/layout/Layout";
 import bassbetLogo from "@/assets/Bassbet-partner.png?partner";
 import rabonaLogo from "@/assets/Rabona-partner.png?partner";
 import spinitLogo from "@/assets/Spinit-partner.png?partner";
@@ -27,10 +26,8 @@ import tikitakaLogo from "@/assets/tikitaka-partner.png?partner";
 import spinangaLogo from "@/assets/spinanga-partner.png?partner";
 
 const Index = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
   const { lang } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (lang && i18n.language !== lang) {
@@ -40,173 +37,11 @@ const Index = () => {
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-    setIsMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <Layout showScrollLinks={true}>
       <SEOHead />
-      {/* Header */}
-      <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <img 
-              src={revillionLogo} 
-              alt="Revillion Logo" 
-              width="170"
-              height="48"
-              className="h-12 w-auto"
-            />
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8 items-center">
-              <a 
-                href={`/${lang}#hero`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('hero');
-                }}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                {t('nav.home')}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href={`/${lang}#why-join`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('why-join');
-                }}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                {t('nav.whyJoin')}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href={`/${lang}#tools`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('tools');
-                }}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                {t('nav.tools')}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href={`/${lang}#offers`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('offers');
-                }}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                {t('nav.offers')}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href={`/${lang}#faq`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('faq');
-                }}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                {t('nav.faq')}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href={`/${lang}/blog`}
-                className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
-              >
-                Blog
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <LanguageSwitcher />
-            </nav>
-
-            {/* Mobile: Language Switcher + Menu Button */}
-            <div className="flex md:hidden items-center gap-3">
-              <LanguageSwitcher />
-              <button 
-                className="text-gray-800 hover:text-orange-500 transition-colors"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-                aria-expanded={isMenuOpen}
-                aria-controls="mobile-navigation"
-              >
-                {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <nav id="mobile-navigation" className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
-              <div className="flex flex-col space-y-4">
-                <a 
-                  href={`/${lang}#hero`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection('hero');
-                  }}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  {t('nav.home')}
-                </a>
-                <a 
-                  href={`/${lang}#why-join`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection('why-join');
-                  }}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  {t('nav.whyJoin')}
-                </a>
-                <a 
-                  href={`/${lang}#tools`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection('tools');
-                  }}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  {t('nav.tools')}
-                </a>
-                <a 
-                  href={`/${lang}#offers`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection('offers');
-                  }}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  {t('nav.offers')}
-                </a>
-                <a 
-                  href={`/${lang}#faq`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection('faq');
-                  }}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  {t('nav.faq')}
-                </a>
-                <a 
-                  href={`/${lang}/blog`}
-                  className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
-                >
-                  Blog
-                </a>
-              </div>
-            </nav>
-          )}
-        </div>
-      </header>
-
-      <main>
         {/* Hero Section */}
       <section id="hero" className="relative bg-gradient-to-br from-black via-gray-900 to-black text-white py-16 md:py-24 overflow-hidden">
         {/* Background Pattern */}
@@ -1086,22 +921,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-black to-gray-900 text-white py-6 md:py-8">
-        <div className="container mx-auto px-4 text-center">
-          <img 
-            src={revillionLogo} 
-            alt="Revillion Logo" 
-            className="h-12 w-auto mx-auto mb-6"
-          />
-          <p className="text-gray-400 text-lg">
-            {t('footer.copyright')}
-          </p>
-        </div>
-      </footer>
-    </div>
+    </Layout>
   );
 };
 
