@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import BlogAdmin from "./pages/admin/BlogAdmin";
+import BlogEditor from "./pages/admin/BlogEditor";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import './lib/i18n';
@@ -33,6 +34,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <BlogAdmin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/:lang/admin/blog/new" 
+              element={
+                <ProtectedRoute>
+                  <BlogEditor />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/:lang/admin/blog/edit/:id" 
+              element={
+                <ProtectedRoute>
+                  <BlogEditor />
                 </ProtectedRoute>
               } 
             />
