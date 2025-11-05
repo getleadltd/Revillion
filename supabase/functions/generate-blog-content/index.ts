@@ -65,13 +65,38 @@ OTTIMIZZAZIONE SEO:
 - Frasi brevi e leggibili
 - Lunghezza appropriata per il topic
 
+FORMATTAZIONE HTML RICHIESTA (CRITICO PER LEGGIBILITÀ):
+- Aggiungi DUE righe vuote tra ogni sezione principale (tra </p> e <h2>, tra </ul> e <h2>, ecc.)
+- Aggiungi UNA riga vuota tra paragrafi (tra </p> e <p>)
+- Aggiungi UNA riga vuota tra </h2> e <p>, tra </h3> e <p>
+- Usa tag <br> per spaziare liste dai paragrafi quando necessario
+- Assicurati che ogni elemento sia ben separato visivamente nel codice HTML
+- L'HTML deve essere ben indentato e leggibile, non compatto su poche righe
+
+ESEMPIO DI FORMATTAZIONE CORRETTA:
+<h2>Titolo Sezione</h2>
+
+<p>Primo paragrafo con contenuto interessante.</p>
+
+<p>Secondo paragrafo che approfondisce il concetto.</p>
+
+<ul>
+<li>Elemento lista 1</li>
+<li>Elemento lista 2</li>
+</ul>
+
+
+<h2>Altra Sezione</h2>
+
+<p>Nuovo paragrafo...</p>
+
 SETTORE: ${category || 'gambling/casino online'}
 TONO: ${toneGuide}
 LUNGHEZZA TARGET: ${lengthGuide}
 
 ${keywords ? `KEYWORDS DA INCLUDERE NATURALMENTE: ${keywords}` : ''}
 
-IMPORTANTE: Restituisci SOLO contenuto HTML ben formattato, senza wrapper esterni come <html> o <body>. Inizia direttamente con <h2> per la prima sezione.`;
+IMPORTANTE: Restituisci SOLO contenuto HTML ben formattato con spaziatura corretta, senza wrapper esterni come <html> o <body>. Inizia direttamente con <h2> per la prima sezione.`;
 
     const userPrompt = `Crea un articolo completo in italiano sull'argomento: "${topic}"
 

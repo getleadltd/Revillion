@@ -10,9 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { generateSlug } from "@/lib/blog";
-import { Loader2, Sparkles } from "lucide-react";
+import { generateSlug, formatHTMLContent } from "@/lib/blog";
+import { Loader2, Sparkles, Upload, ImagePlus } from "lucide-react";
 import { AIContentGeneratorDialog, type GeneratedContent } from "@/components/admin/AIContentGeneratorDialog";
+import { AIImageGeneratorDialog } from "@/components/admin/AIImageGeneratorDialog";
 
 const schema = z.object({
   title_it: z.string().min(3, "Il titolo deve essere lungo almeno 3 caratteri"),
@@ -34,6 +35,7 @@ export default function BlogEditor() {
   const [translating, setTranslating] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [showAIImageGenerator, setShowAIImageGenerator] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -85,8 +87,11 @@ export default function BlogEditor() {
   }, [form.watch("title_it"), id]);
 
   const handleAIContentGenerated = (generatedContent: GeneratedContent) => {
+    // Formatta il contenuto HTML per migliore leggibilità
+    const formattedContent = formatHTMLContent(generatedContent.content_it);
+    
     form.setValue("title_it", generatedContent.title_it);
-    form.setValue("content_it", generatedContent.content_it);
+    form.setValue("content_it", formattedContent);
     form.setValue("meta_description_it", generatedContent.meta_description_it);
     form.setValue("slug", generatedContent.slug);
     form.setValue("category", generatedContent.category);
@@ -95,6 +100,14 @@ export default function BlogEditor() {
     toast({
       title: "✨ Contenuto generato!",
       description: "Revisionalo e modifica come preferisci prima di salvare.",
+    });
+  };
+
+  const handleAIImageGenerated = (imageUrl: string) => {
+    form.setValue("featured_image_url", imageUrl);
+    toast({
+      title: "✅ Immagine aggiunta!",
+      description: "L'immagine in evidenza è stata caricata con successo.",
     });
   };
 
@@ -309,10 +322,49 @@ export default function BlogEditor() {
               name="featured_image_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>URL Immagine in Evidenza</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://esempio.com/immagine.jpg" {...field} />
-                  </FormControl>
+                  <FormLabel>Immagine in Evidenza</FormLabel>
+                  <div className="space-y-3">
+                    <FormControl>
+                      <Input placeholder="https://esempio.com/immagine.jpg" {...field} />
+                    </FormControl>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => {
+                          const url = prompt("Inserisci l'URL dell'immagine:");
+                          if (url) field.onChange(url);
+                        }}
+                      >
+                        <Upload className="h-4 w-4" />
+                        📎 URL Manuale
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => setShowAIImageGenerator(true)}
+                      >
+                        <ImagePlus className="h-4 w-4" />
+                        ✨ Genera con AI
+                      </Button>
+                    </div>
+                    {field.value && (
+                      <div className="border rounded-lg overflow-hidden bg-muted">
+                        <img 
+                          src={field.value} 
+                          alt="Preview" 
+                          className="w-full h-48 object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -366,6 +418,14 @@ export default function BlogEditor() {
           open={showAIGenerator}
           onOpenChange={setShowAIGenerator}
           onContentGenerated={handleAIContentGenerated}
+        />
+
+        <AIImageGeneratorDialog
+          open={showAIImageGenerator}
+          onOpenChange={setShowAIImageGenerator}
+          onImageGenerated={handleAIImageGenerated}
+          articleTitle={form.watch("title_it")}
+          articleCategory={form.watch("category")}
         />
       </div>
     </div>

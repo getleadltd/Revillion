@@ -19,3 +19,30 @@ export const generateSlug = (title: string): string => {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 };
+
+export const formatHTMLContent = (html: string): string => {
+  if (!html) return html;
+  
+  // Normalizza gli spazi multipli e le righe vuote
+  let formatted = html.trim();
+  
+  // Aggiungi spaziatura tra sezioni principali (due righe vuote prima di ogni H2)
+  formatted = formatted.replace(/<h2/g, '\n\n<h2');
+  
+  // Aggiungi spaziatura dopo H2 e H3
+  formatted = formatted.replace(/<\/h2>/g, '</h2>\n');
+  formatted = formatted.replace(/<\/h3>/g, '</h3>\n');
+  
+  // Aggiungi spaziatura tra paragrafi
+  formatted = formatted.replace(/<\/p>/g, '</p>\n');
+  
+  // Aggiungi spaziatura dopo liste
+  formatted = formatted.replace(/<\/ul>/g, '</ul>\n');
+  formatted = formatted.replace(/<\/ol>/g, '</ol>\n');
+  
+  // Rimuovi righe vuote multiple (max 2 consecutive)
+  formatted = formatted.replace(/\n{3,}/g, '\n\n');
+  
+  // Pulisci spazi all'inizio e alla fine
+  return formatted.trim();
+};
