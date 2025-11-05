@@ -17,6 +17,20 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { formatDate } from '@/lib/blog';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const BlogAdmin = () => {
   const { t } = useTranslation();
@@ -30,9 +44,42 @@ const BlogAdmin = () => {
     statusFilter,
   });
 
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
+
   const publishedCount = posts?.filter(p => p.status === 'published').length || 0;
   const draftCount = posts?.filter(p => p.status === 'draft').length || 0;
   const totalCount = posts?.length || 0;
+
+  const handleDeletePost = async (postId: string, postTitle: string) => {
+    setDeletingPostId(postId);
+    
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['blog-posts-admin'] });
+
+      toast({
+        title: "Post eliminato",
+        description: `"${postTitle}" è stato eliminato con successo.`,
+      });
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile eliminare il post. Riprova.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingPostId(null);
+    }
+  };
 
   return (
     <Layout>
@@ -112,9 +159,39 @@ const BlogAdmin = () => {
                                   <Edit className="h-4 w-4" />
                                 </Link>
                               </Button>
-                              <Button variant="ghost" size="sm">
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    disabled={deletingPostId === post.id}
+                                  >
+                                    {deletingPostId === post.id ? (
+                                      <Loader2 className="h-4 w-4 animate-spin text-destructive" />
+                                    ) : (
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    )}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Conferma eliminazione</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Sei sicuro di voler eliminare "{post.title_en}"? 
+                                      Questa azione non può essere annullata.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Annulla</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDeletePost(post.id, post.title_en)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Elimina
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
                           </TableCell>
                         </TableRow>
