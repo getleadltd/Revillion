@@ -14,10 +14,9 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
 
   const allCategories = [
     { id: 'all', label: t('blog.allPosts') },
-    { id: 'news', label: t('blog.categories.news') },
-    { id: 'casino-reviews', label: t('blog.categories.casino-reviews') },
-    { id: 'affiliate-tips', label: t('blog.categories.affiliate-tips') },
-    { id: 'industry-updates', label: t('blog.categories.industry-updates') },
+    { id: 'guides', label: t('blog.categories.guides') || 'Guide' },
+    { id: 'news', label: t('blog.categories.news') || 'News' },
+    { id: 'casino-reviews', label: t('blog.categories.casino-reviews') || 'Recensioni Casino' },
   ];
 
   return (
