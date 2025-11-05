@@ -12,6 +12,7 @@ import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogEditor from "./pages/admin/BlogEditor";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { AdminRedirect } from "./components/AdminRedirect";
 import './lib/i18n';
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navigate to="/en" replace />} />
+            <Route path="/admin" element={<AdminRedirect />} />
             <Route path="/:lang" element={<Index />} />
             <Route path="/:lang/blog" element={<Blog />} />
             <Route path="/:lang/blog/:slug" element={<BlogPost />} />
