@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { generateSlug } from "@/lib/blog";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
+import { AIContentGeneratorDialog, type GeneratedContent } from "@/components/admin/AIContentGeneratorDialog";
 
 const schema = z.object({
   title_it: z.string().min(3, "Il titolo deve essere lungo almeno 3 caratteri"),
@@ -32,6 +33,7 @@ export default function BlogEditor() {
   const [loading, setLoading] = useState(false);
   const [translating, setTranslating] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -81,6 +83,20 @@ export default function BlogEditor() {
       }
     }
   }, [form.watch("title_it"), id]);
+
+  const handleAIContentGenerated = (generatedContent: GeneratedContent) => {
+    form.setValue("title_it", generatedContent.title_it);
+    form.setValue("content_it", generatedContent.content_it);
+    form.setValue("meta_description_it", generatedContent.meta_description_it);
+    form.setValue("slug", generatedContent.slug);
+    form.setValue("category", generatedContent.category);
+    form.setValue("status", "draft");
+    
+    toast({
+      title: "✨ Contenuto generato!",
+      description: "Revisionalo e modifica come preferisci prima di salvare.",
+    });
+  };
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
@@ -191,6 +207,21 @@ export default function BlogEditor() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">{id ? "Modifica Post" : "Nuovo Post"}</h1>
         
+        <div className="mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => setShowAIGenerator(true)}
+            className="gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            ✨ Genera con AI
+          </Button>
+          <p className="text-sm text-muted-foreground">
+            Oppure compila manualmente i campi qui sotto
+          </p>
+        </div>
+
         <div className="mb-4 p-3 bg-primary/10 rounded-md border border-primary/20">
           <p className="text-sm text-muted-foreground">
             🌍 <strong>Traduzioni automatiche:</strong> Inserisci il contenuto in italiano, le traduzioni in EN, DE, ES, PT verranno generate automaticamente.
@@ -330,6 +361,12 @@ export default function BlogEditor() {
             </div>
           </form>
         </Form>
+
+        <AIContentGeneratorDialog
+          open={showAIGenerator}
+          onOpenChange={setShowAIGenerator}
+          onContentGenerated={handleAIContentGenerated}
+        />
       </div>
     </div>
   );
