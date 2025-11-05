@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Image, Settings, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3 } from 'lucide-react';
 import { NavLink, useParams } from 'react-router-dom';
 import {
   Sidebar,
@@ -47,6 +47,11 @@ export function AdminSidebar() {
         { title: 'Tutti gli articoli', path: `/${lang}/admin/blog` },
         { title: 'Aggiungi nuovo', path: `/${lang}/admin/blog/new` },
       ],
+    },
+    {
+      title: 'Analytics',
+      icon: BarChart3,
+      path: `/${lang}/admin/analytics`,
     },
   ];
 

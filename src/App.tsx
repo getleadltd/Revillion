@@ -10,6 +10,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogEditor from "./pages/admin/BlogEditor";
+import BlogAnalytics from "./pages/admin/BlogAnalytics";
 import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -61,6 +62,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <BlogEditor />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/:lang/admin/analytics" 
+              element={
+                <ProtectedRoute>
+                  <BlogAnalytics />
                 </ProtectedRoute>
               } 
             />

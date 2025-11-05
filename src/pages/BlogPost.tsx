@@ -69,7 +69,8 @@ const BlogPost = () => {
       <BlogCTA 
         postSlug={slug} 
         postTitle={title} 
-        postCategory={post.category} 
+        postCategory={post.category}
+        postId={post.id}
       />
 
       <article className="bg-background">

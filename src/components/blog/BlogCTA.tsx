@@ -2,18 +2,20 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BlogCTAProps {
   postSlug?: string;
   postTitle?: string;
   postCategory?: string;
+  postId?: string;
 }
 
-export const BlogCTA = ({ postSlug, postTitle, postCategory }: BlogCTAProps) => {
+export const BlogCTA = ({ postSlug, postTitle, postCategory, postId }: BlogCTAProps) => {
   const { t } = useTranslation();
 
-  const handleCTAClick = () => {
-    // Track evento specifico per blog CTA
+  const handleCTAClick = async () => {
+    // Track evento GA4
     trackEvent('blog_cta_click', {
       event_category: 'blog_engagement',
       event_label: postSlug || 'unknown',
@@ -22,6 +24,22 @@ export const BlogCTA = ({ postSlug, postTitle, postCategory }: BlogCTAProps) => 
       cta_location: 'sticky_button',
       value: 1
     });
+    
+    // Track evento nel database per analytics dashboard
+    try {
+      await supabase.from('blog_analytics').insert({
+        event_type: 'cta_click',
+        post_id: postId || null,
+        post_slug: postSlug || null,
+        post_title: postTitle || null,
+        post_category: postCategory || null,
+        event_data: { cta_location: 'sticky_button' },
+        user_agent: navigator.userAgent,
+        referrer: document.referrer || null,
+      });
+    } catch (error) {
+      console.error('Error tracking CTA click:', error);
+    }
     
     // Costruire URL con parametri UTM
     const utmParams = new URLSearchParams({
