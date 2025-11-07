@@ -18,91 +18,58 @@ serve(async (req) => {
 
     // Se richiesta auto-generazione prompt, crea un prompt ottimizzato
     if (autoPrompt && autoPrompt.title) {
+      // Variazioni di stile fotografico per categoria
       const photographyStyles = {
         news: {
-          scene: 'Real casino dealer or professional gambler in action at an authentic casino table',
-          people: 'Include real people: dealer, players, or gambling professionals',
-          setting: 'Luxurious casino floor or modern online betting office',
-          camera: 'DSLR camera, 50mm lens, f/2.8',
-          reference: 'Like professional Getty Images casino photography'
+          style: 'fotografia giornalistica professionale in stile reportage',
+          mood: 'dinamica e attuale, con atmosfera moderna',
+          composition: 'composizione cinematografica con soggetto principale ben definito',
+          lighting: 'illuminazione naturale o studio lighting professionale'
         },
         guides: {
-          scene: 'Real person reading, learning, or studying gambling strategies on laptop or tablet',
-          people: 'Include real person: student, professional, or casual learner focused on screen',
-          setting: 'Modern home office, bright study area, or coffee shop',
-          camera: 'DSLR camera, 35mm lens, f/2.0',
-          reference: 'Like professional stock photography for online education'
+          style: 'fotografia educativa in stile documentario',
+          mood: 'chiara e accogliente, atmosfera professionale ma friendly',
+          composition: 'composizione bilanciata con focus sul soggetto centrale',
+          lighting: 'illuminazione morbida e uniforme, soft lighting'
         },
         reviews: {
-          scene: 'Real satisfied player celebrating win or examining luxury casino environment',
-          people: 'Include real people: happy winner, VIP player, or elegant casino guest',
-          setting: 'Premium casino interior, VIP lounge, or high-end gaming room',
-          camera: 'DSLR camera, 85mm lens, f/1.8',
-          reference: 'Like high-end lifestyle magazine editorial photography'
+          style: 'fotografia editoriale in stile magazine premium',
+          mood: 'elegante e lussuosa, atmosfera high-end',
+          composition: 'composizione artistica con shallow depth of field',
+          lighting: 'studio lighting drammatico con contrasti morbidi'
         },
         tips: {
-          scene: 'Real gambling expert or professional player in thoughtful moment with casino elements',
-          people: 'Include real person: confident professional, strategic thinker, or experienced player',
-          setting: 'Upscale casino, professional gaming environment, or elegant study',
-          camera: 'DSLR camera, 50mm lens, f/2.2',
-          reference: 'Like professional business lifestyle photography'
+          style: 'fotografia lifestyle professionale',
+          mood: 'coinvolgente e aspirazionale, atmosfera positiva',
+          composition: 'composizione dinamica con angolazioni interessanti',
+          lighting: 'golden hour lighting o illuminazione calda e invitante'
         }
       };
 
       const styleConfig = photographyStyles[autoPrompt.category as keyof typeof photographyStyles] 
         || photographyStyles.news;
 
-      finalPrompt = `IMPORTANT: Create a REAL PHOTOGRAPH (NOT 3D, NOT CGI, NOT illustration, NOT isometric, NOT cartoon) for: "${autoPrompt.title}".
+      finalPrompt = `Create a high-resolution professional photograph for a blog article about: "${autoPrompt.title}".
 
-MANDATORY PHOTOGRAPHIC REQUIREMENTS:
+Photography specifications:
+- Style: ${styleConfig.style}
+- Mood: ${styleConfig.mood}
+- Composition: ${styleConfig.composition}
+- Lighting: ${styleConfig.lighting}
 
-📸 CAMERA & TECHNICAL SPECS:
-- Shot with: ${styleConfig.camera}
-- Real DSLR/mirrorless camera photograph
-- Shallow depth of field with natural bokeh
-- Professional color grading
-- 4K resolution quality
+Subject matter: Online casino/gambling theme with relevant elements like playing cards, poker chips, roulette wheel, slot machines, or casino environment.
+
+Technical requirements:
+- Photo-realistic, not illustration or CGI
+- High resolution 4K quality
+- Shallow depth of field with bokeh effect
+- Professional color grading with rich, vibrant but elegant tones
 - Sharp focus on main subject
-
-👥 HUMAN ELEMENT (CRITICAL):
-- ${styleConfig.people}
-- Real human faces and expressions
-- Natural body language and poses
-- Authentic emotions and interactions
-- Professional models or real people
-
-🎬 SCENE & COMPOSITION:
-- Scene: ${styleConfig.scene}
-- Setting: ${styleConfig.setting}
-- Natural casino elements: real poker chips, authentic cards, genuine roulette wheel
+- Natural or studio photography aesthetic
+- No text or overlays in the image
 - Clean, uncluttered composition
-- Cinematic framing
 
-💡 LIGHTING:
-- Natural lighting or professional studio setup
-- Soft shadows and highlights
-- Warm, inviting atmosphere
-- Professional photography lighting techniques
-
-🚫 STRICTLY AVOID:
-- NO 3D renders or CGI graphics
-- NO isometric or axonometric views
-- NO illustrations or digital art
-- NO cartoon or stylized elements
-- NO floating objects or impossible physics
-- NO geometric/abstract patterns
-- NO text, logos, or overlays
-
-✅ STYLE REFERENCE:
-${styleConfig.reference}
-
-The final image MUST look like an authentic photograph you would find in:
-- Professional stock photography websites (Getty Images, Shutterstock editorial)
-- High-end casino promotional materials
-- Premium lifestyle or business magazines
-- Professional journalism or editorial publications
-
-REMEMBER: This must be a REAL PHOTOGRAPH with REAL PEOPLE in a REAL ENVIRONMENT.`;
+The final result should look like a professional photograph you would see in a premium gambling magazine or high-end casino website.`;
     }
 
     if (!finalPrompt || finalPrompt.trim() === '') {
