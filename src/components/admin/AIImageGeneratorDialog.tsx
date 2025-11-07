@@ -40,16 +40,13 @@ export function AIImageGeneratorDialog({
       return;
     }
 
-    const categoryContext = {
-      news: 'notizie e aggiornamenti dal mondo dei casinò online',
-      guides: 'guida educativa per giocatori',
-      reviews: 'recensione di casinò o giochi',
-      tips: 'consigli e strategie di gioco'
-    }[articleCategory] || 'contenuto di casinò online';
-
-    const autoPrompt = `Crea un'immagine professionale e accattivante per un articolo di blog sul tema: "${articleTitle}". L'immagine rappresenta ${categoryContext}. Stile: moderno, professionale, colori vivaci ma eleganti, alta qualità, tema casinò/gambling online. Include elementi visivi rilevanti: carte da gioco, chips, roulette, slot machine (dove appropriato). Evita testo nell'immagine, focus su elementi grafici puliti e professionali.`;
+    // Prompt placeholder che verrà sostituito dall'edge function
+    setPrompt(`[AUTO] ${articleTitle} - ${articleCategory}`);
     
-    setPrompt(autoPrompt);
+    toast({
+      title: "Prompt automatico preparato",
+      description: "Il prompt fotografico verrà generato automaticamente dall'AI."
+    });
   };
 
   const handleGenerate = async () => {
@@ -75,8 +72,23 @@ export function AIImageGeneratorDialog({
     setGeneratedImage(null);
 
     try {
+      // Controlla se è un auto-prompt
+      const isAutoPrompt = prompt.startsWith('[AUTO]');
+      
+      const requestBody = isAutoPrompt 
+        ? {
+            prompt: '', // Edge function lo ignorerà
+            autoPrompt: {
+              title: articleTitle,
+              category: articleCategory
+            }
+          }
+        : {
+            prompt: prompt.trim()
+          };
+
       const { data, error } = await supabase.functions.invoke('generate-blog-image', {
-        body: { prompt: prompt.trim() }
+        body: requestBody
       });
 
       if (error) throw error;
