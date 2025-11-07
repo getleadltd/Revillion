@@ -86,6 +86,11 @@ export type Database = {
           meta_description_pt: string | null
           published_at: string | null
           slug: string
+          slug_de: string | null
+          slug_en: string | null
+          slug_es: string | null
+          slug_it: string | null
+          slug_pt: string | null
           status: string
           title_de: string | null
           title_en: string
@@ -119,6 +124,11 @@ export type Database = {
           meta_description_pt?: string | null
           published_at?: string | null
           slug: string
+          slug_de?: string | null
+          slug_en?: string | null
+          slug_es?: string | null
+          slug_it?: string | null
+          slug_pt?: string | null
           status?: string
           title_de?: string | null
           title_en: string
@@ -152,6 +162,11 @@ export type Database = {
           meta_description_pt?: string | null
           published_at?: string | null
           slug?: string
+          slug_de?: string | null
+          slug_en?: string | null
+          slug_es?: string | null
+          slug_it?: string | null
+          slug_pt?: string | null
           status?: string
           title_de?: string | null
           title_en?: string

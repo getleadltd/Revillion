@@ -9,6 +9,11 @@ import { formatDate, calculateReadingTime } from '@/lib/blog';
 interface BlogPost {
   id: string;
   slug: string;
+  slug_en?: string;
+  slug_de?: string;
+  slug_it?: string;
+  slug_pt?: string;
+  slug_es?: string;
   title_en: string;
   title_de?: string;
   title_it?: string;
@@ -36,6 +41,7 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
   
   const title = post[`title_${lang}` as keyof BlogPost] as string || post.title_en;
   const excerpt = post[`excerpt_${lang}` as keyof BlogPost] as string || post.excerpt_en || '';
+  const slug = post[`slug_${lang}` as keyof BlogPost] as string || post.slug_en || post.slug;
 
   return (
     <Card className="group h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
@@ -78,7 +84,7 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
         </div>
         
         <Button asChild variant="default" className="w-full">
-          <Link to={`/${lang}/blog/${post.slug}`}>
+          <Link to={`/${lang}/blog/${slug}`}>
             {t('blog.readMore')}
           </Link>
         </Button>

@@ -62,6 +62,8 @@ const BlogPost = () => {
     FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
   });
 
+  const currentUrl = `https://revillionpartners.com/${lang}/blog/${slug}`;
+
   return (
     <Layout>
       <Helmet>
@@ -70,6 +72,27 @@ const BlogPost = () => {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={metaDesc || title} />
         {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={currentUrl} />
+        
+        {/* Hreflang tags for multilingual SEO */}
+        {post.slug_en && (
+          <link rel="alternate" hrefLang="en" href={`https://revillionpartners.com/en/blog/${post.slug_en}`} />
+        )}
+        {post.slug_de && (
+          <link rel="alternate" hrefLang="de" href={`https://revillionpartners.com/de/blog/${post.slug_de}`} />
+        )}
+        {post.slug_it && (
+          <link rel="alternate" hrefLang="it" href={`https://revillionpartners.com/it/blog/${post.slug_it}`} />
+        )}
+        {post.slug_pt && (
+          <link rel="alternate" hrefLang="pt" href={`https://revillionpartners.com/pt/blog/${post.slug_pt}`} />
+        )}
+        {post.slug_es && (
+          <link rel="alternate" hrefLang="es" href={`https://revillionpartners.com/es/blog/${post.slug_es}`} />
+        )}
+        <link rel="alternate" hrefLang="x-default" href={`https://revillionpartners.com/en/blog/${post.slug_en || slug}`} />
       </Helmet>
 
       <BlogCTA 

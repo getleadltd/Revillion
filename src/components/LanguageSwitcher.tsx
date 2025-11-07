@@ -1,6 +1,7 @@
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,14 +23,64 @@ export const LanguageSwitcher = () => {
   const { lang } = useParams();
   const location = useLocation();
 
-  const changeLanguage = (langCode: string) => {
+  const changeLanguage = async (langCode: string) => {
     i18n.changeLanguage(langCode);
     
-    // Estrai il percorso corrente senza la lingua
     const currentPath = location.pathname;
-    const pathWithoutLang = currentPath.replace(`/${lang}`, '');
     
-    // Naviga alla stessa pagina nella nuova lingua
+    // If we're on a blog post, redirect to the translated slug
+    if (currentPath.includes('/blog/') && !currentPath.endsWith('/blog')) {
+      const slugMatch = currentPath.match(/\/blog\/([^/]+)$/);
+      if (slugMatch) {
+        const currentSlug = slugMatch[1];
+        
+        // Find the post with this slug in the current language
+        let query = supabase
+          .from('blog_posts')
+          .select('slug_en, slug_de, slug_it, slug_pt, slug_es');
+        
+        // Apply the correct slug filter based on current language
+        switch (lang) {
+          case 'en':
+            query = query.eq('slug_en', currentSlug);
+            break;
+          case 'de':
+            query = query.eq('slug_de', currentSlug);
+            break;
+          case 'it':
+            query = query.eq('slug_it', currentSlug);
+            break;
+          case 'pt':
+            query = query.eq('slug_pt', currentSlug);
+            break;
+          case 'es':
+            query = query.eq('slug_es', currentSlug);
+            break;
+          default:
+            query = query.eq('slug_en', currentSlug);
+        }
+        
+        const { data: post } = await query.single();
+        
+        if (post) {
+          // Get the slug in the new language
+          const newSlug = (langCode === 'en' && post.slug_en) ||
+                          (langCode === 'de' && post.slug_de) ||
+                          (langCode === 'it' && post.slug_it) ||
+                          (langCode === 'pt' && post.slug_pt) ||
+                          (langCode === 'es' && post.slug_es) ||
+                          post.slug_en;
+          
+          if (newSlug) {
+            navigate(`/${langCode}/blog/${newSlug}`);
+            return;
+          }
+        }
+      }
+    }
+    
+    // Otherwise, normal behavior
+    const pathWithoutLang = currentPath.replace(`/${lang}`, '');
     navigate(`/${langCode}${pathWithoutLang}`);
   };
 

@@ -7,12 +7,34 @@ export const useBlogPost = (slug: string, lang: string) => {
   const query = useQuery({
     queryKey: ['blog-post', slug, lang],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Build the query dynamically based on language
+      let query = supabase
         .from('blog_posts')
         .select('*')
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .single();
+        .eq('status', 'published');
+
+      // Use the appropriate slug column based on language
+      switch (lang) {
+        case 'en':
+          query = query.eq('slug_en', slug);
+          break;
+        case 'de':
+          query = query.eq('slug_de', slug);
+          break;
+        case 'it':
+          query = query.eq('slug_it', slug);
+          break;
+        case 'pt':
+          query = query.eq('slug_pt', slug);
+          break;
+        case 'es':
+          query = query.eq('slug_es', slug);
+          break;
+        default:
+          query = query.eq('slug_en', slug);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) throw error;
       return data;
