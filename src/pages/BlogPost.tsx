@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
@@ -14,6 +14,7 @@ import { Loader2, Calendar, Clock } from 'lucide-react';
 const BlogPost = () => {
   const { t } = useTranslation();
   const { lang = 'en', slug } = useParams();
+  const navigate = useNavigate();
   const { data: post, isLoading, incrementViews } = useBlogPost(slug!, lang);
 
   // Track article view automatically
@@ -22,6 +23,21 @@ const BlogPost = () => {
       incrementViews();
     }
   }, [post?.id, incrementViews]);
+
+  // SEO-canonical redirect: ensure correct localized slug in URL
+  useEffect(() => {
+    if (post && slug) {
+      const localizedSlug = (post[`slug_${lang}` as keyof typeof post] as string) ||
+        (lang !== 'it' ? post.slug_en : undefined) ||
+        post.slug_it ||
+        post.slug_en ||
+        post.slug;
+      
+      if (localizedSlug && slug !== localizedSlug) {
+        navigate(`/${lang}/blog/${localizedSlug}`, { replace: true });
+      }
+    }
+  }, [post, lang, slug, navigate]);
 
   if (isLoading) {
     return (

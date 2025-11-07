@@ -42,8 +42,9 @@ export const LanguageSwitcher = () => {
           .maybeSingle();
         
         if (post) {
-          // Try to get the slug in the new language with robust fallback chain
+          // Try to get the slug in the new language, prefer en over it for non-Italian
           const newSlug = post[`slug_${langCode}` as keyof typeof post] || 
+                         (langCode !== 'it' ? post.slug_en : undefined) ||
                          post.slug_it || 
                          post.slug_en || 
                          post.slug;

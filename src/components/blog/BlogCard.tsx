@@ -42,8 +42,9 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
   const title = post[`title_${lang}` as keyof BlogPost] as string || post.title_en;
   const excerpt = post[`excerpt_${lang}` as keyof BlogPost] as string || post.excerpt_en || '';
   
-  // Robust fallback for slug: try language-specific, then it, then en, then main slug
+  // Robust fallback for slug: prefer en over it for non-Italian languages
   const slug = (post[`slug_${lang}` as keyof BlogPost] as string) || 
+                (lang !== 'it' ? post.slug_en : undefined) ||
                 post.slug_it || 
                 post.slug_en || 
                 post.slug;

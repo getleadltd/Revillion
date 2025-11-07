@@ -7,12 +7,12 @@ export const useBlogPost = (slug: string, lang: string) => {
   const query = useQuery({
     queryKey: ['blog-post', slug, lang],
     queryFn: async () => {
-      // Try to find post by language-specific slug with fallback to other slugs
+      // Try to find post by language-specific slug with fallback to all other slugs
       const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
         .eq('status', 'published')
-        .or(`slug_${lang}.eq.${slug},slug_it.eq.${slug},slug_en.eq.${slug},slug.eq.${slug}`)
+        .or(`slug_${lang}.eq.${slug},slug_de.eq.${slug},slug_pt.eq.${slug},slug_es.eq.${slug},slug_it.eq.${slug},slug_en.eq.${slug},slug.eq.${slug}`)
         .maybeSingle();
 
       if (error) throw error;
