@@ -83,7 +83,7 @@ serve(async (req) => {
           throw new Error(`Content generation failed: ${contentResponse.error.message}`);
         }
 
-        const generatedContent = contentResponse.data;
+        const generatedContent = contentResponse.data.generated;
         console.log('Content generated:', generatedContent.title_it);
 
         // Step 3: Translate content
