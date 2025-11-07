@@ -41,7 +41,12 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
   
   const title = post[`title_${lang}` as keyof BlogPost] as string || post.title_en;
   const excerpt = post[`excerpt_${lang}` as keyof BlogPost] as string || post.excerpt_en || '';
-  const slug = post[`slug_${lang}` as keyof BlogPost] as string || post.slug_en || post.slug;
+  
+  // Robust fallback for slug: try language-specific, then it, then en, then main slug
+  const slug = (post[`slug_${lang}` as keyof BlogPost] as string) || 
+                post.slug_it || 
+                post.slug_en || 
+                post.slug;
 
   return (
     <Card className="group h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow">

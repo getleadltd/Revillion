@@ -34,45 +34,22 @@ export const LanguageSwitcher = () => {
       if (slugMatch) {
         const currentSlug = slugMatch[1];
         
-        // Find the post with this slug in the current language
-        let query = supabase
+        // Find the post with this slug in any language (robust fallback)
+        const { data: post } = await supabase
           .from('blog_posts')
-          .select('slug_en, slug_de, slug_it, slug_pt, slug_es');
-        
-        // Apply the correct slug filter based on current language
-        switch (lang) {
-          case 'en':
-            query = query.eq('slug_en', currentSlug);
-            break;
-          case 'de':
-            query = query.eq('slug_de', currentSlug);
-            break;
-          case 'it':
-            query = query.eq('slug_it', currentSlug);
-            break;
-          case 'pt':
-            query = query.eq('slug_pt', currentSlug);
-            break;
-          case 'es':
-            query = query.eq('slug_es', currentSlug);
-            break;
-          default:
-            query = query.eq('slug_en', currentSlug);
-        }
-        
-        const { data: post } = await query.single();
+          .select('slug, slug_en, slug_de, slug_it, slug_pt, slug_es')
+          .or(`slug_en.eq.${currentSlug},slug_de.eq.${currentSlug},slug_it.eq.${currentSlug},slug_pt.eq.${currentSlug},slug_es.eq.${currentSlug},slug.eq.${currentSlug}`)
+          .maybeSingle();
         
         if (post) {
-          // Get the slug in the new language
-          const newSlug = (langCode === 'en' && post.slug_en) ||
-                          (langCode === 'de' && post.slug_de) ||
-                          (langCode === 'it' && post.slug_it) ||
-                          (langCode === 'pt' && post.slug_pt) ||
-                          (langCode === 'es' && post.slug_es) ||
-                          post.slug_en;
+          // Try to get the slug in the new language with robust fallback chain
+          const newSlug = post[`slug_${langCode}` as keyof typeof post] || 
+                         post.slug_it || 
+                         post.slug_en || 
+                         post.slug;
           
           if (newSlug) {
-            navigate(`/${langCode}/blog/${newSlug}`);
+            navigate(`/${langCode}/blog/${newSlug as string}`);
             return;
           }
         }

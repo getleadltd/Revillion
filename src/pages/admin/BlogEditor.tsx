@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { generateSlug, formatHTMLContent } from "@/lib/blog";
+import { generateTranslatedSlugs } from "@/lib/slugUtils";
 import { Loader2, Sparkles, Upload, ImagePlus } from "lucide-react";
 import { AIContentGeneratorDialog, type GeneratedContent } from "@/components/admin/AIContentGeneratorDialog";
 import { AIImageGeneratorDialog } from "@/components/admin/AIImageGeneratorDialog";
@@ -181,6 +182,18 @@ export default function BlogEditor() {
         featured_image_alt: values.featured_image_alt || null,
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
+
+      // Generate translated slugs automatically from titles
+      const translatedSlugs = generateTranslatedSlugs({
+        title_en: baseData.title_en,
+        title_de: baseData.title_de,
+        title_it: baseData.title_it,
+        title_pt: baseData.title_pt,
+        title_es: baseData.title_es,
+      });
+
+      // Merge generated slugs with base data
+      Object.assign(baseData, translatedSlugs);
 
       if (!id) {
         // Create

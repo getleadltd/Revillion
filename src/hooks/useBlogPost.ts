@@ -7,36 +7,17 @@ export const useBlogPost = (slug: string, lang: string) => {
   const query = useQuery({
     queryKey: ['blog-post', slug, lang],
     queryFn: async () => {
-      // Build the query dynamically based on language
-      let query = supabase
+      // Try to find post by language-specific slug with fallback to other slugs
+      const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
-        .eq('status', 'published');
-
-      // Use the appropriate slug column based on language
-      switch (lang) {
-        case 'en':
-          query = query.eq('slug_en', slug);
-          break;
-        case 'de':
-          query = query.eq('slug_de', slug);
-          break;
-        case 'it':
-          query = query.eq('slug_it', slug);
-          break;
-        case 'pt':
-          query = query.eq('slug_pt', slug);
-          break;
-        case 'es':
-          query = query.eq('slug_es', slug);
-          break;
-        default:
-          query = query.eq('slug_en', slug);
-      }
-
-      const { data, error } = await query.single();
+        .eq('status', 'published')
+        .or(`slug_${lang}.eq.${slug},slug_it.eq.${slug},slug_en.eq.${slug},slug.eq.${slug}`)
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) throw new Error('Post not found');
+      
       return data;
     },
   });
