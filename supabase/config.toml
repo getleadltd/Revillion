@@ -11,3 +11,9 @@ verify_jwt = true
 
 [functions.generate-sitemap]
 verify_jwt = false
+
+[functions.analyze-blog-title]
+verify_jwt = true
+
+[functions.process-blog-queue]
+verify_jwt = false

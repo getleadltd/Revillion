@@ -178,6 +178,56 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_queue: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          generated_post_id: string | null
+          id: string
+          priority: number | null
+          processed_at: string | null
+          retry_count: number | null
+          scheduled_for: string
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          generated_post_id?: string | null
+          id?: string
+          priority?: number | null
+          processed_at?: string | null
+          retry_count?: number | null
+          scheduled_for: string
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          generated_post_id?: string | null
+          id?: string
+          priority?: number | null
+          processed_at?: string | null
+          retry_count?: number | null
+          scheduled_for?: string
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_queue_generated_post_id_fkey"
+            columns: ["generated_post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null

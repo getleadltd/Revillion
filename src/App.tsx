@@ -11,6 +11,7 @@ import BlogPost from "./pages/BlogPost";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogEditor from "./pages/admin/BlogEditor";
 import BlogAnalytics from "./pages/admin/BlogAnalytics";
+import BlogQueue from "./pages/admin/BlogQueue";
 import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -70,6 +71,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <BlogAnalytics />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/:lang/admin/blog/queue" 
+              element={
+                <ProtectedRoute>
+                  <BlogQueue />
                 </ProtectedRoute>
               } 
             />
