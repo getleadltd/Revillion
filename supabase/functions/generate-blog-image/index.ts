@@ -18,18 +18,58 @@ serve(async (req) => {
 
     // Se richiesta auto-generazione prompt, crea un prompt ottimizzato
     if (autoPrompt && autoPrompt.title) {
-      const categoryContext = {
-        news: 'notizie e aggiornamenti dal mondo dei casinò online',
-        guides: 'guida educativa per giocatori',
-        reviews: 'recensione di casinò o giochi',
-        tips: 'consigli e strategie di gioco'
-      }[autoPrompt.category] || 'contenuto di casinò online';
+      // Variazioni di stile fotografico per categoria
+      const photographyStyles = {
+        news: {
+          style: 'fotografia giornalistica professionale in stile reportage',
+          mood: 'dinamica e attuale, con atmosfera moderna',
+          composition: 'composizione cinematografica con soggetto principale ben definito',
+          lighting: 'illuminazione naturale o studio lighting professionale'
+        },
+        guides: {
+          style: 'fotografia educativa in stile documentario',
+          mood: 'chiara e accogliente, atmosfera professionale ma friendly',
+          composition: 'composizione bilanciata con focus sul soggetto centrale',
+          lighting: 'illuminazione morbida e uniforme, soft lighting'
+        },
+        reviews: {
+          style: 'fotografia editoriale in stile magazine premium',
+          mood: 'elegante e lussuosa, atmosfera high-end',
+          composition: 'composizione artistica con shallow depth of field',
+          lighting: 'studio lighting drammatico con contrasti morbidi'
+        },
+        tips: {
+          style: 'fotografia lifestyle professionale',
+          mood: 'coinvolgente e aspirazionale, atmosfera positiva',
+          composition: 'composizione dinamica con angolazioni interessanti',
+          lighting: 'golden hour lighting o illuminazione calda e invitante'
+        }
+      };
 
-      finalPrompt = `Crea un'immagine professionale e accattivante per un articolo di blog sul tema: "${autoPrompt.title}". 
-L'immagine rappresenta ${categoryContext}. 
-Stile: moderno, professionale, colori vivaci ma eleganti, alta qualità, tema casinò/gambling online.
-Include elementi visivi rilevanti: carte da gioco, chips, roulette, slot machine (dove appropriato).
-Evita testo nell'immagine, focus su elementi grafici puliti e professionali.`;
+      const styleConfig = photographyStyles[autoPrompt.category as keyof typeof photographyStyles] 
+        || photographyStyles.news;
+
+      finalPrompt = `Create a high-resolution professional photograph for a blog article about: "${autoPrompt.title}".
+
+Photography specifications:
+- Style: ${styleConfig.style}
+- Mood: ${styleConfig.mood}
+- Composition: ${styleConfig.composition}
+- Lighting: ${styleConfig.lighting}
+
+Subject matter: Online casino/gambling theme with relevant elements like playing cards, poker chips, roulette wheel, slot machines, or casino environment.
+
+Technical requirements:
+- Photo-realistic, not illustration or CGI
+- High resolution 4K quality
+- Shallow depth of field with bokeh effect
+- Professional color grading with rich, vibrant but elegant tones
+- Sharp focus on main subject
+- Natural or studio photography aesthetic
+- No text or overlays in the image
+- Clean, uncluttered composition
+
+The final result should look like a professional photograph you would see in a premium gambling magazine or high-end casino website.`;
     }
 
     if (!finalPrompt || finalPrompt.trim() === '') {
