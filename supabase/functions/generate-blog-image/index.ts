@@ -87,13 +87,39 @@ Evita testo nell'immagine, focus su elementi grafici puliti e professionali.`;
 
     const aiData = await aiResponse.json();
     console.log('Image generated successfully');
+    console.log('AI Response structure:', JSON.stringify(aiData, null, 2));
 
-    // Estrarre l'immagine base64 dalla risposta
-    const imageUrl = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    
+    // Prova diversi percorsi nella risposta per estrarre l'immagine
+    let imageUrl = null;
+
+    // Percorso 1: images array con image_url nested
+    if (aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url) {
+      imageUrl = aiData.choices[0].message.images[0].image_url.url;
+      console.log('Image extracted via path 1: images[0].image_url.url');
+    }
+    // Percorso 2: images array con url diretto
+    else if (aiData.choices?.[0]?.message?.images?.[0]?.url) {
+      imageUrl = aiData.choices[0].message.images[0].url;
+      console.log('Image extracted via path 2: images[0].url');
+    }
+    // Percorso 3: image_url diretto nel message
+    else if (aiData.choices?.[0]?.message?.image_url) {
+      imageUrl = aiData.choices[0].message.image_url;
+      console.log('Image extracted via path 3: message.image_url');
+    }
+
     if (!imageUrl) {
+      console.error('Unable to extract image. Response structure:', JSON.stringify(aiData, null, 2));
       throw new Error('Nessuna immagine generata dalla risposta AI');
     }
+
+    // Validare il formato base64
+    if (!imageUrl.startsWith('data:image/')) {
+      console.error('Invalid image format. First 50 chars:', imageUrl.substring(0, 50));
+      throw new Error('Formato immagine non valido');
+    }
+    
+    console.log('Image validated successfully');
 
     return new Response(
       JSON.stringify({
