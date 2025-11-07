@@ -69,8 +69,11 @@ const BlogPost = () => {
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
   const formattedContent = formatHTMLContent(content);
   
+  // Add language prefix to internal blog links
+  const htmlWithLangLinks = formattedContent.replace(/href="\/blog\//g, `href="/${lang}/blog/`);
+  
   // Sanitize HTML to prevent XSS attacks
-  const sanitizedContent = DOMPurify.sanitize(formattedContent, {
+  const sanitizedContent = DOMPurify.sanitize(htmlWithLangLinks, {
     ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'br', 'img', 'blockquote', 'code', 'pre', 'span', 'div'],
     ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height'],
     ALLOW_DATA_ATTR: false,

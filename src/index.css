@@ -130,4 +130,26 @@
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;
   }
+
+  /* Link styles for articles - ensure visibility */
+  .prose a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  .prose a:hover {
+    color: hsl(var(--primary) / 0.8);
+    text-decoration-thickness: 2px;
+  }
+
+  .prose a:focus {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  .prose a:visited {
+    color: hsl(var(--primary));
+    opacity: 0.9;
+  }
 }
