@@ -100,8 +100,16 @@ serve(async (req) => {
           throw new Error(`Translation failed: ${translateResponse.error.message}`);
         }
 
-        const translations = translateResponse.data;
+        const translationsData = translateResponse.data.translations;
         console.log('Translations completed');
+
+        // Slug generation utility
+        const slugify = (text: string) => {
+          return text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        };
 
         // Step 4: Generate featured image
         console.log('Step 4: Generating image...');
@@ -142,26 +150,26 @@ serve(async (req) => {
           .from('blog_posts')
           .insert({
             title_it: generatedContent.title_it,
-            title_en: translations.title_en,
-            title_de: translations.title_de,
-            title_es: translations.title_es,
-            title_pt: translations.title_pt,
+            title_en: translationsData.en.title,
+            title_de: translationsData.de.title,
+            title_es: translationsData.es.title,
+            title_pt: translationsData.pt.title,
             content_it: generatedContent.content_it,
-            content_en: translations.content_en,
-            content_de: translations.content_de,
-            content_es: translations.content_es,
-            content_pt: translations.content_pt,
+            content_en: translationsData.en.content,
+            content_de: translationsData.de.content,
+            content_es: translationsData.es.content,
+            content_pt: translationsData.pt.content,
             meta_description_it: generatedContent.meta_description_it,
-            meta_description_en: translations.meta_description_en,
-            meta_description_de: translations.meta_description_de,
-            meta_description_es: translations.meta_description_es,
-            meta_description_pt: translations.meta_description_pt,
+            meta_description_en: translationsData.en.meta_description,
+            meta_description_de: translationsData.de.meta_description,
+            meta_description_es: translationsData.es.meta_description,
+            meta_description_pt: translationsData.pt.meta_description,
             slug: generatedContent.slug,
             slug_it: generatedContent.slug,
-            slug_en: translations.slug_en,
-            slug_de: translations.slug_de,
-            slug_es: translations.slug_es,
-            slug_pt: translations.slug_pt,
+            slug_en: slugify(translationsData.en.title),
+            slug_de: slugify(translationsData.de.title),
+            slug_es: slugify(translationsData.es.title),
+            slug_pt: slugify(translationsData.pt.title),
             category: category,
             featured_image_url: featuredImageUrl,
             featured_image_alt: generatedContent.title_it,
