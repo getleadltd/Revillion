@@ -51,6 +51,13 @@ serve(async (req) => {
 
       finalPrompt = `Create a high-resolution professional photograph for a blog article about: "${autoPrompt.title}".
 
+CRITICAL REQUIREMENT - ABSOLUTELY NO TEXT:
+- NO text, letters, numbers, or written content of any kind
+- NO logos, brand names, or typography
+- NO signs, labels, or captions
+- NO watermarks or overlays
+- Pure photographic content only
+
 Photography specifications:
 - Style: ${styleConfig.style}
 - Mood: ${styleConfig.mood}
@@ -66,10 +73,10 @@ Technical requirements:
 - Professional color grading with rich, vibrant but elegant tones
 - Sharp focus on main subject
 - Natural or studio photography aesthetic
-- No text or overlays in the image
 - Clean, uncluttered composition
+- REMEMBER: Absolutely NO text, letters, or written content visible in the image
 
-The final result should look like a professional photograph you would see in a premium gambling magazine or high-end casino website.`;
+The final result should look like a professional photograph you would see in a premium gambling magazine or high-end casino website - a pure photograph without any text elements.`;
     }
 
     if (!finalPrompt || finalPrompt.trim() === '') {
