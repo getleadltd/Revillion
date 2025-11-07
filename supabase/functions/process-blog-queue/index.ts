@@ -123,25 +123,56 @@ serve(async (req) => {
         });
 
         let featuredImageUrl = null;
-        if (imageResponse.data?.imageBase64) {
-          // Upload image to storage
-          const imageBuffer = Uint8Array.from(atob(imageResponse.data.imageBase64.split(',')[1]), c => c.charCodeAt(0));
-          const fileName = `blog-${Date.now()}-${Math.random().toString(36).substring(7)}.png`;
-          
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('blog-images')
-            .upload(fileName, imageBuffer, {
-              contentType: 'image/png',
-              cacheControl: '3600'
-            });
 
-          if (!uploadError && uploadData) {
-            const { data: urlData } = supabase.storage
+        try {
+          if (imageResponse.error) {
+            console.error('Image function error:', imageResponse.error);
+          } else if (imageResponse.data?.imageBase64) {
+            const dataUrl: string = imageResponse.data.imageBase64;
+
+            // Match data URL: data:<mime>;base64,<base64>
+            const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+            if (!match) {
+              throw new Error('Invalid data URL format returned by image generator');
+            }
+
+            const mimeType = match[1]; // e.g. image/png, image/jpeg, image/webp
+            const b64 = match[2];
+
+            // Decode base64 into bytes
+            const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+
+            // Derive extension from mime
+            let ext = mimeType.split('/')[1]?.toLowerCase() || 'png';
+            if (ext === 'jpeg') ext = 'jpg';
+
+            // Create a Blob for upload with correct contentType
+            const blob = new Blob([bytes], { type: mimeType });
+
+            const fileName = `blog-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+            const { data: uploadData, error: uploadError } = await supabase.storage
               .from('blog-images')
-              .getPublicUrl(uploadData.path);
-            featuredImageUrl = urlData.publicUrl;
-            console.log('Image uploaded:', featuredImageUrl);
+              .upload(fileName, blob, {
+                contentType: mimeType,
+                cacheControl: '3600',
+                upsert: false,
+              });
+
+            if (uploadError) {
+              console.error('Image upload error:', uploadError);
+            } else if (uploadData) {
+              const { data: urlData } = supabase.storage
+                .from('blog-images')
+                .getPublicUrl(uploadData.path);
+              featuredImageUrl = urlData.publicUrl;
+              console.log('Image uploaded:', featuredImageUrl);
+            }
+          } else {
+            console.warn('No imageBase64 returned by generate-blog-image');
           }
+        } catch (imgErr) {
+          console.error('Error while processing/uploading generated image:', imgErr);
         }
 
         // Step 5: Create blog post
