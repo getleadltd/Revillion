@@ -173,7 +173,7 @@ const BlogPost = () => {
                 prose-strong:font-bold prose-strong:text-foreground
                 prose-li:my-2
                 prose-ul:my-6 prose-ol:my-6
-                prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                prose-a:text-primary prose-a:underline prose-a:font-semibold hover:prose-a:text-primary/80 hover:prose-a:decoration-2 transition-colors
                 prose-img:rounded-lg prose-img:shadow-lg"
               dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
