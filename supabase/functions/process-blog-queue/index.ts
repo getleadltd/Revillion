@@ -123,9 +123,9 @@ serve(async (req) => {
         });
 
         let featuredImageUrl = null;
-        if (imageResponse.data?.imageUrl) {
+        if (imageResponse.data?.imageBase64) {
           // Upload image to storage
-          const imageBuffer = Uint8Array.from(atob(imageResponse.data.imageUrl.split(',')[1]), c => c.charCodeAt(0));
+          const imageBuffer = Uint8Array.from(atob(imageResponse.data.imageBase64.split(',')[1]), c => c.charCodeAt(0));
           const fileName = `blog-${Date.now()}-${Math.random().toString(36).substring(7)}.png`;
           
           const { data: uploadData, error: uploadError } = await supabase.storage
