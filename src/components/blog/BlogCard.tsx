@@ -55,7 +55,9 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
         <div className="aspect-video overflow-hidden">
           <img
             src={post.featured_image_url}
-            alt={title}
+            alt={`${t(`blog.categories.${post.category}`)} - ${title}`}
+            width={400}
+            height={225}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />

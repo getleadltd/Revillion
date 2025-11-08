@@ -20,10 +20,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch all published blog posts
+    // Fetch all published blog posts with localized slugs
     const { data: posts, error } = await supabase
       .from('blog_posts')
-      .select('slug, updated_at, published_at, category')
+      .select('slug, slug_en, slug_de, slug_it, slug_pt, slug_es, updated_at, published_at, category')
       .eq('status', 'published')
       .order('published_at', { ascending: false });
 
@@ -117,23 +117,32 @@ serve(async (req) => {
           priority = (parseFloat(priority) + 0.1).toString();
         }
 
+        // Create URL for each language with localized slug
         languages.forEach(lang => {
-          sitemap += `
-  <url>
-    <loc>${baseUrl}/${lang}/blog/${post.slug}</loc>`;
+          const localizedSlug = post[`slug_${lang}`] || post.slug_en || post.slug;
           
-          languages.forEach(l => {
+          if (localizedSlug) {
             sitemap += `
-    <xhtml:link rel="alternate" hreflang="${l}" href="${baseUrl}/${l}/blog/${post.slug}" />`;
-          });
-          
-          sitemap += `
-    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}/en/blog/${post.slug}" />
+  <url>
+    <loc>${baseUrl}/${lang}/blog/${localizedSlug}</loc>`;
+            
+            // Add hreflang for all available languages
+            languages.forEach(l => {
+              const altSlug = post[`slug_${l}`] || post.slug_en || post.slug;
+              if (altSlug) {
+                sitemap += `
+    <xhtml:link rel="alternate" hreflang="${l}" href="${baseUrl}/${l}/blog/${altSlug}" />`;
+              }
+            });
+            
+            sitemap += `
+    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}/en/blog/${post.slug_en || post.slug}" />
     <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>
 `;
+          }
         });
       });
     }

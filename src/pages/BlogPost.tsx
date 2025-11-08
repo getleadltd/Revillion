@@ -81,37 +81,106 @@ const BlogPost = () => {
     FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
   });
 
-  const currentUrl = `https://revillionpartners.com/${lang}/blog/${slug}`;
+  const currentUrl = `https://revillion-partners.com/${lang}/blog/${slug}`;
+
+  // Structured Data - Article Schema
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": title,
+    "description": metaDesc || title,
+    "image": post.featured_image_url,
+    "datePublished": post.published_at || post.created_at,
+    "dateModified": post.updated_at || post.published_at || post.created_at,
+    "author": {
+      "@type": "Organization",
+      "name": "Revillion Partners",
+      "url": "https://revillion-partners.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Revillion Partners",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://revillion-partners.com/favicon.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": currentUrl
+    }
+  };
+
+  // Breadcrumb Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": `https://revillion-partners.com/${lang}`
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": t('blog.title'),
+        "item": `https://revillion-partners.com/${lang}/blog`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": title,
+        "item": currentUrl
+      }
+    ]
+  };
 
   return (
     <Layout>
       <Helmet>
         <title>{title} | Revillion Partners</title>
         <meta name="description" content={metaDesc || title} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="article" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={metaDesc || title} />
+        <meta property="og:url" content={currentUrl} />
         {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
+        <meta property="article:published_time" content={post.published_at || post.created_at} />
+        {post.updated_at && <meta property="article:modified_time" content={post.updated_at} />}
+        <meta property="article:section" content={post.category} />
         
         {/* Canonical URL */}
         <link rel="canonical" href={currentUrl} />
         
         {/* Hreflang tags for multilingual SEO */}
         {post.slug_en && (
-          <link rel="alternate" hrefLang="en" href={`https://revillionpartners.com/en/blog/${post.slug_en}`} />
+          <link rel="alternate" hrefLang="en" href={`https://revillion-partners.com/en/blog/${post.slug_en}`} />
         )}
         {post.slug_de && (
-          <link rel="alternate" hrefLang="de" href={`https://revillionpartners.com/de/blog/${post.slug_de}`} />
+          <link rel="alternate" hrefLang="de" href={`https://revillion-partners.com/de/blog/${post.slug_de}`} />
         )}
         {post.slug_it && (
-          <link rel="alternate" hrefLang="it" href={`https://revillionpartners.com/it/blog/${post.slug_it}`} />
+          <link rel="alternate" hrefLang="it" href={`https://revillion-partners.com/it/blog/${post.slug_it}`} />
         )}
         {post.slug_pt && (
-          <link rel="alternate" hrefLang="pt" href={`https://revillionpartners.com/pt/blog/${post.slug_pt}`} />
+          <link rel="alternate" hrefLang="pt" href={`https://revillion-partners.com/pt/blog/${post.slug_pt}`} />
         )}
         {post.slug_es && (
-          <link rel="alternate" hrefLang="es" href={`https://revillionpartners.com/es/blog/${post.slug_es}`} />
+          <link rel="alternate" hrefLang="es" href={`https://revillion-partners.com/es/blog/${post.slug_es}`} />
         )}
-        <link rel="alternate" hrefLang="x-default" href={`https://revillionpartners.com/en/blog/${post.slug_en || slug}`} />
+        <link rel="alternate" hrefLang="x-default" href={`https://revillion-partners.com/en/blog/${post.slug_en || slug}`} />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(articleSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
       </Helmet>
 
       <BlogCTA 

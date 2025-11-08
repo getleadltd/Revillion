@@ -20,11 +20,34 @@ const Blog = () => {
     lang: lang as string,
   });
 
+  // Dynamic meta description based on category
+  const getMetaDescription = () => {
+    if (selectedCategory === 'all') {
+      return t('blog.subtitle');
+    }
+    return `${t(`blog.categories.${selectedCategory}`)} - ${t('blog.subtitle')}`;
+  };
+
+  const currentUrl = `https://revillion-partners.com/${lang}/blog`;
+
   return (
     <Layout>
       <Helmet>
         <title>{t('blog.title')} | Revillion Partners</title>
-        <meta name="description" content={t('blog.subtitle')} />
+        <meta name="description" content={getMetaDescription()} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${t('blog.title')} | Revillion Partners`} />
+        <meta property="og:description" content={getMetaDescription()} />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
+        <meta property="og:locale" content={lang} />
+        <meta property="og:locale:alternate" content="en" />
+        <meta property="og:locale:alternate" content="de" />
+        <meta property="og:locale:alternate" content="it" />
+        <meta property="og:locale:alternate" content="pt" />
+        <meta property="og:locale:alternate" content="es" />
       </Helmet>
 
       <div className="bg-background py-16">
