@@ -14,6 +14,7 @@ import BlogAnalytics from "./pages/admin/BlogAnalytics";
 import BlogQueue from "./pages/admin/BlogQueue";
 import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/auth/Login";
+import Sitemap from "./pages/Sitemap";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
 import './lib/i18n';
@@ -29,6 +30,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navigate to="/en" replace />} />
+            <Route path="/sitemap.xml" element={<Sitemap />} />
             <Route path="/admin" element={<AdminRedirect />} />
             <Route path="/:lang" element={<Index />} />
             <Route path="/:lang/blog" element={<Blog />} />
