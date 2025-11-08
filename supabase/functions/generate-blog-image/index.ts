@@ -6,6 +6,61 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Analizza il titolo per estrarre concetti chiave e mappare a soggetti visivi specifici
+function analyzeTitle(title: string): string {
+  const titleLower = title.toLowerCase();
+  
+  // Mapping concetti → soggetti visivi
+  const conceptMappings: Record<string, string> = {
+    // Tecnologia e innovazione
+    'technology|tech|ai|artificial intelligence|blockchain|vr|ar|metaverse': 
+      'futuristic holographic interfaces, AI visualization, digital innovation, cutting-edge technology setup',
+    
+    // Metriche e Analytics  
+    'metrics|analytics|data|kpi|performance|roi|statistics|tracking':
+      'modern analytics dashboard, data visualization charts, performance metrics displays, business intelligence screens',
+    
+    // Marketing e Design
+    'landing page|cta|banner|creative|design|ui|ux|conversion':
+      'sleek website mockups, modern web interface designs, creative marketing materials, digital design elements',
+    
+    // Strategia business
+    'strategy|ltv|retention|customer|engagement|loyalty|journey':
+      'business strategy visualization, customer journey mapping, retention concept art, professional planning',
+    
+    // Mercati e Geografia
+    'market|global|region|international|geo|country|territory':
+      'world map with data points, global market visualization, international business concept, geographic analysis',
+    
+    // Affiliate e Partnership
+    'affiliate|partner|commission|network|referral':
+      'partnership handshake, network connections visualization, affiliate marketing concept, business collaboration',
+    
+    // Traffic e Acquisizione
+    'traffic|source|acquisition|channel|media|advertising':
+      'digital traffic flow visualization, marketing channels concept, advertising platforms, multi-channel strategy',
+    
+    // Ottimizzazione
+    'optimization|boost|improve|increase|growth|enhance':
+      'growth chart visualization, upward trending graphs, optimization concept, improvement metrics',
+    
+    // Regolamentazione
+    'regulation|compliance|legal|license|law|jurisdiction':
+      'legal documents, compliance checklist, regulatory framework, professional legal setting'
+  };
+  
+  // Trova il primo match
+  for (const [keywords, subject] of Object.entries(conceptMappings)) {
+    const keywordRegex = new RegExp(keywords, 'i');
+    if (keywordRegex.test(titleLower)) {
+      return subject;
+    }
+  }
+  
+  // Fallback: elementi casino tradizionali (ma con più varietà)
+  return 'professional casino environment with selective focus, elegant gambling elements, premium gaming atmosphere';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -26,12 +81,26 @@ serve(async (req) => {
           composition: 'composizione cinematografica con soggetto principale ben definito',
           lighting: 'illuminazione naturale o studio lighting professionale'
         },
-        guides: {
-          style: 'fotografia educativa in stile documentario',
-          mood: 'chiara e accogliente, atmosfera professionale ma friendly',
-          composition: 'composizione bilanciata con focus sul soggetto centrale',
-          lighting: 'illuminazione morbida e uniforme, soft lighting'
-        },
+        guides: [
+          {
+            style: 'fotografia educativa in stile documentario',
+            mood: 'chiara e accogliente, atmosfera professionale ma friendly',
+            composition: 'composizione bilanciata con focus sul soggetto centrale',
+            lighting: 'illuminazione morbida e uniforme, soft lighting'
+          },
+          {
+            style: 'fotografia concettuale moderna',
+            mood: 'innovativa e ispirazionale, atmosfera tech-forward',
+            composition: 'composizione asimmetrica con elementi grafici',
+            lighting: 'illuminazione drammatica con accent lights'
+          },
+          {
+            style: 'fotografia editoriale pulita',
+            mood: 'minimalista e sofisticata, atmosfera premium',
+            composition: 'composizione geometrica con negative space',
+            lighting: 'illuminazione piatta e uniforme, high-key'
+          }
+        ],
         reviews: {
           style: 'fotografia editoriale in stile magazine premium',
           mood: 'elegante e lussuosa, atmosfera high-end',
@@ -46,8 +115,17 @@ serve(async (req) => {
         }
       };
 
-      const styleConfig = photographyStyles[autoPrompt.category as keyof typeof photographyStyles] 
+      let styleConfig = photographyStyles[autoPrompt.category as keyof typeof photographyStyles] 
         || photographyStyles.news;
+      
+      // Se è un array (guides), seleziona casualmente uno stile
+      if (Array.isArray(styleConfig)) {
+        const randomIndex = Math.floor(Math.random() * styleConfig.length);
+        styleConfig = styleConfig[randomIndex];
+      }
+      
+      // Analizza il titolo per ottenere il subject matter specifico
+      const subjectMatter = analyzeTitle(autoPrompt.title);
 
       finalPrompt = `Create a high-resolution professional photograph for a blog article about: "${autoPrompt.title}".
 
@@ -64,7 +142,9 @@ Photography specifications:
 - Composition: ${styleConfig.composition}
 - Lighting: ${styleConfig.lighting}
 
-Subject matter: Online casino/gambling theme with relevant elements like playing cards, poker chips, roulette wheel, slot machines, or casino environment.
+Subject matter: ${subjectMatter}
+
+Context: This is for an iGaming/online gambling industry article. The visual should be relevant to the article topic while maintaining a professional, high-end aesthetic.
 
 Technical requirements:
 - Photo-realistic, not illustration or CGI
@@ -76,7 +156,7 @@ Technical requirements:
 - Clean, uncluttered composition
 - REMEMBER: Absolutely NO text, letters, or written content visible in the image
 
-The final result should look like a professional photograph you would see in a premium gambling magazine or high-end casino website - a pure photograph without any text elements.`;
+The final result should look like a professional photograph you would see in a premium industry magazine - a pure photograph without any text elements.`;
     }
 
     if (!finalPrompt || finalPrompt.trim() === '') {
