@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Sparkles, Upload } from "lucide-react";
@@ -29,54 +30,50 @@ export function AIImageGeneratorDialog({
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-
-  const handleAutoPrompt = () => {
-    if (!articleTitle) {
-      toast({
-        title: "Titolo mancante",
-        description: "Inserisci prima il titolo dell'articolo per generare un prompt automatico.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const categoryContext = {
-      news: 'notizie e aggiornamenti dal mondo dei casinò online',
-      guides: 'guida educativa per giocatori',
-      reviews: 'recensione di casinò o giochi',
-      tips: 'consigli e strategie di gioco'
-    }[articleCategory] || 'contenuto di casinò online';
-
-    const autoPrompt = `Crea un'immagine professionale e accattivante per un articolo di blog sul tema: "${articleTitle}". L'immagine rappresenta ${categoryContext}. Stile: moderno, professionale, colori vivaci ma eleganti, alta qualità, tema casinò/gambling online. Include elementi visivi rilevanti: carte da gioco, chips, roulette, slot machine (dove appropriato). Evita testo nell'immagine, focus su elementi grafici puliti e professionali.`;
-    
-    setPrompt(autoPrompt);
-  };
+  const [useSmartPrompt, setUseSmartPrompt] = useState(!!articleTitle);
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
-      toast({
-        title: "Prompt vuoto",
-        description: "Inserisci una descrizione dell'immagine da generare.",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Validazione per modalità smart
+    if (useSmartPrompt) {
+      if (!articleTitle) {
+        toast({
+          title: "Titolo mancante",
+          description: "Il titolo dell'articolo è necessario per la generazione intelligente.",
+          variant: "destructive"
+        });
+        return;
+      }
+    } else {
+      // Validazione per modalità manuale
+      if (!prompt.trim()) {
+        toast({
+          title: "Prompt vuoto",
+          description: "Inserisci una descrizione dell'immagine da generare.",
+          variant: "destructive"
+        });
+        return;
+      }
 
-    if (prompt.trim().length < 10) {
-      toast({
-        title: "Prompt troppo breve",
-        description: "Inserisci una descrizione più dettagliata (almeno 10 caratteri).",
-        variant: "destructive"
-      });
-      return;
+      if (prompt.trim().length < 10) {
+        toast({
+          title: "Prompt troppo breve",
+          description: "Inserisci una descrizione più dettagliata (almeno 10 caratteri).",
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     setLoading(true);
     setGeneratedImage(null);
 
     try {
+      const requestBody = useSmartPrompt
+        ? { autoPrompt: { title: articleTitle, category: articleCategory } }
+        : { prompt: prompt.trim() };
+
       const { data, error } = await supabase.functions.invoke('generate-blog-image', {
-        body: { prompt: prompt.trim() }
+        body: requestBody
       });
 
       if (error) throw error;
@@ -187,6 +184,7 @@ export function AIImageGeneratorDialog({
     setPrompt("");
     setAltText("");
     setGeneratedImage(null);
+    setUseSmartPrompt(!!articleTitle);
     onOpenChange(false);
   };
 
@@ -204,17 +202,41 @@ export function AIImageGeneratorDialog({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="prompt">Descrizione Immagine</Label>
-            <Textarea
-              id="prompt"
-              placeholder="Descrivi l'immagine che vuoi generare (es: 'Un'immagine moderna di un casinò online con carte da gioco e chips...')"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              className="min-h-[120px]"
-              disabled={loading || uploading}
+          <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+            <div className="space-y-1">
+              <Label htmlFor="smart-mode" className="text-base font-medium">
+                🧠 Generazione Intelligente
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                {useSmartPrompt 
+                  ? `Userà il titolo "${articleTitle}" e la categoria "${articleCategory}" per creare automaticamente l'immagine perfetta.`
+                  : "Disattivato: inserisci manualmente la descrizione dell'immagine."}
+              </p>
+            </div>
+            <Switch
+              id="smart-mode"
+              checked={useSmartPrompt}
+              onCheckedChange={setUseSmartPrompt}
+              disabled={loading || uploading || !articleTitle}
             />
           </div>
+
+          {!useSmartPrompt && (
+            <div className="space-y-2">
+              <Label htmlFor="prompt">Descrizione Immagine (Manuale)</Label>
+              <Textarea
+                id="prompt"
+                placeholder="Descrivi l'immagine che vuoi generare (es: 'Un'immagine moderna con grafici e dashboard analytics...')"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="min-h-[120px]"
+                disabled={loading || uploading}
+              />
+              <p className="text-xs text-muted-foreground">
+                💡 Attiva la modalità intelligente per generazioni automatiche più varie e contestuali
+              </p>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="altText">Alt Text (SEO)</Label>
@@ -229,17 +251,6 @@ export function AIImageGeneratorDialog({
               Se lasciato vuoto, verrà generato automaticamente da titolo + categoria
             </p>
           </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleAutoPrompt}
-            disabled={loading || uploading || !articleTitle}
-            className="gap-2"
-          >
-            <Sparkles className="h-4 w-4" />
-            ✨ Suggerisci da Titolo
-          </Button>
 
           {generatedImage && (
             <div className="space-y-2">
@@ -269,11 +280,11 @@ export function AIImageGeneratorDialog({
             <Button
               type="button"
               onClick={handleGenerate}
-              disabled={loading || uploading || !prompt.trim()}
+              disabled={loading || uploading || (!useSmartPrompt && !prompt.trim())}
               className="gap-2"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {loading ? "Generando..." : "Genera Immagine"}
+              {loading ? "Generando..." : useSmartPrompt ? "🧠 Genera con AI Intelligente" : "Genera Immagine"}
             </Button>
           ) : (
             <>
