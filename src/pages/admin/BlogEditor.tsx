@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { generateSlug, formatHTMLContent } from "@/lib/blog";
 import { generateTranslatedSlugs } from "@/lib/slugUtils";
@@ -40,6 +42,8 @@ export default function BlogEditor() {
   const [initialLoading, setInitialLoading] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [showAIImageGenerator, setShowAIImageGenerator] = useState(false);
+  const [originalData, setOriginalData] = useState<any>(null);
+  const [shouldRetranslate, setShouldRetranslate] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -67,6 +71,7 @@ export default function BlogEditor() {
       if (error) {
         toast({ title: "Errore", description: error.message, variant: "destructive" });
       } else if (data) {
+        setOriginalData(data); // Salva dati originali per confronto
         form.reset({
           title_it: data.title_it ?? "",
           content_it: data.content_it ?? "",
@@ -120,61 +125,65 @@ export default function BlogEditor() {
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
-    setTranslating(true);
     
     try {
       const { data: { user }, error: authErr } = await supabase.auth.getUser();
       if (authErr) throw authErr;
       if (!user) throw new Error("Devi essere autenticato per creare o modificare articoli.");
 
-      // Chiamare edge function per traduzione automatica dall'italiano
-      const { data: translationData, error: translationError } = await supabase.functions.invoke(
-        'translate-blog-post',
-        {
-          body: {
-            title_it: values.title_it,
-            content_it: values.content_it,
-            meta_description_it: values.meta_description_it || ""
-          }
-        }
-      );
+      let translationData = null;
       
-      setTranslating(false);
+      // Determina se servono le traduzioni
+      const needsTranslation = !id || // Nuovo post → sempre tradurre
+        shouldRetranslate || // Utente ha chiesto esplicitamente
+        // Oppure rileva cambiamenti nei contenuti testuali
+        (originalData && (
+          originalData.title_it !== values.title_it ||
+          originalData.content_it !== values.content_it ||
+          originalData.meta_description_it !== values.meta_description_it
+        ));
 
-      if (translationError) {
-        console.error("Errore traduzione:", translationError);
-        const proceed = confirm(
-          "Errore durante la traduzione automatica. Vuoi salvare solo la versione italiana?"
+      if (needsTranslation) {
+        setTranslating(true);
+        
+        const { data, error: translationError } = await supabase.functions.invoke(
+          'translate-blog-post',
+          {
+            body: {
+              title_it: values.title_it,
+              content_it: values.content_it,
+              meta_description_it: values.meta_description_it || ""
+            }
+          }
         );
-        if (!proceed) {
-          setLoading(false);
-          return;
+        
+        setTranslating(false);
+        
+        if (translationError) {
+          console.error("Errore traduzione:", translationError);
+          const proceed = confirm(
+            "Errore durante la traduzione automatica. Vuoi salvare solo la versione italiana?"
+          );
+          if (!proceed) {
+            setLoading(false);
+            return;
+          }
+        } else {
+          translationData = data;
         }
+      } else if (!needsTranslation && id) {
+        // Feedback quando solo l'immagine è cambiata
+        toast({
+          title: "ℹ️ Traduzioni preservate",
+          description: "Solo l'immagine è stata modificata. Le traduzioni esistenti sono state mantenute.",
+        });
       }
 
-      // Preparare i dati con italiano come base + traduzioni
-      const baseData = {
+      // Preparare i dati per il salvataggio
+      const baseData: any = {
         title_it: values.title_it,
         content_it: values.content_it,
         meta_description_it: values.meta_description_it || null,
-        
-        // Traduzioni automatiche (se disponibili) altrimenti fallback su italiano
-        title_en: translationData?.translations?.en?.title || values.title_it,
-        content_en: translationData?.translations?.en?.content || values.content_it,
-        meta_description_en: translationData?.translations?.en?.meta_description || values.meta_description_it || null,
-        
-        title_de: translationData?.translations?.de?.title || null,
-        content_de: translationData?.translations?.de?.content || null,
-        meta_description_de: translationData?.translations?.de?.meta_description || null,
-        
-        title_es: translationData?.translations?.es?.title || null,
-        content_es: translationData?.translations?.es?.content || null,
-        meta_description_es: translationData?.translations?.es?.meta_description || null,
-        
-        title_pt: translationData?.translations?.pt?.title || null,
-        content_pt: translationData?.translations?.pt?.content || null,
-        meta_description_pt: translationData?.translations?.pt?.meta_description || null,
-        
         category: values.category,
         status: values.status,
         slug: values.slug,
@@ -182,6 +191,65 @@ export default function BlogEditor() {
         featured_image_alt: values.featured_image_alt || null,
         published_at: values.status === "published" ? new Date().toISOString() : null,
       };
+      
+      // Se ci sono nuove traduzioni, usale
+      if (translationData?.translations) {
+        Object.assign(baseData, {
+          title_en: translationData.translations.en?.title || values.title_it,
+          content_en: translationData.translations.en?.content || values.content_it,
+          meta_description_en: translationData.translations.en?.meta_description || values.meta_description_it || null,
+          
+          title_de: translationData.translations.de?.title || null,
+          content_de: translationData.translations.de?.content || null,
+          meta_description_de: translationData.translations.de?.meta_description || null,
+          
+          title_es: translationData.translations.es?.title || null,
+          content_es: translationData.translations.es?.content || null,
+          meta_description_es: translationData.translations.es?.meta_description || null,
+          
+          title_pt: translationData.translations.pt?.title || null,
+          content_pt: translationData.translations.pt?.content || null,
+          meta_description_pt: translationData.translations.pt?.meta_description || null,
+        });
+      } else if (originalData) {
+        // Preserva traduzioni esistenti se disponibili
+        Object.assign(baseData, {
+          title_en: originalData.title_en || values.title_it,
+          content_en: originalData.content_en || values.content_it,
+          meta_description_en: originalData.meta_description_en || values.meta_description_it || null,
+          
+          title_de: originalData.title_de || null,
+          content_de: originalData.content_de || null,
+          meta_description_de: originalData.meta_description_de || null,
+          
+          title_es: originalData.title_es || null,
+          content_es: originalData.content_es || null,
+          meta_description_es: originalData.meta_description_es || null,
+          
+          title_pt: originalData.title_pt || null,
+          content_pt: originalData.content_pt || null,
+          meta_description_pt: originalData.meta_description_pt || null,
+        });
+      } else {
+        // Nuovo post senza traduzioni (fallback su italiano)
+        Object.assign(baseData, {
+          title_en: values.title_it,
+          content_en: values.content_it,
+          meta_description_en: values.meta_description_it || null,
+          
+          title_de: null,
+          content_de: null,
+          meta_description_de: null,
+          
+          title_es: null,
+          content_es: null,
+          meta_description_es: null,
+          
+          title_pt: null,
+          content_pt: null,
+          meta_description_pt: null,
+        });
+      }
 
       // Generate translated slugs automatically from titles
       const translatedSlugs = generateTranslatedSlugs({
@@ -459,6 +527,19 @@ export default function BlogEditor() {
                   </FormItem>
                 )}
               />
+
+              {id && (
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-md border">
+                  <Switch
+                    checked={shouldRetranslate}
+                    onCheckedChange={setShouldRetranslate}
+                    id="retranslate"
+                  />
+                  <Label htmlFor="retranslate" className="cursor-pointer">
+                    Rigenera traduzioni automatiche
+                  </Label>
+                </div>
+              )}
 
               <div className="flex gap-4">
                 <Button type="button" variant="outline" onClick={() => navigate(`/${lang}/admin/blog`)} disabled={loading || translating}>
