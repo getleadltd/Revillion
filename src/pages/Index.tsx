@@ -772,15 +772,15 @@ const Index = () => {
             </h3>
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/casino-win</div>
+                <div className="text-orange-700 font-mono text-lg mb-2 font-bold">rev.ly/casino-win</div>
                 <div className="text-gray-600 text-sm">{t('socialMedia.urlExample1')}</div>
               </div>
               <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/slots-bonus</div>
+                <div className="text-orange-700 font-mono text-lg mb-2 font-bold">rev.ly/slots-bonus</div>
                 <div className="text-gray-600 text-sm">{t('socialMedia.urlExample2')}</div>
               </div>
               <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="text-orange-500 font-mono text-lg mb-2 font-bold">rev.ly/mega-jackpot</div>
+                <div className="text-orange-700 font-mono text-lg mb-2 font-bold">rev.ly/mega-jackpot</div>
                 <div className="text-gray-600 text-sm">{t('socialMedia.urlExample3')}</div>
               </div>
             </div>
@@ -808,7 +808,7 @@ const Index = () => {
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-orange-300 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
         </div>
         
         <div className="container mx-auto px-4 text-center relative z-10">
@@ -821,17 +821,17 @@ const Index = () => {
           
           {/* Stats or benefits */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
               <div className="text-4xl font-bold text-white mb-2">16+</div>
-              <div className="text-white/80">{t('finalCta.stat1')}</div>
+              <div className="text-white">{t('finalCta.stat1')}</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
               <div className="text-4xl font-bold text-white mb-2">{t('finalCta.stat2Value')}</div>
-              <div className="text-white/80">{t('finalCta.stat2')}</div>
+              <div className="text-white">{t('finalCta.stat2')}</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
               <div className="text-4xl font-bold text-white mb-2">24/7</div>
-              <div className="text-white/80">{t('finalCta.stat3')}</div>
+              <div className="text-white">{t('finalCta.stat3')}</div>
             </div>
           </div>
           

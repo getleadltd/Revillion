@@ -86,7 +86,7 @@ export const Footer = () => {
 
         {/* Separator */}
         <div className="border-t border-gray-800 pt-8">
-          <div className="text-center text-gray-500 text-sm">
+          <div className="text-center text-gray-400 text-sm">
             {t('footer.copyright')}
           </div>
         </div>
