@@ -4,7 +4,7 @@ import './index.css'
 import './lib/i18n'
 import { initAnalytics } from './lib/lazyAnalytics'
 
-createRoot(document.getElementById("root")!).render(<App />);
-
-// Initialize Google Analytics immediately
+// Initialize Google Analytics (Consent Mode is initialized inside)
 initAnalytics();
+
+createRoot(document.getElementById("root")!).render(<App />);

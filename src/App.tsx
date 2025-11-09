@@ -17,6 +17,7 @@ import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
 import { useGA4PageViews } from "./hooks/useGA4PageViews";
+import { CookieBanner } from "./components/CookieBanner";
 import './lib/i18n';
 
 // Component to listen to route changes and send GA4 page views
@@ -35,6 +36,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <GAListener />
+          <CookieBanner />
           <Routes>
             <Route path="/" element={<Navigate to="/en" replace />} />
             <Route path="/admin" element={<AdminRedirect />} />

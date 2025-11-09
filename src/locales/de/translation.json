@@ -243,5 +243,21 @@
         "actions": "Aktionen"
       }
     }
+  },
+  "auth": {
+    "login": "Anmelden",
+    "loginDescription": "Geben Sie Ihre Zugangsdaten ein, um auf das Admin-Panel zuzugreifen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "loginSuccess": "Anmeldung erfolgreich",
+    "welcome": "Willkommen zurück!",
+    "loginError": "Anmeldung fehlgeschlagen"
+  },
+  "cookieBanner": {
+    "title": "Wir verwenden Cookies",
+    "description": "Wir verwenden Cookies und ähnliche Technologien, um Ihre Erfahrung zu verbessern, den Datenverkehr zu analysieren und Inhalte zu personalisieren. Durch Klicken auf Akzeptieren stimmen Sie der Verwendung von Cookies zu.",
+    "acceptAll": "Alle akzeptieren",
+    "rejectAll": "Ablehnen",
+    "settings": "Einstellungen"
   }
 }

@@ -252,5 +252,12 @@
     "loginSuccess": "Accesso effettuato",
     "welcome": "Bentornato!",
     "loginError": "Accesso fallito"
+  },
+  "cookieBanner": {
+    "title": "Utilizziamo i cookie",
+    "description": "Utilizziamo cookie e tecnologie simili per migliorare la tua esperienza, analizzare il traffico e personalizzare i contenuti. Cliccando Accetta, acconsenti all'uso dei cookie.",
+    "acceptAll": "Accetta tutti",
+    "rejectAll": "Rifiuta",
+    "settings": "Impostazioni"
   }
 }

@@ -243,5 +243,21 @@
         "actions": "Acciones"
       }
     }
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "loginDescription": "Ingresa tus credenciales para acceder al panel de administración",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "welcome": "¡Bienvenido de nuevo!",
+    "loginError": "Error al iniciar sesión"
+  },
+  "cookieBanner": {
+    "title": "Usamos cookies",
+    "description": "Utilizamos cookies y tecnologías similares para mejorar tu experiencia, analizar el tráfico y personalizar el contenido. Al hacer clic en Aceptar, consientes el uso de cookies.",
+    "acceptAll": "Aceptar todo",
+    "rejectAll": "Rechazar",
+    "settings": "Configuración"
   }
 }

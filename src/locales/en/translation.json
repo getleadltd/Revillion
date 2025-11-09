@@ -252,5 +252,12 @@
     "loginSuccess": "Login successful",
     "welcome": "Welcome back!",
     "loginError": "Login failed"
+  },
+  "cookieBanner": {
+    "title": "We use cookies",
+    "description": "We use cookies and similar technologies to improve your experience, analyze traffic, and personalize content. By clicking Accept, you consent to our use of cookies.",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject",
+    "settings": "Settings"
   }
 }

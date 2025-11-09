@@ -1,4 +1,6 @@
-// Google Analytics 4 - Enhanced Debug Loading
+// Google Analytics 4 - Enhanced Debug Loading with Consent Mode v2
+import { initConsentMode } from './consentMode';
+
 let gaLoaded = false;
 
 // Check if debug mode is enabled
@@ -9,6 +11,9 @@ const isDebugMode = () => {
 
 const loadGoogleAnalytics = () => {
   if (gaLoaded || typeof window === 'undefined') return;
+  
+  // CRITICAL: Initialize Consent Mode BEFORE loading GA
+  initConsentMode();
   
   gaLoaded = true;
   const debugMode = isDebugMode();
