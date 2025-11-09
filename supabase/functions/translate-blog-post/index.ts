@@ -47,78 +47,98 @@ CONTENUTO: ${content_it}
 
 META DESCRIPTION: ${meta_description_it || ""}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "return_translations",
-              description: "Restituisce le traduzioni del contenuto del blog in 4 lingue",
-              parameters: {
-                type: "object",
-                properties: {
-                  translations: {
-                    type: "object",
-                    properties: {
-                      en: {
-                        type: "object",
-                        properties: {
-                          title: { type: "string", description: "Titolo tradotto in inglese" },
-                          content: { type: "string", description: "Contenuto HTML tradotto in inglese" },
-                          meta_description: { type: "string", description: "Meta description tradotta in inglese" }
+    // ⏱️ Timeout 90s con AbortController
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000);
+
+    let response;
+    try {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "return_translations",
+                description: "Restituisce le traduzioni del contenuto del blog in 4 lingue",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    translations: {
+                      type: "object",
+                      properties: {
+                        en: {
+                          type: "object",
+                          properties: {
+                            title: { type: "string", description: "Titolo tradotto in inglese" },
+                            content: { type: "string", description: "Contenuto HTML tradotto in inglese" },
+                            meta_description: { type: "string", description: "Meta description tradotta in inglese" }
+                          },
+                          required: ["title", "content", "meta_description"]
                         },
-                        required: ["title", "content", "meta_description"]
+                        de: {
+                          type: "object",
+                          properties: {
+                            title: { type: "string", description: "Titolo tradotto in tedesco" },
+                            content: { type: "string", description: "Contenuto HTML tradotto in tedesco" },
+                            meta_description: { type: "string", description: "Meta description tradotta in tedesco" }
+                          },
+                          required: ["title", "content", "meta_description"]
+                        },
+                        es: {
+                          type: "object",
+                          properties: {
+                            title: { type: "string", description: "Titolo tradotto in spagnolo" },
+                            content: { type: "string", description: "Contenuto HTML tradotto in spagnolo" },
+                            meta_description: { type: "string", description: "Meta description tradotta in spagnolo" }
+                          },
+                          required: ["title", "content", "meta_description"]
+                        },
+                        pt: {
+                          type: "object",
+                          properties: {
+                            title: { type: "string", description: "Titolo tradotto in portoghese" },
+                            content: { type: "string", description: "Contenuto HTML tradotto in portoghese" },
+                            meta_description: { type: "string", description: "Meta description tradotta in portoghese" }
+                          },
+                          required: ["title", "content", "meta_description"]
+                        }
                       },
-                      de: {
-                        type: "object",
-                        properties: {
-                          title: { type: "string", description: "Titolo tradotto in tedesco" },
-                          content: { type: "string", description: "Contenuto HTML tradotto in tedesco" },
-                          meta_description: { type: "string", description: "Meta description tradotta in tedesco" }
-                        },
-                        required: ["title", "content", "meta_description"]
-                      },
-                      es: {
-                        type: "object",
-                        properties: {
-                          title: { type: "string", description: "Titolo tradotto in spagnolo" },
-                          content: { type: "string", description: "Contenuto HTML tradotto in spagnolo" },
-                          meta_description: { type: "string", description: "Meta description tradotta in spagnolo" }
-                        },
-                        required: ["title", "content", "meta_description"]
-                      },
-                      pt: {
-                        type: "object",
-                        properties: {
-                          title: { type: "string", description: "Titolo tradotto in portoghese" },
-                          content: { type: "string", description: "Contenuto HTML tradotto in portoghese" },
-                          meta_description: { type: "string", description: "Meta description tradotta in portoghese" }
-                        },
-                        required: ["title", "content", "meta_description"]
-                      }
-                    },
-                    required: ["en", "de", "es", "pt"]
-                  }
-                },
-                required: ["translations"]
+                      required: ["en", "de", "es", "pt"]
+                    }
+                  },
+                  required: ["translations"]
+                }
               }
             }
-          }
-        ],
-        tool_choice: { type: "function", function: { name: "return_translations" } }
-      }),
-    });
+          ],
+          tool_choice: { type: "function", function: { name: "return_translations" } }
+        }),
+      });
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === 'AbortError') {
+        console.error('⏱️ Translation request timeout after 90s');
+        return new Response(
+          JSON.stringify({ error: 'Timeout: richiesta traduzione superato 90 secondi. Riprova.' }),
+          { status: 504, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      throw fetchError;
+    }
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();

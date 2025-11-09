@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 
+// Helper: sleep per backoff
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -86,6 +89,60 @@ function getTopicFromSlug(slug: string): { topic: string; keywords: string; cate
   };
 }
 
+// Helper: invoke con timeout
+async function invokeWithTimeout<T>(
+  supabase: any,
+  fnName: string,
+  body: any,
+  timeoutMs = 120000
+): Promise<{ data: T | null; error: any }> {
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`Timeout ${timeoutMs}ms for ${fnName}`)), timeoutMs)
+  );
+
+  return Promise.race([
+    supabase.functions.invoke<T>(fnName, { body }),
+    timeoutPromise
+  ]);
+}
+
+// Helper: retry con backoff esponenziale
+async function callWithRetry<T>(
+  supabase: any,
+  fnName: string,
+  body: any,
+  maxAttempts = 2
+): Promise<{ data: T | null; error: any }> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const result = await invokeWithTimeout<T>(supabase, fnName, body, 120000);
+      
+      // Se 429 (rate limit) e non è l'ultimo tentativo, attendi e riprova
+      if (result.error?.message?.includes('429') && attempt < maxAttempts) {
+        console.warn(`🔁 Rate limit (429) su ${fnName}, attendo 10s e riprovo...`);
+        await sleep(10000);
+        continue;
+      }
+      
+      return result;
+    } catch (err: any) {
+      const isLastAttempt = attempt === maxAttempts;
+      
+      if (err.message?.includes('Timeout') && !isLastAttempt) {
+        const backoffMs = attempt === 1 ? 2000 : 4000;
+        console.warn(`⏱️ Timeout su ${fnName} (tentativo ${attempt}/${maxAttempts}), attendo ${backoffMs}ms...`);
+        await sleep(backoffMs);
+        continue;
+      }
+      
+      // Ultimo tentativo o errore non gestibile
+      return { data: null, error: err };
+    }
+  }
+  
+  return { data: null, error: new Error(`Failed after ${maxAttempts} attempts`) };
+}
+
 serve(async (req) => {
   // Handle CORS
   if (req.method === 'OPTIONS') {
@@ -140,22 +197,30 @@ serve(async (req) => {
         console.log(`   Topic: ${mapping.topic}`);
         console.log(`   Keywords: ${mapping.keywords}`);
 
-        // 3. Genera nuovo contenuto con il prompt "più umano"
-        const { data: newContent, error: generateError } = await supabase.functions.invoke(
+        // 3. Genera nuovo contenuto con il prompt "più umano" (con retry e timeout)
+        const { data: newContent, error: generateError } = await callWithRetry(
+          supabase,
           'generate-blog-content',
           {
-            body: {
-              topic: mapping.topic,
-              keywords: mapping.keywords,
-              category: mapping.category,
-              tone: 'professional',
-              length: 'medium'
-            }
+            topic: mapping.topic,
+            keywords: mapping.keywords,
+            category: mapping.category,
+            tone: 'professional',
+            length: 'medium'
           }
         );
 
         if (generateError) {
-          throw new Error(`Errore generazione contenuto: ${generateError.message}`);
+          console.error(`⏭️ Errore generazione per ${post.slug}, skip articolo:`, generateError.message);
+          errorCount++;
+          results.push({
+            id: post.id,
+            title: post.title_it,
+            slug: post.slug,
+            status: 'error',
+            error: `Generazione fallita: ${generateError.message}`
+          });
+          continue; // Salta al prossimo articolo
         }
 
         if (!newContent || !newContent.generated || !newContent.generated.content_it) {
@@ -181,22 +246,30 @@ serve(async (req) => {
 
         console.log(`   ✅ Contenuto italiano aggiornato`);
 
-        // 5. Rigenera tutte le traduzioni con il nuovo contenuto
+        // 5. Rigenera tutte le traduzioni con il nuovo contenuto (con retry)
         console.log(`   🌍 Rigenerando traduzioni...`);
         
-        const { data: translations, error: translateError } = await supabase.functions.invoke(
+        const { data: translations, error: translateError } = await callWithRetry(
+          supabase,
           'translate-blog-post',
           {
-            body: {
-              title_it: post.title_it,
-              content_it: newContent.generated.content_it,
-              meta_description_it: post.meta_description_it
-            }
+            title_it: post.title_it,
+            content_it: newContent.generated.content_it,
+            meta_description_it: post.meta_description_it
           }
         );
 
         if (translateError) {
-          throw new Error(`Errore traduzione: ${translateError.message}`);
+          console.error(`⏭️ Errore traduzione per ${post.slug}, skip traduzione:`, translateError.message);
+          errorCount++;
+          results.push({
+            id: post.id,
+            title: post.title_it,
+            slug: post.slug,
+            status: 'error',
+            error: `Traduzione fallita: ${translateError.message}`
+          });
+          continue;
         }
 
         // 6. Aggiorna le traduzioni nel database

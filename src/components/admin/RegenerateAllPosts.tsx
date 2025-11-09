@@ -132,7 +132,7 @@ export function RegenerateAllPosts() {
             </div>
             <Progress value={progress} className="h-2" />
             <p className="text-xs text-[hsl(var(--muted-foreground))] text-center">
-              Questa operazione può richiedere diversi minuti. Non chiudere questa pagina.
+              Progresso stimato. Il batch continua anche se alcuni articoli richiedono più tempo o vanno in errore. Non chiudere questa pagina.
             </p>
           </div>
         )}

@@ -256,58 +256,78 @@ Genera in formato strutturato:
 
     console.log('Calling Lovable AI for content generation...');
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        tools: [
-          {
-            type: 'function',
-            function: {
-              name: 'create_blog_post',
-              description: 'Crea un articolo blog completo con tutti i metadati',
-              parameters: {
-                type: 'object',
-                properties: {
-                  title_it: {
-                    type: 'string',
-                    description: 'Titolo accattivante in italiano (60-70 caratteri, include keyword principale)'
+    // ⏱️ Timeout 90s con AbortController
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000);
+
+    let aiResponse;
+    try {
+      aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          tools: [
+            {
+              type: 'function',
+              function: {
+                name: 'create_blog_post',
+                description: 'Crea un articolo blog completo con tutti i metadati',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    title_it: {
+                      type: 'string',
+                      description: 'Titolo accattivante in italiano (60-70 caratteri, include keyword principale)'
+                    },
+                    content_it: {
+                      type: 'string',
+                      description: 'Contenuto HTML completo dell\'articolo in italiano. Usa <h2>, <h3>, <p>, <strong>, <em>, <ul>, <ol>, <li>. NO wrapper <html> o <body>.'
+                    },
+                    meta_description_it: {
+                      type: 'string',
+                      description: 'Meta description ottimizzata SEO (140-160 caratteri, include CTA)'
+                    },
+                    slug: {
+                      type: 'string',
+                      description: 'Slug URL-friendly basato sul titolo (lowercase, trattini al posto degli spazi, senza caratteri speciali)'
+                    },
+                    keywords: {
+                      type: 'array',
+                      items: { type: 'string' },
+                      description: 'Array di 3-5 keywords rilevanti per SEO'
+                    }
                   },
-                  content_it: {
-                    type: 'string',
-                    description: 'Contenuto HTML completo dell\'articolo in italiano. Usa <h2>, <h3>, <p>, <strong>, <em>, <ul>, <ol>, <li>. NO wrapper <html> o <body>.'
-                  },
-                  meta_description_it: {
-                    type: 'string',
-                    description: 'Meta description ottimizzata SEO (140-160 caratteri, include CTA)'
-                  },
-                  slug: {
-                    type: 'string',
-                    description: 'Slug URL-friendly basato sul titolo (lowercase, trattini al posto degli spazi, senza caratteri speciali)'
-                  },
-                  keywords: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    description: 'Array di 3-5 keywords rilevanti per SEO'
-                  }
-                },
-                required: ['title_it', 'content_it', 'meta_description_it', 'slug', 'keywords'],
-                additionalProperties: false
+                  required: ['title_it', 'content_it', 'meta_description_it', 'slug', 'keywords'],
+                  additionalProperties: false
+                }
               }
             }
-          }
-        ],
-        tool_choice: { type: 'function', function: { name: 'create_blog_post' } }
-      }),
-    });
+          ],
+          tool_choice: { type: 'function', function: { name: 'create_blog_post' } }
+        }),
+      });
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === 'AbortError') {
+        console.error('⏱️ AI request timeout after 90s');
+        return new Response(
+          JSON.stringify({ error: 'Timeout: richiesta AI superato 90 secondi. Riprova.' }),
+          { status: 504, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      throw fetchError;
+    }
+
+    clearTimeout(timeoutId);
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
