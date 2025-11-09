@@ -424,7 +424,7 @@ RICORDA: L'obiettivo è che un AI detector dia MENO del 40% di probabilità AI. 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-pro',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -502,19 +502,99 @@ RICORDA: L'obiettivo è che un AI detector dia MENO del 40% di probabilità AI. 
 
     const generatedContent = JSON.parse(toolCall.function.arguments);
 
-    // ✅ VALIDAZIONE POST-GENERAZIONE: Conta i link interni
+    // ✅ VALIDAZIONE POST-GENERAZIONE: Conta i link interni (pre-humanizer)
     const internalLinkRegex = /<a\s+href=["']\/blog\/[^"']+["'][^>]*>/gi;
-    const linkMatches = generatedContent.content_it.match(internalLinkRegex) || [];
-    const linkCount = linkMatches.length;
+    let linkMatches = generatedContent.content_it.match(internalLinkRegex) || [];
+    let linkCount = linkMatches.length;
     
-    console.log(`✅ Internal links validation: Found ${linkCount} internal links`);
+    console.log(`✅ Internal links validation (pre-humanizer): Found ${linkCount} internal links`);
     
     if (linkCount < 3) {
       console.warn(`⚠️ WARNING: Only ${linkCount} internal links generated (expected 3-5)`);
       console.warn('Links found:', linkMatches);
-      // Il contenuto viene comunque restituito, ma l'utente può vedere il warning nei log
     } else {
       console.log(`✅ Internal linking requirement met: ${linkCount} links generated`);
+    }
+
+    // 🧠 HUMANIZER PASS: Secondo passaggio per ridurre AI detection
+    console.log('🧠 Applying humanizer pass with Gemini Pro...');
+    
+    const humanizerSystemPrompt = `Sei un editor umano esperto. Il tuo compito è riscrivere il contenuto HTML fornito per renderlo:
+- PIÙ NATURALE e meno rilevabile dai detector AI (target: <40% AI detection)
+- PRESERVANDO INTATTI tutti i tag HTML (<h2>, <h3>, <p>, <strong>, <em>, <ul>, <ol>, <li>, <a>)
+- PRESERVANDO INTATTI tutti gli href dei link (NON modificare URL, NON rimuovere link)
+- PRESERVANDO fatti numerici e informazioni tecniche accurate
+
+MODIFICHE DA APPLICARE:
+✅ Rompi la struttura formulaica: varia lunghezza paragrafi drasticamente (80, 200, 120, 300 parole—mai tutte uguali)
+✅ Sostituisci transizioni meccaniche ("Inoltre" → "Ok, ora...", "Pertanto" → "E qui diventa interessante—", "In conclusione" → "Ultima cosa:")
+✅ Aggiungi imperfezioni intenzionali:
+   - Mini-digressioni tra parentesi ogni 3-4 paragrafi: "(Un momento—lascia che ti dica...)"
+   - Contraddizioni leggere: "Prima ho detto X, ma a pensarci bene..."
+   - Ammissioni di dubbio: "Non sono sicuro al 100%, ma..."
+   - Punteggiatura variabile: virgole, "—" (em dash), "..." (ellissi), ";" (punto e virgola)
+✅ Rendi il linguaggio più colloquiale:
+   - "Gli RNG (quei generatori di numeri casuali di cui parlano tutti)"
+   - "Diciamoci la verità", "A dirla tutta", "Beh", "Tipo"
+   - Prima persona: "Nella mia esperienza", "Secondo me", "Ti consiglio"
+✅ Varia lunghezza frasi drasticamente: alcune di 5 parole. Altre molto più lunghe con subordinate.
+
+VIETATO:
+❌ Modificare gli href dei link (<a href="/blog/...">)
+❌ Rimuovere link interni
+❌ Aggiungere wrapper <html>, <body>, o altri container
+❌ Cambiare fatti numerici o informazioni tecniche
+❌ Snaturare il significato originale
+
+RESTITUISCI: Solo l'HTML riscritto, niente altro.`;
+
+    const humanizerUserPrompt = `Riscrivi questo contenuto HTML per renderlo più naturale e meno rilevabile come AI-generated. Mantieni TUTTI i tag HTML e TUTTI gli href dei link intatti:
+
+${generatedContent.content_it}`;
+
+    try {
+      const humanizerResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-pro',
+          messages: [
+            { role: 'system', content: humanizerSystemPrompt },
+            { role: 'user', content: humanizerUserPrompt }
+          ],
+          temperature: 0.9, // Più creatività per variazione
+        }),
+      });
+
+      if (humanizerResponse.ok) {
+        const humanizerData = await humanizerResponse.json();
+        const humanizedContent = humanizerData.choices?.[0]?.message?.content;
+        
+        if (humanizedContent) {
+          // Sostituisci il contenuto con la versione umanizzata
+          generatedContent.content_it = humanizedContent.trim();
+          console.log('✅ Humanizer pass completed successfully');
+          
+          // Re-valida i link interni dopo humanizer
+          linkMatches = generatedContent.content_it.match(internalLinkRegex) || [];
+          linkCount = linkMatches.length;
+          console.log(`✅ Internal links validation (post-humanizer): Found ${linkCount} internal links`);
+          
+          if (linkCount < 3) {
+            console.warn(`⚠️ WARNING: After humanizer, only ${linkCount} internal links remain (expected 3-5)`);
+          }
+        } else {
+          console.warn('⚠️ Humanizer pass returned empty content, using original');
+        }
+      } else {
+        console.warn(`⚠️ Humanizer pass failed (${humanizerResponse.status}), using original content`);
+      }
+    } catch (humanizerError) {
+      console.error('⚠️ Error in humanizer pass:', humanizerError);
+      console.log('Using original content as fallback');
     }
 
     return new Response(
