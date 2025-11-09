@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Generating sitemap...');
+    console.log('Starting sitemap generation...');
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -40,16 +40,14 @@ serve(async (req) => {
 
     // Build sitemap XML
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="https://revillion-partners.com/sitemap.xsl"?>
+<?xml-stylesheet type="text/xsl" href="${baseUrl}/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 `;
 
-    // Add homepage for each language
+    // Add homepage for each language (5 URLs)
     languages.forEach(lang => {
-      sitemap += `
-  <url>
+      sitemap += `  <url>
     <loc>${baseUrl}/${lang}</loc>`;
       
       languages.forEach(l => {
@@ -62,18 +60,13 @@ serve(async (req) => {
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <image:image>
-      <image:loc>${baseUrl}/favicon.png</image:loc>
-      <image:title>Revillion Partners Logo</image:title>
-    </image:image>
   </url>
 `;
     });
 
-    // Add blog list page for each language
+    // Add blog list page for each language (5 URLs)
     languages.forEach(lang => {
-      sitemap += `
-  <url>
+      sitemap += `  <url>
     <loc>${baseUrl}/${lang}/blog</loc>`;
       
       languages.forEach(l => {
@@ -90,7 +83,7 @@ serve(async (req) => {
 `;
     });
 
-    // Add blog posts for each language
+    // Add blog posts for each language (~50 URLs)
     if (posts && posts.length > 0) {
       posts.forEach(post => {
         const lastmod = post.updated_at 
@@ -122,8 +115,7 @@ serve(async (req) => {
           const localizedSlug = post[`slug_${lang}`] || post.slug_en || post.slug;
           
           if (localizedSlug) {
-            sitemap += `
-  <url>
+            sitemap += `  <url>
     <loc>${baseUrl}/${lang}/blog/${localizedSlug}</loc>`;
             
             // Add hreflang for all available languages
@@ -149,18 +141,19 @@ serve(async (req) => {
 
     sitemap += `</urlset>`;
 
-    console.log('Sitemap generated successfully');
+    const totalUrls = 10 + (posts?.length || 0) * 5; // 5 home + 5 blog list + N posts × 5 languages
+    console.log(`Sitemap generated successfully with ${totalUrls} URLs`);
 
     return new Response(sitemap, {
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=600', // Cache for 10 minutes
       },
     });
 
   } catch (error) {
-    console.error('Error in generate-sitemap:', error);
+    console.error('Error in sitemap generation:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
