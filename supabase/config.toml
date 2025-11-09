@@ -14,3 +14,6 @@ verify_jwt = true
 
 [functions.process-blog-queue]
 verify_jwt = false
+
+[functions.sitemap]
+verify_jwt = false

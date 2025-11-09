@@ -32,3 +32,5 @@ Allow: /es/
 Disallow: /api/
 Disallow: /admin/
 Disallow: /auth/
+
+Sitemap: https://revillion-partners.com/sitemap.xml
