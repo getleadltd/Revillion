@@ -158,18 +158,18 @@ serve(async (req) => {
           throw new Error(`Errore generazione contenuto: ${generateError.message}`);
         }
 
-        if (!newContent || !newContent.content) {
+        if (!newContent || !newContent.generated || !newContent.generated.content_it) {
           throw new Error('Contenuto generato vuoto');
         }
 
-        console.log(`   ✅ Contenuto generato (${newContent.content.length} caratteri)`);
+        console.log(`   ✅ Contenuto generato (${newContent.generated.content_it.length} caratteri)`);
 
         // 4. Aggiorna SOLO il contenuto italiano, mantieni tutto il resto
         const { error: updateError } = await supabase
           .from('blog_posts')
           .update({
-            content_it: newContent.content,
-            excerpt_it: newContent.excerpt || post.excerpt_it,
+            content_it: newContent.generated.content_it,
+            excerpt_it: post.excerpt_it, // Mantieni excerpt esistente
             updated_at: new Date().toISOString()
             // NON aggiorniamo: title_*, slug_*, featured_image_*, meta_description_*, category, status
           })
@@ -189,7 +189,7 @@ serve(async (req) => {
           {
             body: {
               title_it: post.title_it,
-              content_it: newContent.content,
+              content_it: newContent.generated.content_it,
               meta_description_it: post.meta_description_it
             }
           }
