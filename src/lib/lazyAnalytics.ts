@@ -1,6 +1,4 @@
-// Lazy-loaded Google Analytics 4
-// Loads GA4 only after user interaction to reduce initial bundle size
-
+// Google Analytics 4 - Immediate Loading
 let gaLoaded = false;
 
 const loadGoogleAnalytics = () => {
@@ -26,25 +24,13 @@ const loadGoogleAnalytics = () => {
     page_path: window.location.pathname,
     send_page_view: true
   });
+  
+  console.log('✅ Google Analytics loaded immediately');
 };
 
-// Initialize GA4 on first user interaction
-export const initLazyAnalytics = () => {
-  if (gaLoaded) return;
-
-  const events = ['mousedown', 'touchstart', 'scroll', 'keydown'];
-  
-  const loadOnce = () => {
-    loadGoogleAnalytics();
-    events.forEach(event => window.removeEventListener(event, loadOnce));
-  };
-
-  events.forEach(event => window.addEventListener(event, loadOnce, { once: true, passive: true }));
-  
-  // Fallback: load after 5 seconds if no interaction
-  setTimeout(() => {
-    if (!gaLoaded) loadGoogleAnalytics();
-  }, 5000);
+// Initialize GA4 immediately
+export const initAnalytics = () => {
+  loadGoogleAnalytics();
 };
 
 declare global {
