@@ -70,6 +70,31 @@ export const updateConsent = (granted: boolean, saveToStorage = true) => {
     });
 
     console.info(`[Consent] Updated: analytics_storage=${consentState}`);
+
+    // If consent is granted, send immediate page_view and test event
+    if (granted) {
+      const pagePath = window.location.pathname + window.location.search;
+      const pageTitle = document.title;
+
+      // Send page_view immediately after consent
+      window.gtag('event', 'page_view', {
+        page_path: pagePath,
+        page_title: pageTitle
+      });
+
+      // Send test event for debugging
+      window.gtag('event', 'consent_accepted', {
+        event_category: 'consent',
+        event_label: 'cookie_banner',
+        timestamp: new Date().toISOString()
+      });
+
+      console.info('[GA4] Events sent immediately after consent', { 
+        pagePath, 
+        pageTitle,
+        timestamp: new Date().toISOString()
+      });
+    }
   }
 
   // Save choice to localStorage
