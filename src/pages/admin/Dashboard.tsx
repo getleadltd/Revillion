@@ -3,7 +3,6 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { SlugMigrationTool } from '@/components/admin/SlugMigrationTool';
 import { SEOStatusWidget } from '@/components/admin/SEOStatusWidget';
-import { RegenerateAllPosts } from '@/components/admin/RegenerateAllPosts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, CheckCircle, FileEdit, Eye, Plus, List } from 'lucide-react';
@@ -93,9 +92,6 @@ export default function Dashboard() {
             </Button>
           </CardContent>
         </Card>
-
-        {/* Regenerate All Posts */}
-        <RegenerateAllPosts />
 
         {/* SEO Status Widget */}
         <SEOStatusWidget posts={allPosts || []} lang={lang} />
