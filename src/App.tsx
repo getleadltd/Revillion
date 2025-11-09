@@ -16,7 +16,14 @@ import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
+import { useGA4PageViews } from "./hooks/useGA4PageViews";
 import './lib/i18n';
+
+// Component to listen to route changes and send GA4 page views
+const GAListener = () => {
+  useGA4PageViews();
+  return null;
+};
 
 const queryClient = new QueryClient();
 
@@ -27,6 +34,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <GAListener />
           <Routes>
             <Route path="/" element={<Navigate to="/en" replace />} />
             <Route path="/admin" element={<AdminRedirect />} />
