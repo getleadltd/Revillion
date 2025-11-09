@@ -40,6 +40,7 @@ export default function BlogEditor() {
   const [loading, setLoading] = useState(false);
   const [translating, setTranslating] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [showAIImageGenerator, setShowAIImageGenerator] = useState(false);
   const [originalData, setOriginalData] = useState<any>(null);
@@ -121,6 +122,56 @@ export default function BlogEditor() {
       title: "✅ Immagine aggiunta!",
       description: "L'immagine in evidenza è stata caricata con metadati SEO.",
     });
+  };
+
+  const handleRegenerateContent = async () => {
+    const currentTitle = form.getValues("title_it");
+    const currentCategory = form.getValues("category");
+
+    if (!currentTitle || currentTitle.trim() === "") {
+      toast({
+        title: "Errore",
+        description: "Inserisci un titolo prima di rigenerare il contenuto.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setRegenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-blog-content", {
+        body: {
+          topic: currentTitle,
+          category: currentCategory,
+          tone: "professional",
+          length: "medium",
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.generated) {
+        const formattedContent = formatHTMLContent(data.generated.content_it);
+        
+        // Aggiorna SOLO contenuto e meta description, NON titolo e slug
+        form.setValue("content_it", formattedContent);
+        form.setValue("meta_description_it", data.generated.meta_description_it);
+        
+        toast({
+          title: "🔄 Contenuto rigenerato!",
+          description: "Il contenuto è stato aggiornato. Titolo e slug sono rimasti invariati per preservare il SEO.",
+        });
+      }
+    } catch (error: any) {
+      console.error("Errore rigenerazione:", error);
+      toast({
+        title: "Errore",
+        description: error.message || "Errore durante la rigenerazione del contenuto.",
+        variant: "destructive",
+      });
+    } finally {
+      setRegenerating(false);
+    }
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -316,18 +367,43 @@ export default function BlogEditor() {
         </div>
           
           <div className="mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => setShowAIGenerator(true)}
-              className="gap-2"
-            >
-              <Sparkles className="h-4 w-4" />
-              ✨ Genera con AI
-            </Button>
-            <p className="text-sm text-muted-foreground">
-              Oppure compila manualmente i campi qui sotto
-            </p>
+            {!id && (
+              <>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setShowAIGenerator(true)}
+                  className="gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  ✨ Genera con AI
+                </Button>
+                <p className="text-sm text-muted-foreground">
+                  Oppure compila manualmente i campi qui sotto
+                </p>
+              </>
+            )}
+            {id && (
+              <>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleRegenerateContent}
+                  disabled={regenerating}
+                  className="gap-2"
+                >
+                  {regenerating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  🔄 Rigenera Contenuto
+                </Button>
+                <p className="text-sm text-muted-foreground">
+                  Rigenera solo il contenuto, titolo e slug rimangono invariati
+                </p>
+              </>
+            )}
           </div>
 
           <div className="mb-4 p-3 bg-primary/10 rounded-md border border-primary/20">
