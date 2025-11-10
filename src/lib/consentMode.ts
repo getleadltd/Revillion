@@ -1,6 +1,9 @@
 // Google Consent Mode v2 - GDPR Compliant
 // Must be initialized BEFORE loading Google Analytics
 
+// Import global types
+import type {} from './analytics';
+
 const CONSENT_KEY = 'cookieConsent';
 
 type ConsentStatus = 'accepted' | 'rejected' | null;
@@ -9,6 +12,12 @@ type ConsentStatus = 'accepted' | 'rejected' | null;
 const isForceConsentEnabled = () => {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.has('ga_force_consent') || localStorage.getItem('ga_force_consent') === '1';
+};
+
+// Check if debug mode is enabled
+const isDebugMode = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.has('ga_debug') || localStorage.getItem('ga_debug') === '1';
 };
 
 // Get stored consent status
@@ -22,12 +31,12 @@ export const getConsentStatus = (): ConsentStatus => {
 export const initConsentMode = () => {
   if (typeof window === 'undefined') return;
 
-  // Initialize dataLayer for gtag
+  // Initialize dataLayer for gtag with official pattern
   window.dataLayer = window.dataLayer || [];
   function gtag(...args: any[]) {
-    window.dataLayer.push(args);
+    window.dataLayer.push(arguments);
   }
-  window.gtag = gtag as any;
+  window.gtag = gtag;
 
   // Set default consent state (denied until user accepts)
   gtag('consent', 'default', {
@@ -71,29 +80,48 @@ export const updateConsent = (granted: boolean, saveToStorage = true) => {
 
     console.info(`[Consent] Updated: analytics_storage=${consentState}`);
 
-    // If consent is granted, send immediate page_view and test event
+    // If consent is granted, send immediate page_view and test event with retry
     if (granted) {
-      const pagePath = window.location.pathname + window.location.search;
-      const pageTitle = document.title;
+      const sendImmediateEvents = (attempt = 1) => {
+        if (!window.gtag && attempt <= 3) {
+          console.warn(`[GA4] gtag not ready, retry ${attempt}/3`);
+          setTimeout(() => sendImmediateEvents(attempt + 1), 250);
+          return;
+        }
 
-      // Send page_view immediately after consent
-      window.gtag('event', 'page_view', {
-        page_path: pagePath,
-        page_title: pageTitle
-      });
+        if (!window.gtag) {
+          console.error('[GA4] gtag not available after retries');
+          return;
+        }
 
-      // Send test event for debugging
-      window.gtag('event', 'consent_accepted', {
-        event_category: 'consent',
-        event_label: 'cookie_banner',
-        timestamp: new Date().toISOString()
-      });
+        const pagePath = window.location.pathname + window.location.search;
+        const pageTitle = document.title;
+        const debugMode = isDebugMode();
 
-      console.info('[GA4] Events sent immediately after consent', { 
-        pagePath, 
-        pageTitle,
-        timestamp: new Date().toISOString()
-      });
+        // Send page_view immediately after consent
+        window.gtag('event', 'page_view', {
+          page_path: pagePath,
+          page_title: pageTitle,
+          debug_mode: debugMode
+        });
+
+        // Send test event for debugging
+        window.gtag('event', 'consent_accepted', {
+          event_category: 'consent',
+          event_label: 'cookie_banner',
+          timestamp: new Date().toISOString(),
+          debug_mode: debugMode
+        });
+
+        console.info('[GA4] Events sent immediately after consent', { 
+          pagePath, 
+          pageTitle,
+          debugMode,
+          timestamp: new Date().toISOString()
+        });
+      };
+
+      sendImmediateEvents();
     }
   }
 
@@ -106,24 +134,29 @@ export const updateConsent = (granted: boolean, saveToStorage = true) => {
 
 // Debug helper for console
 if (typeof window !== 'undefined') {
-  (window as any).__gaDebugInfo = () => ({
-    hasGtag: !!window.gtag,
-    hasDataLayer: !!window.dataLayer,
-    location: window.location.href,
-    title: document.title,
-    consentStatus: getConsentStatus(),
-    forceConsent: isForceConsentEnabled(),
-    gaCookies: document.cookie.split('; ').filter(c => c.startsWith('_ga'))
-  });
-}
+  (window as any).__gaDebugInfo = () => {
+    const info: any = {
+      hasGtag: !!window.gtag,
+      hasDataLayer: !!window.dataLayer,
+      dataLayerLength: window.dataLayer?.length || 0,
+      measurementId: 'G-FKENPNYCSP',
+      location: window.location.href,
+      title: document.title,
+      consentStatus: getConsentStatus(),
+      forceConsent: isForceConsentEnabled(),
+      debugMode: isDebugMode(),
+      gaCookies: document.cookie.split('; ').filter(c => c.startsWith('_ga'))
+    };
 
-declare global {
-  interface Window {
-    dataLayer: any[];
-    gtag?: (
-      command: string,
-      targetId: string | Date,
-      config?: Record<string, any>
-    ) => void;
-  }
+    // Try to get client_id if gtag is available
+    if (window.gtag) {
+      window.gtag('get', 'G-FKENPNYCSP', 'client_id', (cid: string) => {
+        console.info('[GA4] Current client_id:', cid);
+      });
+    }
+
+    return info;
+  };
+
+  console.info('[GA4] Debug helper available: window.__gaDebugInfo()');
 }
