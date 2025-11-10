@@ -54,13 +54,6 @@ const loadGoogleAnalytics = () => {
       debug_mode: debugMode
     });
     
-    // Send test ping event
-    gtag('event', 'ga_test_ping', {
-      source: 'init',
-      timestamp: new Date().toISOString(),
-      debug_mode: debugMode
-    });
-    
     console.log('✅ GA script loaded & configured', {
       measurementId: MEASUREMENT_ID,
       debugMode,
