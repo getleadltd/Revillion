@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useBlogPostsAdmin } from '@/hooks/useBlogPostsAdmin';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
@@ -82,7 +83,11 @@ const BlogAdmin = () => {
   };
 
   return (
-    <AdminLayout>
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -201,6 +206,7 @@ const BlogAdmin = () => {
           </Tabs>
       </div>
     </AdminLayout>
+    </>
   );
 };
 

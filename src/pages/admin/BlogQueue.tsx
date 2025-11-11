@@ -1,9 +1,14 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { BlogQueueManager } from "@/components/admin/BlogQueueManager";
+import { Helmet } from 'react-helmet-async';
 
 const BlogQueue = () => {
   return (
-    <AdminLayout>
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <AdminLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Coda Articoli Automatica</h1>
@@ -15,6 +20,7 @@ const BlogQueue = () => {
         <BlogQueueManager />
       </div>
     </AdminLayout>
+    </>
   );
 };
 

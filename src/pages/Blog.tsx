@@ -36,6 +36,17 @@ const Blog = () => {
         <title>{t('blog.title')} | Revillion Partners</title>
         <meta name="description" content={getMetaDescription()} />
         
+        {/* Canonical URL */}
+        <link rel="canonical" href={currentUrl} />
+        
+        {/* Hreflang Tags */}
+        <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en/blog" />
+        <link rel="alternate" hrefLang="de" href="https://revillion-partners.com/de/blog" />
+        <link rel="alternate" hrefLang="it" href="https://revillion-partners.com/it/blog" />
+        <link rel="alternate" hrefLang="pt" href="https://revillion-partners.com/pt/blog" />
+        <link rel="alternate" hrefLang="es" href="https://revillion-partners.com/es/blog" />
+        <link rel="alternate" hrefLang="x-default" href="https://revillion-partners.com/en/blog" />
+        
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${t('blog.title')} | Revillion Partners`} />

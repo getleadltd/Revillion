@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { SlugMigrationTool } from '@/components/admin/SlugMigrationTool';
@@ -35,7 +36,11 @@ export default function Dashboard() {
   const latestPosts = publishedPosts?.slice(0, 5) || [];
 
   return (
-    <AdminLayout>
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <AdminLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
@@ -144,5 +149,6 @@ export default function Dashboard() {
         </Card>
       </div>
     </AdminLayout>
+    </>
   );
 }

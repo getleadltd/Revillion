@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useBlogAnalytics } from '@/hooks/useBlogAnalytics';
@@ -12,21 +13,31 @@ export default function BlogAnalytics() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
+      <>
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </AdminLayout>
+      </>
     );
   }
 
   if (!analytics) {
     return (
-      <AdminLayout>
+      <>
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <AdminLayout>
         <div className="text-center py-12">
           <p className="text-muted-foreground">Nessun dato analytics disponibile</p>
         </div>
       </AdminLayout>
+      </>
     );
   }
 
@@ -49,7 +60,11 @@ export default function BlogAnalytics() {
     }));
 
   return (
-    <AdminLayout>
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <AdminLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics Blog</h1>
@@ -282,5 +297,6 @@ export default function BlogAnalytics() {
         </Card>
       </div>
     </AdminLayout>
+    </>
   );
 }

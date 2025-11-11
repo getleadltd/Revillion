@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Helmet } from 'react-helmet-async';
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -348,16 +349,25 @@ export default function BlogEditor() {
 
   if (initialLoading) {
     return (
-      <AdminLayout>
+      <>
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <AdminLayout>
         <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       </AdminLayout>
+      </>
     );
   }
 
   return (
-    <AdminLayout>
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <AdminLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">{id ? "Modifica Post" : "Nuovo Post"}</h1>
@@ -643,6 +653,7 @@ export default function BlogEditor() {
             articleCategory={form.watch("category")}
           />
         </div>
-    </AdminLayout>
-  );
-}
+      </AdminLayout>
+      </>
+    );
+  }
