@@ -48,17 +48,23 @@ export const SEOHead = () => {
   return (
     <Helmet>
       <html lang={i18n.language} />
+      
+      {/* Dynamic Title & Description */}
       <title>{currentMeta.title}</title>
       <meta name="description" content={currentMeta.description} />
       <meta name="keywords" content={keywords[i18n.language as keyof typeof keywords] || keywords.en} />
       <meta name="app-build" content={new Date().toISOString()} />
       
-      {/* OpenGraph */}
+      {/* OpenGraph Dynamic Tags */}
       <meta property="og:title" content={currentMeta.title} />
       <meta property="og:description" content={currentMeta.description} />
       <meta property="og:locale" content={localeMap[i18n.language as keyof typeof localeMap] || 'en_US'} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={`https://revillion-partners.com/${i18n.language}`} />
+      
+      {/* Twitter Dynamic Tags */}
+      <meta name="twitter:title" content={currentMeta.title} />
+      <meta name="twitter:description" content={currentMeta.description} />
       
       {/* Canonical */}
       <link rel="canonical" href={`https://revillion-partners.com/${i18n.language}`} />

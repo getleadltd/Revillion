@@ -14,8 +14,24 @@ export const calculateReadingTime = (text: string): number => {
 };
 
 export const generateSlug = (title: string): string => {
+  // Character mapping for special characters to ASCII equivalents
+  const charMap: Record<string, string> = {
+    'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss',
+    'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a',
+    'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e',
+    'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
+    'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o',
+    'ù': 'u', 'ú': 'u', 'û': 'u',
+    'ñ': 'n', 'ç': 'c'
+  };
+
   return title
     .toLowerCase()
+    .split('')
+    .map(char => charMap[char] || char)
+    .join('')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 };
