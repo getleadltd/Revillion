@@ -7,6 +7,7 @@ import { useBlogPost } from '@/hooks/useBlogPost';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { BlogCTA } from '@/components/blog/BlogCTA';
+import { Breadcrumbs } from '@/components/blog/Breadcrumbs';
 import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog';
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
@@ -174,12 +175,9 @@ const BlogPost = () => {
         )}
         <link rel="alternate" hrefLang="x-default" href={`https://revillion-partners.com/en/blog/${post.slug_en || slug}`} />
         
-        {/* Structured Data */}
+        {/* Structured Data - Article only (breadcrumbs are inline) */}
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
         </script>
       </Helmet>
 
@@ -199,6 +197,7 @@ const BlogPost = () => {
               alt={post.featured_image_alt || title}
               title={title}
               loading="eager"
+              fetchPriority="high"
               width={1200}
               height={630}
               className="w-full h-full object-cover"
@@ -207,14 +206,15 @@ const BlogPost = () => {
         )}
 
         <div className="container mx-auto px-4 py-12">
-          {/* Breadcrumbs */}
-          <nav className="text-sm text-muted-foreground mb-6">
-            <Link to={`/${lang}`} className="hover:text-primary">Home</Link>
-            {' > '}
-            <Link to={`/${lang}/blog`} className="hover:text-primary">{t('blog.title')}</Link>
-            {' > '}
-            <span className="text-foreground">{title}</span>
-          </nav>
+          {/* Breadcrumbs with Structured Data */}
+          <Breadcrumbs
+            items={[
+              { name: 'Home', url: `https://revillion-partners.com/${lang}`, position: 1 },
+              { name: t('blog.title'), url: `https://revillion-partners.com/${lang}/blog`, position: 2 }
+            ]}
+            currentPage={title}
+            className="mb-6"
+          />
 
           <div className="max-w-4xl mx-auto">
             {/* Title */}

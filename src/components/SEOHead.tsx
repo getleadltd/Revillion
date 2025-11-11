@@ -37,14 +37,6 @@ export const SEOHead = () => {
     es: 'es_ES'
   };
 
-  const keywords: Record<string, string> = {
-    en: "casino affiliate, high CPA, iGaming partners, affiliate network, casino commissions",
-    de: "Casino-Affiliate, hohes CPA, iGaming-Partner, Affiliate-Netzwerk, Casino-Provisionen",
-    it: "affiliazione casino, CPA alto, partner iGaming, network affiliazione, commissioni casino",
-    pt: "afiliados cassino, CPA alto, parceiros iGaming, rede afiliados, comissões cassino",
-    es: "afiliados casino, CPA alto, socios iGaming, red afiliados, comisiones casino"
-  };
-
   return (
     <Helmet>
       <html lang={i18n.language} />
@@ -52,7 +44,6 @@ export const SEOHead = () => {
       {/* Dynamic Title & Description */}
       <title>{currentMeta.title}</title>
       <meta name="description" content={currentMeta.description} />
-      <meta name="keywords" content={keywords[i18n.language as keyof typeof keywords] || keywords.en} />
       <meta name="app-build" content={new Date().toISOString()} />
       
       {/* OpenGraph Dynamic Tags */}
