@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered } from 'lucide-react';
+import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield } from 'lucide-react';
 import { NavLink, useParams } from 'react-router-dom';
 import {
   Sidebar,
@@ -53,6 +53,11 @@ export function AdminSidebar() {
       title: 'Analytics',
       icon: BarChart3,
       path: `/${lang}/admin/analytics`,
+    },
+    {
+      title: 'SEO Monitoring',
+      icon: Shield,
+      path: `/${lang}/admin/seo-monitoring`,
     },
   ];
 

@@ -228,6 +228,42 @@ export type Database = {
           },
         ]
       }
+      seo_monitoring_logs: {
+        Row: {
+          created_at: string | null
+          error_details: Json | null
+          execution_time_ms: number | null
+          id: string
+          issues_found: number | null
+          scan_date: string | null
+          scan_type: string
+          status: string | null
+          total_items_checked: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_details?: Json | null
+          execution_time_ms?: number | null
+          id?: string
+          issues_found?: number | null
+          scan_date?: string | null
+          scan_type: string
+          status?: string | null
+          total_items_checked?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          error_details?: Json | null
+          execution_time_ms?: number | null
+          id?: string
+          issues_found?: number | null
+          scan_date?: string | null
+          scan_type?: string
+          status?: string | null
+          total_items_checked?: number | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null

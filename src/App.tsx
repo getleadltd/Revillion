@@ -13,6 +13,7 @@ import BlogEditor from "./pages/admin/BlogEditor";
 import BlogAnalytics from "./pages/admin/BlogAnalytics";
 import BlogQueue from "./pages/admin/BlogQueue";
 import Dashboard from "./pages/admin/Dashboard";
+import SEOMonitoring from "./pages/admin/SEOMonitoring";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
@@ -89,6 +90,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <BlogQueue />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/:lang/admin/seo-monitoring" 
+              element={
+                <ProtectedRoute>
+                  <SEOMonitoring />
                 </ProtectedRoute>
               } 
             />
