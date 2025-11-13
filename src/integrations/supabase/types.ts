@@ -264,6 +264,36 @@ export type Database = {
         }
         Relationships: []
       }
+      url_redirects: {
+        Row: {
+          created_at: string
+          hit_count: number
+          id: string
+          last_hit_at: string | null
+          new_url: string
+          old_url: string
+          redirect_type: number
+        }
+        Insert: {
+          created_at?: string
+          hit_count?: number
+          id?: string
+          last_hit_at?: string | null
+          new_url: string
+          old_url: string
+          redirect_type?: number
+        }
+        Update: {
+          created_at?: string
+          hit_count?: number
+          id?: string
+          last_hit_at?: string | null
+          new_url?: string
+          old_url?: string
+          redirect_type?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -297,6 +327,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      track_redirect_hit: { Args: { redirect_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
