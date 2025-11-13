@@ -54,6 +54,11 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
+                <Link to={`/${lang}/contact`} className="hover:text-orange-400 transition-colors">
+                  {t('nav.contact')}
+                </Link>
+              </li>
+              <li>
                 <Link to={`/${lang}/blog`} className="hover:text-orange-400 transition-colors">
                   Blog
                 </Link>

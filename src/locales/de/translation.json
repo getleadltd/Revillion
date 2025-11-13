@@ -259,5 +259,57 @@
     "acceptAll": "Alle akzeptieren",
     "rejectAll": "Ablehnen",
     "settings": "Einstellungen"
+  },
+  "contact": {
+    "badge": "KONTAKTIEREN SIE UNS",
+    "title": "Kontaktieren Sie",
+    "titleHighlight": "Revillion",
+    "subtitle": "Kontaktieren Sie unser Team für Partnerschaftsmöglichkeiten oder Support",
+    "form": {
+      "name": "Vollständiger Name",
+      "namePlaceholder": "Max Mustermann",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "ihre@email.com",
+      "phone": "Telefonnummer (Optional)",
+      "phonePlaceholder": "+49 123 456 7890",
+      "contactType": "Ich bin ein...",
+      "contactTypeOptions": {
+        "affiliate": "Aktueller/Zukünftiger Affiliate",
+        "partner": "Casino/Marken-Partner",
+        "general": "Allgemeine Anfrage"
+      },
+      "company": "Firmenname",
+      "companyPlaceholder": "Ihre Firma GmbH",
+      "subject": "Betreff",
+      "subjectPlaceholder": "Kurze Beschreibung Ihrer Anfrage",
+      "message": "Nachricht",
+      "messagePlaceholder": "Erzählen Sie uns mehr über Ihre Bedürfnisse...",
+      "submit": "Nachricht Senden",
+      "submitting": "Wird gesendet...",
+      "success": "Nachricht erfolgreich gesendet! Wir antworten innerhalb von 24 Stunden.",
+      "error": "Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut."
+    },
+    "info": {
+      "title": "Partnerschaftsmöglichkeiten",
+      "affiliate": {
+        "title": "Für Affiliates",
+        "description": "Treten Sie unserem Netzwerk bei und beginnen Sie, hohe CPA-Provisionen zu verdienen, indem Sie Premium-Casino-Marken bewerben."
+      },
+      "partner": {
+        "title": "Für Casino-Marken",
+        "description": "Erweitern Sie Ihre Reichweite durch unser globales Affiliate-Netzwerk. Wir verbinden Ihre Marke mit hochwertigem Traffic weltweit."
+      },
+      "support": {
+        "title": "Support und Fragen",
+        "description": "Unser Team hilft Ihnen bei technischen Fragen, Kontoproblemen oder allgemeinen Anfragen."
+      }
+    },
+    "contactDetails": {
+      "title": "Kontaktinformationen",
+      "email": "E-Mail",
+      "emailValue": "partners@revillion.com",
+      "response": "Antwortzeit",
+      "responseValue": "Innerhalb von 24 Stunden"
+    }
   }
 }

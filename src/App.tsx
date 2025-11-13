@@ -8,12 +8,14 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Contact from "./pages/Contact";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogEditor from "./pages/admin/BlogEditor";
 import BlogAnalytics from "./pages/admin/BlogAnalytics";
 import BlogQueue from "./pages/admin/BlogQueue";
 import Dashboard from "./pages/admin/Dashboard";
 import SEOMonitoring from "./pages/admin/SEOMonitoring";
+import ContactMessages from "./pages/admin/ContactMessages";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
@@ -44,6 +46,7 @@ const App = () => (
             <Route path="/" element={<Navigate to="/en" replace />} />
             <Route path="/admin" element={<AdminRedirect />} />
             <Route path="/:lang" element={<Index />} />
+            <Route path="/:lang/contact" element={<Contact />} />
             <Route path="/:lang/blog" element={<Blog />} />
             <Route path="/:lang/blog/:slug" element={<BlogPost />} />
             <Route path="/:lang/auth/login" element={<Login />} />
@@ -100,6 +103,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SEOMonitoring />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/:lang/admin/contact-messages" 
+              element={
+                <ProtectedRoute>
+                  <ContactMessages />
                 </ProtectedRoute>
               } 
             />

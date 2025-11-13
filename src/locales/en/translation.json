@@ -4,7 +4,8 @@
     "whyJoin": "Why Join",
     "tools": "Tools",
     "offers": "Offers",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "contact": "Contact"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate Network",
@@ -259,5 +260,57 @@
     "acceptAll": "Accept all",
     "rejectAll": "Reject",
     "settings": "Settings"
+  },
+  "contact": {
+    "badge": "GET IN TOUCH",
+    "title": "Contact",
+    "titleHighlight": "Revillion",
+    "subtitle": "Get in touch with our team for partnership opportunities or support",
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email Address",
+      "emailPlaceholder": "your@email.com",
+      "phone": "Phone Number (Optional)",
+      "phonePlaceholder": "+1 234 567 8900",
+      "contactType": "I am a...",
+      "contactTypeOptions": {
+        "affiliate": "Current/Future Affiliate",
+        "partner": "Casino/Brand Partner",
+        "general": "General Inquiry"
+      },
+      "company": "Company Name",
+      "companyPlaceholder": "Your Company Ltd.",
+      "subject": "Subject",
+      "subjectPlaceholder": "Brief description of your inquiry",
+      "message": "Message",
+      "messagePlaceholder": "Tell us more about your needs...",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "success": "Message sent successfully! We'll respond within 24 hours.",
+      "error": "Error sending message. Please try again."
+    },
+    "info": {
+      "title": "Partnership Opportunities",
+      "affiliate": {
+        "title": "For Affiliates",
+        "description": "Join our network and start earning high CPA commissions promoting premium casino brands."
+      },
+      "partner": {
+        "title": "For Casino Brands",
+        "description": "Expand your reach through our global affiliate network. We connect your brand with high-quality traffic worldwide."
+      },
+      "support": {
+        "title": "Support & Questions",
+        "description": "Our team is here to help with technical questions, account issues, or general inquiries."
+      }
+    },
+    "contactDetails": {
+      "title": "Contact Information",
+      "email": "Email",
+      "emailValue": "partners@revillion.com",
+      "response": "Response Time",
+      "responseValue": "Within 24 hours"
+    }
   }
 }
