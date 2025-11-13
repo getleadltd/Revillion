@@ -16,6 +16,17 @@ import { toast } from '@/hooks/use-toast';
 import { Mail, Clock, Users, Building2, HeadphonesIcon } from 'lucide-react';
 import { useState } from 'react';
 
+// Temporary type until Supabase types are regenerated
+type ContactMessageInsert = {
+  name: string;
+  email: string;
+  phone?: string | null;
+  contact_type: string;
+  company_name?: string | null;
+  subject: string;
+  message: string;
+};
+
 const contactSchema = z.object({
   name: z.string()
     .trim()
@@ -59,17 +70,18 @@ const Contact = () => {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .insert([{
-          name: data.name,
-          email: data.email,
-          phone: data.phone || null,
-          contact_type: data.contactType,
-          company_name: data.companyName || null,
-          subject: data.subject,
-          message: data.message
-        }]);
+      const insertData: ContactMessageInsert = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone || null,
+        contact_type: data.contactType,
+        company_name: data.companyName || null,
+        subject: data.subject,
+        message: data.message
+      };
+
+      // @ts-expect-error - Table types will be regenerated after migration
+      const { error } = await supabase.from('contact_messages').insert([insertData]);
 
       if (error) throw error;
 
@@ -277,12 +289,12 @@ const Contact = () => {
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium">{t('contact.contactDetails.email')}</p>
-                      <a href="mailto:partners@revillion.com" className="text-sm text-primary hover:underline">
-                        {t('contact.contactDetails.emailValue')}
-                      </a>
-                    </div>
+                  <div>
+                    <p className="text-sm font-medium">{t('contact.contactDetails.email')}</p>
+                    <a href="mailto:info@revillion.com" className="text-sm text-primary hover:underline">
+                      {t('contact.contactDetails.emailValue')}
+                    </a>
+                  </div>
                   </div>
 
                   <div className="flex items-center gap-3">
