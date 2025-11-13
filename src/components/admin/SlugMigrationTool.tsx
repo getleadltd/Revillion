@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { migrateAllPostSlugs } from '@/lib/slugUtils';
 import { Loader2, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const SlugMigrationTool = () => {
   const [loading, setLoading] = useState(false);
+  const [forceMode, setForceMode] = useState(true); // Default: Force mode ON
   const [result, setResult] = useState<{
     success: boolean;
     message: string;
@@ -17,7 +20,11 @@ export const SlugMigrationTool = () => {
   const { toast } = useToast();
 
   const handleMigration = async () => {
-    if (!confirm('Vuoi generare automaticamente gli slug tradotti per tutti i post esistenti?')) {
+    const confirmMessage = forceMode
+      ? '⚠️ ATTENZIONE: Questa operazione SOVRASCRIVERÀ tutti gli slug esistenti!\n\nGli URL vecchi non funzioneranno più. Vuoi procedere?'
+      : 'Vuoi generare automaticamente gli slug tradotti per tutti i post esistenti?';
+    
+    if (!confirm(confirmMessage)) {
       return;
     }
 
@@ -25,7 +32,7 @@ export const SlugMigrationTool = () => {
     setResult(null);
 
     try {
-      const migrationResult = await migrateAllPostSlugs();
+      const migrationResult = await migrateAllPostSlugs(forceMode);
       setResult(migrationResult);
 
       if (migrationResult.success) {
@@ -64,12 +71,39 @@ export const SlugMigrationTool = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Toggle per modalità Force/Safe */}
+        <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
+          <div className="space-y-0.5 flex-1">
+            <Label htmlFor="force-mode" className="text-base font-medium cursor-pointer">
+              Modalità Forzata
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              {forceMode 
+                ? '⚠️ SOVRASCRIVE tutti gli slug esistenti (consigliato per correggere caratteri speciali)'
+                : 'Aggiunge solo gli slug mancanti, mantiene quelli esistenti'
+              }
+            </p>
+          </div>
+          <Switch
+            id="force-mode"
+            checked={forceMode}
+            onCheckedChange={setForceMode}
+          />
+        </div>
+
         <div className="p-4 bg-muted rounded-lg space-y-2 text-sm">
           <p>📋 <strong>Cosa fa questo tool:</strong></p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Legge tutti i post dal database</li>
             <li>Genera slug da title_en, title_de, title_it, title_pt, title_es</li>
-            <li>Aggiorna solo gli slug mancanti (non sovrascrive quelli esistenti)</li>
+            <li>Converte caratteri speciali: ä→ae, ö→oe, ü→ue, ß→ss, á→a, é→e, ñ→n, ç→c</li>
+            {forceMode ? (
+              <li className="text-orange-600 dark:text-orange-400 font-medium">
+                ⚠️ SOVRASCRIVE tutti gli slug esistenti
+              </li>
+            ) : (
+              <li>Aggiunge solo gli slug mancanti (non sovrascrive esistenti)</li>
+            )}
             <li>Usa lo slug principale come fallback per slug_it se mancante</li>
           </ul>
         </div>
@@ -78,6 +112,7 @@ export const SlugMigrationTool = () => {
           onClick={handleMigration} 
           disabled={loading}
           className="w-full"
+          variant={forceMode ? 'destructive' : 'default'}
         >
           {loading ? (
             <>
@@ -87,7 +122,7 @@ export const SlugMigrationTool = () => {
           ) : (
             <>
               <RefreshCw className="mr-2 h-4 w-4" />
-              Avvia Migrazione
+              {forceMode ? '⚠️ Avvia Migrazione Forzata' : 'Avvia Migrazione'}
             </>
           )}
         </Button>

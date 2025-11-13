@@ -32,8 +32,9 @@ export const generateTranslatedSlugs = (post: {
 
 /**
  * Migrate all existing posts to generate missing translated slugs
+ * @param forceRegenerate - If true, overwrites all existing slugs. If false, only fills missing ones.
  */
-export const migrateAllPostSlugs = async () => {
+export const migrateAllPostSlugs = async (forceRegenerate: boolean = false) => {
   try {
     // Fetch all posts
     const { data: posts, error: fetchError } = await supabase
@@ -58,14 +59,24 @@ export const migrateAllPostSlugs = async () => {
         continue;
       }
 
-      // Merge with existing slugs (don't overwrite if already set)
-      const updatedSlugs = {
-        slug_en: post.slug_en || generatedSlugs.slug_en,
-        slug_de: post.slug_de || generatedSlugs.slug_de,
-        slug_it: post.slug_it || generatedSlugs.slug_it || post.slug, // Fallback to main slug
-        slug_pt: post.slug_pt || generatedSlugs.slug_pt,
-        slug_es: post.slug_es || generatedSlugs.slug_es,
-      };
+      // Choose merge strategy based on forceRegenerate flag
+      const updatedSlugs = forceRegenerate
+        ? {
+            // FORCE MODE: Always use newly generated slugs
+            slug_en: generatedSlugs.slug_en || post.slug_en,
+            slug_de: generatedSlugs.slug_de || post.slug_de,
+            slug_it: generatedSlugs.slug_it || post.slug_it || post.slug,
+            slug_pt: generatedSlugs.slug_pt || post.slug_pt,
+            slug_es: generatedSlugs.slug_es || post.slug_es,
+          }
+        : {
+            // SAFE MODE: Keep existing slugs, only fill missing ones
+            slug_en: post.slug_en || generatedSlugs.slug_en,
+            slug_de: post.slug_de || generatedSlugs.slug_de,
+            slug_it: post.slug_it || generatedSlugs.slug_it || post.slug,
+            slug_pt: post.slug_pt || generatedSlugs.slug_pt,
+            slug_es: post.slug_es || generatedSlugs.slug_es,
+          };
 
       const { error: updateError } = await supabase
         .from('blog_posts')
