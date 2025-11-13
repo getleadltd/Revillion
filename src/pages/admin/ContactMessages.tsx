@@ -25,6 +25,7 @@ import { toast } from '@/hooks/use-toast';
 import { Mail, Eye, Archive, Trash2, Search } from 'lucide-react';
 import { format } from 'date-fns';
 
+// Temporary type until Supabase types are regenerated
 type ContactMessage = {
   id: string;
   name: string;
@@ -47,10 +48,8 @@ const ContactMessages = () => {
   const { data: messages, isLoading } = useQuery({
     queryKey: ['contact-messages', statusFilter, typeFilter, searchQuery],
     queryFn: async () => {
-      let query = supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // @ts-expect-error - Table types will be regenerated after migration
+      let query: any = supabase.from('contact_messages').select('*').order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);
@@ -72,10 +71,8 @@ const ContactMessages = () => {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from('contact_messages')
-        .update({ status })
-        .eq('id', id);
+      // @ts-expect-error - Table types will be regenerated after migration
+      const { error } = await supabase.from('contact_messages').update({ status }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -89,10 +86,8 @@ const ContactMessages = () => {
 
   const deleteMessageMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('contact_messages')
-        .delete()
-        .eq('id', id);
+      // @ts-expect-error - Table types will be regenerated after migration
+      const { error } = await supabase.from('contact_messages').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
