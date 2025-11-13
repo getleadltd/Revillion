@@ -54,7 +54,16 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
-                <Link to={`/${lang}/contact`} className="hover:text-orange-400 transition-colors">
+                <Link 
+                  to={`/${lang}/contact`} 
+                  className="hover:text-orange-400 transition-colors"
+                  onClick={(e) => {
+                    if (window.location.pathname.includes('/contact')) {
+                      e.preventDefault();
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                >
                   {t('nav.contact')}
                 </Link>
               </li>

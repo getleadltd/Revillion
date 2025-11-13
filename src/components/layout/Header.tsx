@@ -164,6 +164,13 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
                 {t('nav.faq')}
               </a>
               <Link 
+                to={`/${lang}/contact`}
+                className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.contact')}
+              </Link>
+              <Link 
                 to={`/${lang}/blog`}
                 className="text-gray-800 hover:text-orange-500 transition-colors font-semibold text-left"
                 onClick={() => setIsMenuOpen(false)}
