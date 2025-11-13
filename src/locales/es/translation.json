@@ -4,7 +4,8 @@
     "whyJoin": "Por Qué Unirse",
     "tools": "Herramientas",
     "offers": "Ofertas",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "contact": "Contacto"
   },
   "hero": {
     "badge": "#1 Red de Afiliados iGaming",
@@ -259,5 +260,57 @@
     "acceptAll": "Aceptar todo",
     "rejectAll": "Rechazar",
     "settings": "Configuración"
+  },
+  "contact": {
+    "badge": "PONTE EN CONTACTO",
+    "title": "Contacta",
+    "titleHighlight": "Revillion",
+    "subtitle": "Ponte en contacto con nuestro equipo para oportunidades de asociación o soporte",
+    "form": {
+      "name": "Nombre Completo",
+      "namePlaceholder": "Juan Pérez",
+      "email": "Dirección de Email",
+      "emailPlaceholder": "tu@email.com",
+      "phone": "Número de Teléfono (Opcional)",
+      "phonePlaceholder": "+34 123 456 789",
+      "contactType": "Soy un...",
+      "contactTypeOptions": {
+        "affiliate": "Afiliado Actual/Futuro",
+        "partner": "Socio Casino/Marca",
+        "general": "Consulta General"
+      },
+      "company": "Nombre de la Empresa",
+      "companyPlaceholder": "Tu Empresa S.L.",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Breve descripción de tu consulta",
+      "message": "Mensaje",
+      "messagePlaceholder": "Cuéntanos más sobre tus necesidades...",
+      "submit": "Enviar Mensaje",
+      "submitting": "Enviando...",
+      "success": "¡Mensaje enviado con éxito! Responderemos en 24 horas.",
+      "error": "Error al enviar el mensaje. Inténtalo de nuevo."
+    },
+    "info": {
+      "title": "Oportunidades de Asociación",
+      "affiliate": {
+        "title": "Para Afiliados",
+        "description": "Únete a nuestra red y comienza a ganar altas comisiones CPA promocionando marcas premium de casino."
+      },
+      "partner": {
+        "title": "Para Marcas de Casino",
+        "description": "Expande tu alcance a través de nuestra red global de afiliados. Conectamos tu marca con tráfico de alta calidad en todo el mundo."
+      },
+      "support": {
+        "title": "Soporte y Preguntas",
+        "description": "Nuestro equipo está aquí para ayudarte con preguntas técnicas, problemas de cuenta o consultas generales."
+      }
+    },
+    "contactDetails": {
+      "title": "Información de Contacto",
+      "email": "Email",
+      "emailValue": "partners@revillion.com",
+      "response": "Tiempo de Respuesta",
+      "responseValue": "Dentro de 24 horas"
+    }
   }
 }

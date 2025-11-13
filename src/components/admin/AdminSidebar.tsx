@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield } from 'lucide-react';
+import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield, Mail } from 'lucide-react';
 import { NavLink, useParams } from 'react-router-dom';
 import {
   Sidebar,
@@ -58,6 +58,11 @@ export function AdminSidebar() {
       title: 'SEO Monitoring',
       icon: Shield,
       path: `/${lang}/admin/seo-monitoring`,
+    },
+    {
+      title: 'Messaggi Contatti',
+      icon: Mail,
+      path: `/${lang}/admin/contact-messages`,
     },
   ];
 

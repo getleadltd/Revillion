@@ -93,6 +93,13 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
             </a>
             <Link 
+              to={`/${lang}/contact`}
+              className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
+            >
+              {t('nav.contact')}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link 
               to={`/${lang}/blog`}
               className="text-gray-800 hover:text-orange-500 transition-all duration-300 font-semibold relative group"
             >

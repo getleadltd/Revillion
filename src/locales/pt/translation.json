@@ -259,5 +259,57 @@
     "acceptAll": "Aceitar todos",
     "rejectAll": "Rejeitar",
     "settings": "Configurações"
+  },
+  "contact": {
+    "badge": "ENTRE EM CONTATO",
+    "title": "Contacte",
+    "titleHighlight": "Revillion",
+    "subtitle": "Entre em contato com nossa equipe para oportunidades de parceria ou suporte",
+    "form": {
+      "name": "Nome Completo",
+      "namePlaceholder": "João Silva",
+      "email": "Endereço de Email",
+      "emailPlaceholder": "seu@email.com",
+      "phone": "Número de Telefone (Opcional)",
+      "phonePlaceholder": "+351 123 456 789",
+      "contactType": "Eu sou um...",
+      "contactTypeOptions": {
+        "affiliate": "Afiliado Atual/Futuro",
+        "partner": "Parceiro Casino/Marca",
+        "general": "Consulta Geral"
+      },
+      "company": "Nome da Empresa",
+      "companyPlaceholder": "Sua Empresa Lda.",
+      "subject": "Assunto",
+      "subjectPlaceholder": "Breve descrição da sua consulta",
+      "message": "Mensagem",
+      "messagePlaceholder": "Conte-nos mais sobre suas necessidades...",
+      "submit": "Enviar Mensagem",
+      "submitting": "Enviando...",
+      "success": "Mensagem enviada com sucesso! Responderemos em 24 horas.",
+      "error": "Erro ao enviar mensagem. Tente novamente."
+    },
+    "info": {
+      "title": "Oportunidades de Parceria",
+      "affiliate": {
+        "title": "Para Afiliados",
+        "description": "Junte-se à nossa rede e comece a ganhar altas comissões CPA promovendo marcas premium de casino."
+      },
+      "partner": {
+        "title": "Para Marcas de Casino",
+        "description": "Expanda seu alcance através da nossa rede global de afiliados. Conectamos sua marca com tráfego de alta qualidade em todo o mundo."
+      },
+      "support": {
+        "title": "Suporte e Perguntas",
+        "description": "Nossa equipe está aqui para ajudar com questões técnicas, problemas de conta ou consultas gerais."
+      }
+    },
+    "contactDetails": {
+      "title": "Informações de Contato",
+      "email": "Email",
+      "emailValue": "partners@revillion.com",
+      "response": "Tempo de Resposta",
+      "responseValue": "Dentro de 24 horas"
+    }
   }
 }
