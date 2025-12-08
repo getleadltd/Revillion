@@ -48,7 +48,6 @@ const ContactMessages = () => {
   const { data: messages, isLoading } = useQuery({
     queryKey: ['contact-messages', statusFilter, typeFilter, searchQuery],
     queryFn: async () => {
-      // @ts-expect-error - Table types will be regenerated after migration
       let query: any = supabase.from('contact_messages').select('*').order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
@@ -71,7 +70,6 @@ const ContactMessages = () => {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      // @ts-expect-error - Table types will be regenerated after migration
       const { error } = await supabase.from('contact_messages').update({ status }).eq('id', id);
       if (error) throw error;
     },
@@ -86,7 +84,6 @@ const ContactMessages = () => {
 
   const deleteMessageMutation = useMutation({
     mutationFn: async (id: string) => {
-      // @ts-expect-error - Table types will be regenerated after migration
       const { error } = await supabase.from('contact_messages').delete().eq('id', id);
       if (error) throw error;
     },

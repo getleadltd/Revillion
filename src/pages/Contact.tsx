@@ -80,7 +80,6 @@ const Contact = () => {
         message: data.message
       };
 
-      // @ts-expect-error - Table types will be regenerated after migration
       const { error } = await supabase.from('contact_messages').insert([insertData]);
 
       if (error) throw error;
