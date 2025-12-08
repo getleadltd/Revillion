@@ -228,6 +228,48 @@ export type Database = {
           },
         ]
       }
+      contact_messages: {
+        Row: {
+          company_name: string | null
+          contact_type: string
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string | null
+          contact_type: string
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string | null
+          contact_type?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       seo_monitoring_logs: {
         Row: {
           created_at: string | null
