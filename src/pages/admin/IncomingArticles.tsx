@@ -61,14 +61,21 @@ export default function IncomingArticles() {
         throw new Error('Failed to fetch article');
       }
 
-      // 2. Call translate-blog-post to generate translations
-      console.log('Generating translations for article:', article.title_en);
+      // 2. Determine source language and content
+      const sourceLang = (article as any).source_language || 'en';
+      const sourceTitle = article[`title_${sourceLang}` as keyof typeof article] || article.title_en;
+      const sourceContent = article[`content_${sourceLang}` as keyof typeof article] || article.content_en;
+      const sourceMetaDesc = article[`meta_description_${sourceLang}` as keyof typeof article] || article.meta_description_en || '';
+
+      console.log(`Generating translations for article from ${sourceLang}:`, sourceTitle);
       
+      // 3. Call translate-blog-post with source language
       const { data: translationData, error: translationError } = await supabase.functions.invoke('translate-blog-post', {
         body: {
-          title_it: article.title_en, // We use English as source and translate TO other languages
-          content_it: article.content_en,
-          meta_description_it: article.meta_description_en || '',
+          title: sourceTitle,
+          content: sourceContent,
+          meta_description: sourceMetaDesc,
+          source_language: sourceLang,
         }
       });
 
@@ -77,46 +84,37 @@ export default function IncomingArticles() {
         throw new Error('Failed to generate translations');
       }
 
-      console.log('Translations received:', Object.keys(translationData || {}));
+      console.log('Translations received:', Object.keys(translationData?.translations || {}));
 
-      // 3. Generate translated slugs
-      const slugs: Record<string, string> = {
-        slug_en: article.slug_en || article.slug,
-      };
+      // 4. Build update data with all translations
+      const translations = translationData?.translations || {};
       
-      if (translationData?.title_de) {
-        slugs.slug_de = generateSlug(translationData.title_de);
-      }
-      if (translationData?.title_it) {
-        slugs.slug_it = generateSlug(translationData.title_it);
-      }
-      if (translationData?.title_pt) {
-        slugs.slug_pt = generateSlug(translationData.title_pt);
-      }
-      if (translationData?.title_es) {
-        slugs.slug_es = generateSlug(translationData.title_es);
-      }
-
-      // 4. Update the article with translations and publish
       const updateData: Record<string, any> = {
         status: 'published',
         published_at: new Date().toISOString(),
-        // Translations
-        title_de: translationData?.title_de || null,
-        content_de: translationData?.content_de || null,
-        meta_description_de: translationData?.meta_description_de || null,
-        title_it: translationData?.title_it || null,
-        content_it: translationData?.content_it || null,
-        meta_description_it: translationData?.meta_description_it || null,
-        title_pt: translationData?.title_pt || null,
-        content_pt: translationData?.content_pt || null,
-        meta_description_pt: translationData?.meta_description_pt || null,
-        title_es: translationData?.title_es || null,
-        content_es: translationData?.content_es || null,
-        meta_description_es: translationData?.meta_description_es || null,
-        // Slugs
-        ...slugs,
       };
+
+      // Keep original source content and add translations
+      const languages = ['en', 'de', 'it', 'pt', 'es'];
+      
+      for (const lang of languages) {
+        if (lang === sourceLang) {
+          // Keep original content for source language
+          updateData[`title_${lang}`] = article[`title_${lang}` as keyof typeof article];
+          updateData[`content_${lang}`] = article[`content_${lang}` as keyof typeof article];
+          updateData[`meta_description_${lang}`] = article[`meta_description_${lang}` as keyof typeof article];
+          updateData[`slug_${lang}`] = article[`slug_${lang}` as keyof typeof article] || article.slug;
+        } else if (translations[lang]) {
+          // Use translations for other languages
+          updateData[`title_${lang}`] = translations[lang].title || null;
+          updateData[`content_${lang}`] = translations[lang].content || null;
+          updateData[`meta_description_${lang}`] = translations[lang].meta_description || null;
+          // Generate slug from translated title
+          if (translations[lang].title) {
+            updateData[`slug_${lang}`] = generateSlug(translations[lang].title);
+          }
+        }
+      }
 
       const { error: updateError } = await supabase
         .from('blog_posts')
