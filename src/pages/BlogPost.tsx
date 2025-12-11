@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import { useBlogPost } from '@/hooks/useBlogPost';
+import { useProcessedContent } from '@/hooks/useProcessedContent';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { BlogCTA } from '@/components/blog/BlogCTA';
@@ -67,11 +68,11 @@ const BlogPost = () => {
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
   const formattedContent = formatHTMLContent(content);
   
-  // Add language prefix to internal blog links
-  const htmlWithLangLinks = formattedContent.replace(/href="\/blog\//g, `href="/${lang}/blog/`);
+  // Process internal links with correct language-specific slugs from database
+  const { processedContent } = useProcessedContent(formattedContent, lang);
   
   // Sanitize HTML to prevent XSS attacks
-  const sanitizedContent = DOMPurify.sanitize(htmlWithLangLinks, {
+  const sanitizedContent = DOMPurify.sanitize(processedContent, {
     ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'br', 'img', 'blockquote', 'code', 'pre', 'span', 'div'],
     ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height'],
     ALLOW_DATA_ATTR: false,
