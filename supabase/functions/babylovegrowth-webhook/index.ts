@@ -286,12 +286,37 @@ serve(async (req) => {
       console.error('Translation failed, saving only source language:', translationError);
     }
 
+    // Get an admin user for author_id (first user with admin role, or first user)
+    let authorId: string | null = null;
+    const { data: adminUser } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .eq('role', 'admin')
+      .limit(1)
+      .single();
+    
+    if (adminUser?.user_id) {
+      authorId = adminUser.user_id;
+    } else {
+      // Fallback: get any user from auth.users
+      const { data: anyUser } = await supabase.auth.admin.listUsers({ perPage: 1 });
+      if (anyUser?.users?.length > 0) {
+        authorId = anyUser.users[0].id;
+      }
+    }
+    
+    if (!authorId) {
+      throw new Error('No valid author_id found. Please ensure at least one user exists.');
+    }
+    
+    console.log(`Using author_id: ${authorId}`);
+
     // Build the blog post data
     const blogPostData: Record<string, any> = {
       status: 'draft',
       source: 'babylovegrowth',
       category: 'news',
-      author_id: '00000000-0000-0000-0000-000000000000', // System user
+      author_id: authorId,
       slug: baseSlug,
       featured_image_url: uploadedImageUrl,
       created_at: createdAt || new Date().toISOString(),
