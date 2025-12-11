@@ -34,11 +34,16 @@ function generateSlug(title: string): string {
     .replace(/^-|-$/g, '');
 }
 
-// Clean HTML content: remove JSON-LD scripts and extract image URL
-function cleanHtmlContent(html: string): { cleanedHtml: string; extractedImageUrl: string | null } {
+// Clean HTML content: remove JSON-LD scripts, extract image URL and alt text
+function cleanHtmlContent(html: string): { 
+  cleanedHtml: string; 
+  extractedImageUrl: string | null;
+  extractedImageAlt: string | null;
+} {
   let extractedImageUrl: string | null = null;
+  let extractedImageAlt: string | null = null;
   
-  // Extract JSON-LD script content to get image URL
+  // Extract JSON-LD script content to get image URL and alt text
   const jsonLdMatch = html.match(/<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
   
   if (jsonLdMatch && jsonLdMatch[1]) {
@@ -95,15 +100,25 @@ function cleanHtmlContent(html: string): { cleanedHtml: string; extractedImageUr
       
       console.log('========================================');
       
-      // Try to extract image URL from JSON-LD
+      // Try to extract image URL and alt text from JSON-LD
       if (jsonLd.image?.url) {
         extractedImageUrl = jsonLd.image.url;
+        // Extract alternativeHeadline as alt text
+        if (jsonLd.image.alternativeHeadline) {
+          extractedImageAlt = jsonLd.image.alternativeHeadline;
+        } else if (jsonLd.image.caption) {
+          extractedImageAlt = jsonLd.image.caption;
+        } else if (jsonLd.image.description) {
+          extractedImageAlt = jsonLd.image.description;
+        }
       } else if (typeof jsonLd.image === 'string') {
         extractedImageUrl = jsonLd.image;
       } else if (jsonLd.thumbnailUrl) {
         extractedImageUrl = jsonLd.thumbnailUrl;
       }
+      
       console.log(`Extracted image URL from JSON-LD: ${extractedImageUrl}`);
+      console.log(`Extracted image alt text from JSON-LD: ${extractedImageAlt}`);
     } catch (e) {
       console.error('Error parsing JSON-LD:', e);
     }
@@ -116,7 +131,7 @@ function cleanHtmlContent(html: string): { cleanedHtml: string; extractedImageUr
     .replace(/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '')
     .trim();
   
-  return { cleanedHtml, extractedImageUrl };
+  return { cleanedHtml, extractedImageUrl, extractedImageAlt };
 }
 
 // Download and upload hero image to Supabase storage
@@ -241,9 +256,9 @@ serve(async (req) => {
     const validLangs = ['en', 'de', 'it', 'pt', 'es'];
     const normalizedSourceLang = validLangs.includes(sourceLang) ? sourceLang : 'en';
 
-    // Clean HTML content and extract image URL from JSON-LD
-    const { cleanedHtml, extractedImageUrl } = cleanHtmlContent(rawContent);
-    console.log(`Content cleaned. Extracted image: ${extractedImageUrl ? 'yes' : 'no'}`);
+    // Clean HTML content and extract image URL + alt text from JSON-LD
+    const { cleanedHtml, extractedImageUrl, extractedImageAlt } = cleanHtmlContent(rawContent);
+    console.log(`Content cleaned. Extracted image: ${extractedImageUrl ? 'yes' : 'no'}, alt text: ${extractedImageAlt ? 'yes' : 'no'}`);
 
     // Generate slug from title
     const baseSlug = generateSlug(title);
@@ -316,6 +331,7 @@ serve(async (req) => {
       author_id: authorId,
       slug: baseSlug,
       featured_image_url: uploadedImageUrl,
+      featured_image_alt: extractedImageAlt, // Save extracted alt text from JSON-LD
       created_at: createdAt || new Date().toISOString(),
       // Set English as required field (use source content if source is en, otherwise still set it)
       title_en: title,
@@ -323,6 +339,9 @@ serve(async (req) => {
       meta_description_en: metaDescription || '',
       slug_en: baseSlug,
     };
+    
+    console.log(`Using featured_image_alt: ${extractedImageAlt || '(none)'}`);
+
 
     // If source language is different from English, also save in source language fields
     if (normalizedSourceLang !== 'en') {
