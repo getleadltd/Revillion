@@ -25,6 +25,15 @@ const BlogPost = () => {
   
   const { data: post, isLoading, incrementViews } = useBlogPost(slug!, lang);
 
+  // Derive content fields BEFORE conditional returns (hooks must be called consistently)
+  const title = post ? (post[`title_${lang}` as keyof typeof post] as string || post.title_en) : '';
+  const content = post ? (post[`content_${lang}` as keyof typeof post] as string || post.content_en) : '';
+  const metaDesc = post ? (post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en) : '';
+  const formattedContent = formatHTMLContent(content);
+  
+  // Process internal links - MUST be called before any conditional returns
+  const { processedContent } = useProcessedContent(formattedContent, lang);
+
   // Track article view automatically
   useEffect(() => {
     if (post?.id) {
@@ -68,14 +77,6 @@ const BlogPost = () => {
       </Layout>
     );
   }
-
-  const title = post[`title_${lang}` as keyof typeof post] as string || post.title_en;
-  const content = post[`content_${lang}` as keyof typeof post] as string || post.content_en;
-  const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
-  const formattedContent = formatHTMLContent(content);
-  
-  // Process internal links with correct language-specific slugs from database
-  const { processedContent } = useProcessedContent(formattedContent, lang);
   
   // Sanitize HTML to prevent XSS attacks
   const sanitizedContent = DOMPurify.sanitize(processedContent, {
