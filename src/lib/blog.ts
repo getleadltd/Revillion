@@ -41,19 +41,6 @@ export const formatHTMLContent = (html: string): string => {
   
   let formatted = html.trim();
   
-  // FAQ styling PRIMA di tutto - lavora sull'HTML pulito
-  // Pattern 1: h4 (domanda) + p (risposta)
-  formatted = formatted.replace(
-    /<h4([^>]*)>([^<]+)<\/h4>\s*<p>([\s\S]*?)<\/p>/g,
-    '<div class="faq-item"><p class="faq-question"><strong>$2</strong></p><p class="faq-answer">$3</p></div>'
-  );
-  
-  // Pattern 2: paragrafo con strong (domanda) seguito da paragrafo normale (risposta)
-  formatted = formatted.replace(
-    /<p><strong([^>]*)>([^<]+)<\/strong><\/p>\s*<p>([\s\S]*?)<\/p>/g,
-    '<div class="faq-item"><p class="faq-question"><strong$1>$2</strong></p><p class="faq-answer">$3</p></div>'
-  );
-  
   // Aggiungi margini generosi prima degli H2 (sezioni principali)
   formatted = formatted.replace(/<h2/g, '\n\n\n<h2');
   
