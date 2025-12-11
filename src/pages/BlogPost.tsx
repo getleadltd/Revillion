@@ -28,11 +28,8 @@ const BlogPost = () => {
   // SEO-canonical redirect: ensure correct localized slug in URL
   useEffect(() => {
     if (post && slug) {
-      const localizedSlug = (post[`slug_${lang}` as keyof typeof post] as string) ||
-        (lang !== 'it' ? post.slug_en : undefined) ||
-        post.slug_it ||
-        post.slug_en ||
-        post.slug;
+      const langSlugKey = `slug_${lang}` as keyof typeof post;
+      const localizedSlug = (post[langSlugKey] as string | null) || post.slug || post.slug_en || slug;
       
       if (localizedSlug && slug !== localizedSlug) {
         navigate(`/${lang}/blog/${localizedSlug}`, { replace: true });
