@@ -108,6 +108,15 @@
     font-size: 1.5rem !important;
   }
 
+  /* Scroll offset per anchor links con sticky header */
+  .prose h2[id],
+  .prose h3[id],
+  .prose h4[id],
+  .prose h5[id],
+  .prose h6[id] {
+    scroll-margin-top: 100px;
+  }
+
   .prose p {
     margin-bottom: 1.5rem !important;
     line-height: 1.8 !important;
