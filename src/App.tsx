@@ -23,6 +23,7 @@ import { AdminRedirect } from "./components/AdminRedirect";
 import { useGA4PageViews } from "./hooks/useGA4PageViews";
 import { CookieBanner } from "./components/CookieBanner";
 import { RedirectHandler } from "./components/RedirectHandler";
+import { ScrollToTop } from "./components/ScrollToTop";
 import './lib/i18n';
 
 // Component to listen to route changes and send GA4 page views
@@ -40,6 +41,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <GAListener />
           <CookieBanner />
           <RedirectHandler />
