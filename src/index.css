@@ -214,3 +214,34 @@
     color: hsl(var(--muted-foreground));
   }
 }
+
+/* FAQ styling */
+.prose .faq-item {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.prose .faq-item:hover {
+  box-shadow: 0 4px 12px hsl(var(--foreground) / 0.08);
+}
+
+.prose .faq-question {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.5rem !important;
+}
+
+.prose .faq-question strong {
+  color: hsl(var(--primary));
+}
+
+.prose .faq-answer {
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 0 !important;
+  line-height: 1.7 !important;
+}
