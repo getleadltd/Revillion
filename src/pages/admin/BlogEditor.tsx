@@ -46,6 +46,7 @@ export default function BlogEditor() {
   const [showAIImageGenerator, setShowAIImageGenerator] = useState(false);
   const [originalData, setOriginalData] = useState<any>(null);
   const [shouldRetranslate, setShouldRetranslate] = useState(false);
+  const [sourceLanguage, setSourceLanguage] = useState<string>('it');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -74,15 +75,34 @@ export default function BlogEditor() {
         toast({ title: "Errore", description: error.message, variant: "destructive" });
       } else if (data) {
         setOriginalData(data); // Salva dati originali per confronto
+        
+        // Detect source language and load appropriate content
+        const detectedSourceLang = (data as any).source_language || 'it';
+        setSourceLanguage(detectedSourceLang);
+        
+        // Get content from source language, fallback to Italian or English
+        const sourceTitle = data[`title_${detectedSourceLang}` as keyof typeof data] 
+          || data.title_it 
+          || data.title_en 
+          || "";
+        const sourceContent = data[`content_${detectedSourceLang}` as keyof typeof data] 
+          || data.content_it 
+          || data.content_en 
+          || "";
+        const sourceMetaDesc = data[`meta_description_${detectedSourceLang}` as keyof typeof data] 
+          || data.meta_description_it 
+          || data.meta_description_en 
+          || "";
+        
         form.reset({
-          title_it: data.title_it ?? "",
-          content_it: data.content_it ?? "",
+          title_it: sourceTitle as string,
+          content_it: sourceContent as string,
           category: data.category ?? "news",
           status: (data.status as "draft"|"published") ?? "draft",
           slug: data.slug ?? "",
           featured_image_url: data.featured_image_url ?? "",
           featured_image_alt: data.featured_image_alt ?? "",
-          meta_description_it: data.meta_description_it ?? "",
+          meta_description_it: sourceMetaDesc as string,
         });
       }
       setInitialLoading(false);
@@ -416,9 +436,20 @@ export default function BlogEditor() {
             )}
           </div>
 
+          {sourceLanguage !== 'it' && id && (
+            <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-md border border-blue-300 dark:border-blue-700">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                🌍 <strong>Articolo in {sourceLanguage === 'en' ? 'inglese' : sourceLanguage.toUpperCase()}:</strong> Questo articolo proviene da BabyLoveGrowth.ai. 
+                Le traduzioni in tutte le lingue (incluso italiano) verranno generate automaticamente al salvataggio.
+              </p>
+            </div>
+          )}
+
           <div className="mb-4 p-3 bg-primary/10 rounded-md border border-primary/20">
             <p className="text-sm text-muted-foreground">
-              🌍 <strong>Traduzioni automatiche:</strong> Inserisci il contenuto in italiano, le traduzioni in EN, DE, ES, PT verranno generate automaticamente.
+              🌍 <strong>Traduzioni automatiche:</strong> {sourceLanguage === 'it' 
+                ? 'Inserisci il contenuto in italiano, le traduzioni in EN, DE, ES, PT verranno generate automaticamente.'
+                : `Il contenuto verrà tradotto da ${sourceLanguage === 'en' ? 'inglese' : sourceLanguage.toUpperCase()} verso tutte le altre lingue.`}
             </p>
           </div>
 

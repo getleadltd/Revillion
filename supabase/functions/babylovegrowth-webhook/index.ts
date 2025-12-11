@@ -236,6 +236,7 @@ serve(async (req) => {
     const blogPostData: Record<string, any> = {
       status: 'draft',
       source: 'babylovegrowth',
+      source_language: normalizedSourceLang, // Save source language for automatic detection
       category: 'news',
       author_id: authorId,
       slug: baseSlug,
