@@ -1,10 +1,55 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Helper function to verify admin authentication
+async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: string }> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    };
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } }
+  });
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    };
+  }
+
+  // Check admin role via RPC
+  const { data: isAdmin, error: roleError } = await supabase
+    .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+
+  if (roleError || !isAdmin) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: 'Unauthorized - admin access required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    };
+  }
+
+  return { userId: user.id };
+}
 
 // Analizza il titolo per estrarre concetti chiave e mappare a soggetti visivi specifici
 function analyzeTitle(title: string): string {
@@ -67,6 +112,12 @@ serve(async (req) => {
   }
 
   try {
+    // Verify admin authentication
+    const authResult = await verifyAdmin(req);
+    if (authResult.error) {
+      return authResult.error;
+    }
+
     const { prompt, autoPrompt } = await req.json();
 
     let finalPrompt = prompt;
