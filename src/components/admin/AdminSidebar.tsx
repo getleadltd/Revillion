@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield, Mail } from 'lucide-react';
+import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield, Mail, Inbox } from 'lucide-react';
 import { NavLink, useParams } from 'react-router-dom';
 import {
   Sidebar,
@@ -16,6 +16,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { useBlogPostsAdmin } from '@/hooks/useBlogPostsAdmin';
+import { useIncomingArticlesCount } from '@/hooks/useIncomingArticlesCount';
 import logo from '@/assets/revillion-logo.png';
 
 export function AdminSidebar() {
@@ -32,11 +33,20 @@ export function AdminSidebar() {
   });
   const draftCount = draftPosts?.length || 0;
 
+  // Fetch incoming articles count
+  const { data: incomingCount } = useIncomingArticlesCount();
+
   const menuItems = [
     {
       title: 'Dashboard',
       icon: LayoutDashboard,
       path: `/${lang}/admin`,
+    },
+    {
+      title: 'Articoli in Arrivo',
+      icon: Inbox,
+      path: `/${lang}/admin/incoming`,
+      badge: incomingCount || 0,
     },
     {
       title: 'Articoli',
@@ -153,7 +163,16 @@ export function AdminSidebar() {
                         }
                       >
                         <item.icon className="h-4 w-4" />
-                        {!isCollapsed && <span>{item.title}</span>}
+                        {!isCollapsed && (
+                          <>
+                            <span>{item.title}</span>
+                            {item.badge !== undefined && item.badge > 0 && (
+                              <Badge variant="secondary" className="ml-auto">
+                                {item.badge}
+                              </Badge>
+                            )}
+                          </>
+                        )}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
