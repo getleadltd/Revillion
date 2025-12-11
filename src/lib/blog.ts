@@ -60,6 +60,13 @@ export const formatHTMLContent = (html: string): string => {
   // Assicura che <strong> sia effettivamente bold
   formatted = formatted.replace(/<strong>/g, '<strong class="font-bold">');
   
+  // FAQ styling: wrappa ogni coppia domanda/risposta in un card
+  // Pattern: paragrafo con strong (domanda) seguito da paragrafo normale (risposta)
+  formatted = formatted.replace(
+    /<p><strong([^>]*)>([^<]+)<\/strong><\/p>\s*\n*\s*<p>([^<]+)<\/p>/g,
+    '<div class="faq-item"><p class="faq-question"><strong$1>$2</strong></p><p class="faq-answer">$3</p></div>'
+  );
+  
   // Rimuovi eccessive righe vuote (max 3)
   formatted = formatted.replace(/\n{4,}/g, '\n\n\n');
   
