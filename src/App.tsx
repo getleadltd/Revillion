@@ -16,6 +16,7 @@ import BlogQueue from "./pages/admin/BlogQueue";
 import Dashboard from "./pages/admin/Dashboard";
 import SEOMonitoring from "./pages/admin/SEOMonitoring";
 import ContactMessages from "./pages/admin/ContactMessages";
+import IncomingArticles from "./pages/admin/IncomingArticles";
 import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
@@ -111,6 +112,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ContactMessages />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/:lang/admin/incoming" 
+              element={
+                <ProtectedRoute>
+                  <IncomingArticles />
                 </ProtectedRoute>
               } 
             />
