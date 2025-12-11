@@ -44,6 +44,57 @@ function cleanHtmlContent(html: string): { cleanedHtml: string; extractedImageUr
   if (jsonLdMatch && jsonLdMatch[1]) {
     try {
       const jsonLd = JSON.parse(jsonLdMatch[1].trim());
+      
+      // === DETAILED JSON-LD LOGGING ===
+      console.log('========================================');
+      console.log('=== BABYLOVEGROWTH JSON-LD ANALYSIS ===');
+      console.log('========================================');
+      console.log('JSON-LD Keys:', Object.keys(jsonLd));
+      console.log('JSON-LD Full Content:', JSON.stringify(jsonLd, null, 2));
+      
+      // Log specific potentially useful fields
+      console.log('--- FIELD BREAKDOWN ---');
+      console.log('@context:', jsonLd['@context']);
+      console.log('@type:', jsonLd['@type']);
+      console.log('headline:', jsonLd.headline);
+      console.log('name:', jsonLd.name);
+      console.log('description:', jsonLd.description);
+      console.log('image:', JSON.stringify(jsonLd.image, null, 2));
+      console.log('thumbnailUrl:', jsonLd.thumbnailUrl);
+      console.log('datePublished:', jsonLd.datePublished);
+      console.log('dateModified:', jsonLd.dateModified);
+      console.log('dateCreated:', jsonLd.dateCreated);
+      console.log('author:', JSON.stringify(jsonLd.author, null, 2));
+      console.log('creator:', JSON.stringify(jsonLd.creator, null, 2));
+      console.log('publisher:', JSON.stringify(jsonLd.publisher, null, 2));
+      console.log('keywords:', jsonLd.keywords);
+      console.log('articleSection:', jsonLd.articleSection);
+      console.log('articleBody (first 200 chars):', jsonLd.articleBody?.substring(0, 200));
+      console.log('wordCount:', jsonLd.wordCount);
+      console.log('inLanguage:', jsonLd.inLanguage);
+      console.log('mainEntityOfPage:', jsonLd.mainEntityOfPage);
+      console.log('isAccessibleForFree:', jsonLd.isAccessibleForFree);
+      console.log('url:', jsonLd.url);
+      console.log('speakable:', JSON.stringify(jsonLd.speakable, null, 2));
+      
+      // Check for FAQ or other structured data
+      if (jsonLd['@graph']) {
+        console.log('--- @graph FOUND (multiple entities) ---');
+        console.log('@graph length:', jsonLd['@graph'].length);
+        jsonLd['@graph'].forEach((item: any, index: number) => {
+          console.log(`@graph[${index}] @type:`, item['@type']);
+          console.log(`@graph[${index}] keys:`, Object.keys(item));
+        });
+      }
+      
+      // Check for FAQ schema
+      if (jsonLd['@type'] === 'FAQPage' || jsonLd.mainEntity) {
+        console.log('--- FAQ CONTENT FOUND ---');
+        console.log('mainEntity:', JSON.stringify(jsonLd.mainEntity, null, 2));
+      }
+      
+      console.log('========================================');
+      
       // Try to extract image URL from JSON-LD
       if (jsonLd.image?.url) {
         extractedImageUrl = jsonLd.image.url;
@@ -56,6 +107,8 @@ function cleanHtmlContent(html: string): { cleanedHtml: string; extractedImageUr
     } catch (e) {
       console.error('Error parsing JSON-LD:', e);
     }
+  } else {
+    console.log('No JSON-LD script found in content');
   }
   
   // Remove all JSON-LD scripts from content
@@ -143,7 +196,29 @@ serve(async (req) => {
 
   try {
     const payload = await req.json();
-    console.log('Received webhook payload:', JSON.stringify(payload).substring(0, 500));
+    
+    // === DETAILED PAYLOAD LOGGING ===
+    console.log('========================================');
+    console.log('=== BABYLOVEGROWTH WEBHOOK PAYLOAD ===');
+    console.log('========================================');
+    console.log('Payload Keys:', Object.keys(payload));
+    console.log('id:', payload.id);
+    console.log('title:', payload.title);
+    console.log('slug:', payload.slug);
+    console.log('languageCode:', payload.languageCode);
+    console.log('keywords:', payload.keywords);
+    console.log('metaDescription:', payload.metaDescription);
+    console.log('createdAt:', payload.createdAt);
+    console.log('updatedAt:', payload.updatedAt);
+    console.log('publishedAt:', payload.publishedAt);
+    console.log('category:', payload.category);
+    console.log('tags:', payload.tags);
+    console.log('author:', payload.author);
+    console.log('content_html length:', payload.content_html?.length);
+    console.log('content_markdown length:', payload.content_markdown?.length);
+    console.log('hero_image_url:', payload.hero_image_url);
+    console.log('featured_image:', payload.featured_image);
+    console.log('========================================');
 
     // Validate required fields
     const { id, title, content_html, content_markdown, metaDescription, languageCode, createdAt } = payload;
