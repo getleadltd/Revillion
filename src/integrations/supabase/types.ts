@@ -91,6 +91,7 @@ export type Database = {
           slug_es: string | null
           slug_it: string | null
           slug_pt: string | null
+          source: string | null
           status: string
           title_de: string | null
           title_en: string
@@ -129,6 +130,7 @@ export type Database = {
           slug_es?: string | null
           slug_it?: string | null
           slug_pt?: string | null
+          source?: string | null
           status?: string
           title_de?: string | null
           title_en: string
@@ -167,6 +169,7 @@ export type Database = {
           slug_es?: string | null
           slug_it?: string | null
           slug_pt?: string | null
+          source?: string | null
           status?: string
           title_de?: string | null
           title_en?: string
