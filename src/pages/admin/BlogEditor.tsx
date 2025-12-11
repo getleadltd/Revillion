@@ -205,15 +205,27 @@ export default function BlogEditor() {
 
       let translationData = null;
       
-      // Determina se servono le traduzioni
-      const needsTranslation = !id || // Nuovo post → sempre tradurre
-        shouldRetranslate || // Utente ha chiesto esplicitamente
-        // Oppure rileva cambiamenti nei contenuti testuali
-        (originalData && (
-          originalData.title_it !== values.title_it ||
-          originalData.content_it !== values.content_it ||
-          originalData.meta_description_it !== values.meta_description_it
-        ));
+      // Per articoli draft (inclusi BabyLoveGrowth), NON tradurre mai
+      // La traduzione avviene solo al click su "Pubblica" dalla pagina IncomingArticles
+      const isDraft = values.status === 'draft';
+      
+      // Rileva cambiamenti nel contenuto sorgente
+      const originalSourceTitle = originalData?.[`title_${sourceLanguage}`];
+      const originalSourceContent = originalData?.[`content_${sourceLanguage}`];
+      const originalSourceMeta = originalData?.[`meta_description_${sourceLanguage}`];
+      
+      const sourceContentChanged = originalData && (
+        originalSourceTitle !== values.title_it ||
+        originalSourceContent !== values.content_it ||
+        originalSourceMeta !== values.meta_description_it
+      );
+      
+      // Traduci SOLO se: non è draft E (è nuovo post OPPURE utente ha chiesto retranslate OPPURE contenuto cambiato)
+      const needsTranslation = !isDraft && (
+        !id || 
+        shouldRetranslate || 
+        sourceContentChanged
+      );
 
       if (needsTranslation) {
         setTranslating(true);
@@ -222,9 +234,10 @@ export default function BlogEditor() {
           'translate-blog-post',
           {
             body: {
-              title_it: values.title_it,
-              content_it: values.content_it,
-              meta_description_it: values.meta_description_it || ""
+              title: values.title_it,
+              content: values.content_it,
+              meta_description: values.meta_description_it || "",
+              source_language: sourceLanguage
             }
           }
         );
@@ -234,7 +247,7 @@ export default function BlogEditor() {
         if (translationError) {
           console.error("Errore traduzione:", translationError);
           const proceed = confirm(
-            "Errore durante la traduzione automatica. Vuoi salvare solo la versione italiana?"
+            "Errore durante la traduzione automatica. Vuoi salvare comunque?"
           );
           if (!proceed) {
             setLoading(false);
@@ -243,8 +256,14 @@ export default function BlogEditor() {
         } else {
           translationData = data;
         }
-      } else if (!needsTranslation && id) {
-        // Feedback quando solo l'immagine è cambiata
+      } else if (isDraft && id) {
+        // Feedback per salvataggio draft senza traduzione
+        toast({
+          title: "📝 Bozza salvata",
+          description: "Le traduzioni verranno generate quando pubblichi l'articolo.",
+        });
+      } else if (!needsTranslation && id && !isDraft) {
+        // Feedback quando solo l'immagine è cambiata (per articoli già pubblicati)
         toast({
           title: "ℹ️ Traduzioni preservate",
           description: "Solo l'immagine è stata modificata. Le traduzioni esistenti sono state mantenute.",
@@ -253,75 +272,59 @@ export default function BlogEditor() {
 
       // Preparare i dati per il salvataggio
       const baseData: any = {
-        title_it: values.title_it,
-        content_it: values.content_it,
-        meta_description_it: values.meta_description_it || null,
         category: values.category,
         status: values.status,
         slug: values.slug,
         featured_image_url: values.featured_image_url || null,
         featured_image_alt: values.featured_image_alt || null,
         published_at: values.status === "published" ? new Date().toISOString() : null,
+        source_language: sourceLanguage,
       };
+      
+      // Per articoli BabyLoveGrowth (source_language = 'en'), salva nei campi inglesi
+      if (sourceLanguage === 'en') {
+        baseData.title_en = values.title_it;
+        baseData.content_en = values.content_it;
+        baseData.meta_description_en = values.meta_description_it || null;
+      } else {
+        // Per articoli italiani, salva nei campi italiani
+        baseData.title_it = values.title_it;
+        baseData.content_it = values.content_it;
+        baseData.meta_description_it = values.meta_description_it || null;
+      }
       
       // Se ci sono nuove traduzioni, usale
       if (translationData?.translations) {
-        Object.assign(baseData, {
-          title_en: translationData.translations.en?.title || values.title_it,
-          content_en: translationData.translations.en?.content || values.content_it,
-          meta_description_en: translationData.translations.en?.meta_description || values.meta_description_it || null,
-          
-          title_de: translationData.translations.de?.title || null,
-          content_de: translationData.translations.de?.content || null,
-          meta_description_de: translationData.translations.de?.meta_description || null,
-          
-          title_es: translationData.translations.es?.title || null,
-          content_es: translationData.translations.es?.content || null,
-          meta_description_es: translationData.translations.es?.meta_description || null,
-          
-          title_pt: translationData.translations.pt?.title || null,
-          content_pt: translationData.translations.pt?.content || null,
-          meta_description_pt: translationData.translations.pt?.meta_description || null,
-        });
-      } else if (originalData) {
-        // Preserva traduzioni esistenti se disponibili
-        Object.assign(baseData, {
-          title_en: originalData.title_en || values.title_it,
-          content_en: originalData.content_en || values.content_it,
-          meta_description_en: originalData.meta_description_en || values.meta_description_it || null,
-          
-          title_de: originalData.title_de || null,
-          content_de: originalData.content_de || null,
-          meta_description_de: originalData.meta_description_de || null,
-          
-          title_es: originalData.title_es || null,
-          content_es: originalData.content_es || null,
-          meta_description_es: originalData.meta_description_es || null,
-          
-          title_pt: originalData.title_pt || null,
-          content_pt: originalData.content_pt || null,
-          meta_description_pt: originalData.meta_description_pt || null,
-        });
-      } else {
-        // Nuovo post senza traduzioni (fallback su italiano)
-        Object.assign(baseData, {
-          title_en: values.title_it,
-          content_en: values.content_it,
-          meta_description_en: values.meta_description_it || null,
-          
-          title_de: null,
-          content_de: null,
-          meta_description_de: null,
-          
-          title_es: null,
-          content_es: null,
-          meta_description_es: null,
-          
-          title_pt: null,
-          content_pt: null,
-          meta_description_pt: null,
-        });
+        const langs = ['en', 'de', 'it', 'es', 'pt'];
+        for (const lng of langs) {
+          if (lng !== sourceLanguage && translationData.translations[lng]) {
+            baseData[`title_${lng}`] = translationData.translations[lng].title;
+            baseData[`content_${lng}`] = translationData.translations[lng].content;
+            baseData[`meta_description_${lng}`] = translationData.translations[lng].meta_description || null;
+          }
+        }
+        // Assicurati che il contenuto sorgente sia sempre salvato
+        if (sourceLanguage === 'en') {
+          baseData.title_en = values.title_it;
+          baseData.content_en = values.content_it;
+          baseData.meta_description_en = values.meta_description_it || null;
+        } else {
+          baseData.title_it = values.title_it;
+          baseData.content_it = values.content_it;
+          baseData.meta_description_it = values.meta_description_it || null;
+        }
+      } else if (originalData && !isDraft) {
+        // Preserva traduzioni esistenti per articoli non-draft
+        const langs = ['en', 'de', 'it', 'es', 'pt'];
+        for (const lng of langs) {
+          if (lng !== sourceLanguage) {
+            baseData[`title_${lng}`] = originalData[`title_${lng}`] || null;
+            baseData[`content_${lng}`] = originalData[`content_${lng}`] || null;
+            baseData[`meta_description_${lng}`] = originalData[`meta_description_${lng}`] || null;
+          }
+        }
       }
+      // Per draft senza traduzioni esistenti, lasciamo i campi vuoti (verranno popolati alla pubblicazione)
 
       // Generate translated slugs automatically from titles
       const translatedSlugs = generateTranslatedSlugs({
@@ -440,7 +443,7 @@ export default function BlogEditor() {
             <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-md border border-blue-300 dark:border-blue-700">
               <p className="text-sm text-blue-800 dark:text-blue-200">
                 🌍 <strong>Articolo in {sourceLanguage === 'en' ? 'inglese' : sourceLanguage.toUpperCase()}:</strong> Questo articolo proviene da BabyLoveGrowth.ai. 
-                Le traduzioni in tutte le lingue (incluso italiano) verranno generate automaticamente al salvataggio.
+                Puoi modificarlo e salvarlo come bozza. Le traduzioni verranno generate automaticamente quando clicchi "Pubblica" dalla lista Articoli in Arrivo.
               </p>
             </div>
           )}
