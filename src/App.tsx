@@ -46,6 +46,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Navigate to="/en" replace />} />
             <Route path="/admin" element={<AdminRedirect />} />
+            <Route path="/admin/*" element={<AdminRedirect />} />
             <Route path="/:lang" element={<Index />} />
             <Route path="/:lang/contact" element={<Contact />} />
             <Route path="/:lang/blog" element={<Blog />} />
