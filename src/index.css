@@ -152,4 +152,56 @@
     color: hsl(var(--primary));
     opacity: 0.9;
   }
+
+  /* Table styles for blog content */
+  .prose table {
+    width: 100%;
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+    border-collapse: collapse;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px hsl(var(--foreground) / 0.1);
+  }
+
+  .prose thead {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .prose th {
+    padding: 1rem 1.25rem !important;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .prose tbody tr {
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  .prose tbody tr:nth-child(even) {
+    background-color: hsl(var(--muted) / 0.5);
+  }
+
+  .prose tbody tr:hover {
+    background-color: hsl(var(--accent));
+  }
+
+  .prose td {
+    padding: 1rem 1.25rem !important;
+    vertical-align: top;
+  }
+
+  .prose td:first-child {
+    font-weight: 600;
+    color: hsl(var(--foreground));
+    min-width: 200px;
+  }
+
+  .prose td:last-child {
+    color: hsl(var(--muted-foreground));
+  }
 }
