@@ -13,10 +13,16 @@ import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog'
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 
+const VALID_LANGS = ['en', 'de', 'it', 'pt', 'es'];
+
 const BlogPost = () => {
   const { t } = useTranslation();
-  const { lang = 'en', slug } = useParams();
+  const { lang: rawLang = 'en', slug } = useParams();
   const navigate = useNavigate();
+  
+  // Validate lang - fallback to 'en' if invalid (e.g., ":lang" literal)
+  const lang = VALID_LANGS.includes(rawLang) ? rawLang : 'en';
+  
   const { data: post, isLoading, incrementViews } = useBlogPost(slug!, lang);
 
   // Track article view automatically
