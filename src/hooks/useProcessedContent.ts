@@ -10,11 +10,16 @@ interface SlugMapping {
   slug: string;
 }
 
+const VALID_LANGS = ['en', 'de', 'it', 'pt', 'es'];
+
 /**
  * Hook to process HTML content and replace internal blog links with correct language-specific slugs
  * Handles both relative links (/blog/...) and absolute links (https://revillion-partners.com/xx/blog/...)
  */
 export function useProcessedContent(htmlContent: string, lang: string) {
+  // Validate lang - fallback to 'en' if invalid (e.g., ":lang" literal)
+  const safeLang = VALID_LANGS.includes(lang) ? lang : 'en';
+  
   const [processedContent, setProcessedContent] = useState(htmlContent);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -48,7 +53,7 @@ export function useProcessedContent(htmlContent: string, lang: string) {
 
         if (slugsToLookup.size === 0) {
           // No internal links found, just return original content with basic processing
-          const result = htmlContent.replace(/href="\/blog\//g, `href="/${lang}/blog/`);
+          const result = htmlContent.replace(/href="\/blog\//g, `href="/${safeLang}/blog/`);
           setProcessedContent(result);
           setIsProcessing(false);
           return;
@@ -71,10 +76,10 @@ export function useProcessedContent(htmlContent: string, lang: string) {
           console.error('Error fetching slugs:', error);
           // Fallback to basic processing
           const result = htmlContent
-            .replace(/href="\/blog\//g, `href="/${lang}/blog/`)
+            .replace(/href="\/blog\//g, `href="/${safeLang}/blog/`)
             .replace(
               /href="https:\/\/revillion-partners\.com\/(en|de|it|pt|es)\/blog\//g,
-              `href="https://revillion-partners.com/${lang}/blog/`
+              `href="https://revillion-partners.com/${safeLang}/blog/`
             );
           setProcessedContent(result);
           setIsProcessing(false);
@@ -85,7 +90,7 @@ export function useProcessedContent(htmlContent: string, lang: string) {
         const slugMapping = new Map<string, string>();
         
         for (const post of (posts || [])) {
-          const targetSlugKey = `slug_${lang}` as keyof SlugMapping;
+          const targetSlugKey = `slug_${safeLang}` as keyof SlugMapping;
           const targetSlug = (post[targetSlugKey] as string | null) || post.slug_en || post.slug;
           
           // Map all known slugs for this post to the target slug
@@ -109,7 +114,7 @@ export function useProcessedContent(htmlContent: string, lang: string) {
         // Replace relative links
         result = result.replace(/href="\/blog\/([^"]+)"/g, (fullMatch, oldSlug) => {
           const newSlug = slugMapping.get(oldSlug) || oldSlug;
-          return `href="/${lang}/blog/${newSlug}"`;
+          return `href="/${safeLang}/blog/${newSlug}"`;
         });
 
         // Replace absolute links
@@ -117,7 +122,7 @@ export function useProcessedContent(htmlContent: string, lang: string) {
           /href="https:\/\/revillion-partners\.com\/(en|de|it|pt|es)\/blog\/([^"]+)"/g,
           (fullMatch, oldLang, oldSlug) => {
             const newSlug = slugMapping.get(oldSlug) || oldSlug;
-            return `href="https://revillion-partners.com/${lang}/blog/${newSlug}"`;
+            return `href="https://revillion-partners.com/${safeLang}/blog/${newSlug}"`;
           }
         );
 
@@ -126,10 +131,10 @@ export function useProcessedContent(htmlContent: string, lang: string) {
         console.error('Error processing content links:', error);
         // Fallback to basic processing
         const result = htmlContent
-          .replace(/href="\/blog\//g, `href="/${lang}/blog/`)
+          .replace(/href="\/blog\//g, `href="/${safeLang}/blog/`)
           .replace(
             /href="https:\/\/revillion-partners\.com\/(en|de|it|pt|es)\/blog\//g,
-            `href="https://revillion-partners.com/${lang}/blog/`
+            `href="https://revillion-partners.com/${safeLang}/blog/`
           );
         setProcessedContent(result);
       } finally {
@@ -138,7 +143,7 @@ export function useProcessedContent(htmlContent: string, lang: string) {
     }
 
     processLinks();
-  }, [htmlContent, lang]);
+  }, [htmlContent, safeLang]);
 
   return { processedContent, isProcessing };
 }
