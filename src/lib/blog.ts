@@ -62,7 +62,7 @@ export const formatHTMLContent = (html: string): string => {
   
   // FAQ styling: wrappa ogni coppia h4 (domanda) + p (risposta) in un card
   formatted = formatted.replace(
-    /<h4([^>]*)>([^<]+)<\/h4>\s*\n*\s*<p>([^<]*(?:<[^\/][^>]*>[^<]*<\/[^>]+>[^<]*)*)<\/p>/g,
+    /<h4([^>]*)>([^<]+)<\/h4>\s*\n*\s*<p>([\s\S]*?)<\/p>/g,
     '<div class="faq-item"><p class="faq-question"><strong>$2</strong></p><p class="faq-answer">$3</p></div>'
   );
   
