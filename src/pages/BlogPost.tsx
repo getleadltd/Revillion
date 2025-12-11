@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import { useBlogPost } from '@/hooks/useBlogPost';
-import { useProcessedContent } from '@/hooks/useProcessedContent';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { BlogCTA } from '@/components/blog/BlogCTA';
@@ -13,26 +12,11 @@ import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog'
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 
-const VALID_LANGS = ['en', 'de', 'it', 'pt', 'es'];
-
 const BlogPost = () => {
   const { t } = useTranslation();
-  const { lang: rawLang = 'en', slug } = useParams();
+  const { lang = 'en', slug } = useParams();
   const navigate = useNavigate();
-  
-  // Validate lang - fallback to 'en' if invalid (e.g., ":lang" literal)
-  const lang = VALID_LANGS.includes(rawLang) ? rawLang : 'en';
-  
   const { data: post, isLoading, incrementViews } = useBlogPost(slug!, lang);
-
-  // Derive content fields BEFORE conditional returns (hooks must be called consistently)
-  const title = post ? (post[`title_${lang}` as keyof typeof post] as string || post.title_en) : '';
-  const content = post ? (post[`content_${lang}` as keyof typeof post] as string || post.content_en) : '';
-  const metaDesc = post ? (post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en) : '';
-  const formattedContent = formatHTMLContent(content);
-  
-  // Process internal links - MUST be called before any conditional returns
-  const { processedContent } = useProcessedContent(formattedContent, lang);
 
   // Track article view automatically
   useEffect(() => {
@@ -77,9 +61,17 @@ const BlogPost = () => {
       </Layout>
     );
   }
+
+  const title = post[`title_${lang}` as keyof typeof post] as string || post.title_en;
+  const content = post[`content_${lang}` as keyof typeof post] as string || post.content_en;
+  const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
+  const formattedContent = formatHTMLContent(content);
+  
+  // Add language prefix to internal blog links
+  const htmlWithLangLinks = formattedContent.replace(/href="\/blog\//g, `href="/${lang}/blog/`);
   
   // Sanitize HTML to prevent XSS attacks
-  const sanitizedContent = DOMPurify.sanitize(processedContent, {
+  const sanitizedContent = DOMPurify.sanitize(htmlWithLangLinks, {
     ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'br', 'img', 'blockquote', 'code', 'pre', 'span', 'div'],
     ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height'],
     ALLOW_DATA_ATTR: false,
