@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
-import { Check, Edit, Trash2, ExternalLink, Loader2, Inbox, RefreshCw } from 'lucide-react';
+import { Check, Edit, Trash2, Loader2, Inbox, RefreshCw, Languages } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
@@ -21,11 +21,13 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { generateSlug } from '@/lib/blog';
 
 export default function IncomingArticles() {
   const { lang = 'en' } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [publishingId, setPublishingId] = useState<string | null>(null);
 
   // Fetch incoming articles (draft + source = babylovegrowth)
   const { data: articles, isLoading, refetch } = useQuery({
@@ -43,25 +45,94 @@ export default function IncomingArticles() {
     },
   });
 
-  // Approve and publish mutation
+  // Approve and publish mutation with automatic translations
   const approveMutation = useMutation({
     mutationFn: async (postId: string) => {
-      const { error } = await supabase
+      setPublishingId(postId);
+      
+      // 1. Fetch the full article
+      const { data: article, error: fetchError } = await supabase
         .from('blog_posts')
-        .update({ 
-          status: 'published',
-          published_at: new Date().toISOString()
-        })
+        .select('*')
+        .eq('id', postId)
+        .single();
+      
+      if (fetchError || !article) {
+        throw new Error('Failed to fetch article');
+      }
+
+      // 2. Call translate-blog-post to generate translations
+      console.log('Generating translations for article:', article.title_en);
+      
+      const { data: translationData, error: translationError } = await supabase.functions.invoke('translate-blog-post', {
+        body: {
+          title_it: article.title_en, // We use English as source and translate TO other languages
+          content_it: article.content_en,
+          meta_description_it: article.meta_description_en || '',
+        }
+      });
+
+      if (translationError) {
+        console.error('Translation error:', translationError);
+        throw new Error('Failed to generate translations');
+      }
+
+      console.log('Translations received:', Object.keys(translationData || {}));
+
+      // 3. Generate translated slugs
+      const slugs: Record<string, string> = {
+        slug_en: article.slug_en || article.slug,
+      };
+      
+      if (translationData?.title_de) {
+        slugs.slug_de = generateSlug(translationData.title_de);
+      }
+      if (translationData?.title_it) {
+        slugs.slug_it = generateSlug(translationData.title_it);
+      }
+      if (translationData?.title_pt) {
+        slugs.slug_pt = generateSlug(translationData.title_pt);
+      }
+      if (translationData?.title_es) {
+        slugs.slug_es = generateSlug(translationData.title_es);
+      }
+
+      // 4. Update the article with translations and publish
+      const updateData: Record<string, any> = {
+        status: 'published',
+        published_at: new Date().toISOString(),
+        // Translations
+        title_de: translationData?.title_de || null,
+        content_de: translationData?.content_de || null,
+        meta_description_de: translationData?.meta_description_de || null,
+        title_it: translationData?.title_it || null,
+        content_it: translationData?.content_it || null,
+        meta_description_it: translationData?.meta_description_it || null,
+        title_pt: translationData?.title_pt || null,
+        content_pt: translationData?.content_pt || null,
+        meta_description_pt: translationData?.meta_description_pt || null,
+        title_es: translationData?.title_es || null,
+        content_es: translationData?.content_es || null,
+        meta_description_es: translationData?.meta_description_es || null,
+        // Slugs
+        ...slugs,
+      };
+
+      const { error: updateError } = await supabase
+        .from('blog_posts')
+        .update(updateData)
         .eq('id', postId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
     },
     onSuccess: () => {
+      setPublishingId(null);
       queryClient.invalidateQueries({ queryKey: ['incoming-articles'] });
       queryClient.invalidateQueries({ queryKey: ['blog-posts'] });
-      toast.success('Articolo pubblicato con successo');
+      toast.success('Articolo pubblicato con traduzioni in tutte le lingue');
     },
     onError: (error) => {
+      setPublishingId(null);
       toast.error(`Errore durante la pubblicazione: ${error.message}`);
     },
   });
@@ -98,6 +169,11 @@ export default function IncomingArticles() {
     return textContent.length > 150 ? textContent.substring(0, 150) + '...' : textContent;
   };
 
+  // Check if article has translations
+  const hasTranslations = (post: any) => {
+    return post.title_de || post.title_it || post.title_pt || post.title_es;
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -126,13 +202,17 @@ export default function IncomingArticles() {
               <Card key={article.id} className="overflow-hidden">
                 <div className="flex">
                   {/* Image thumbnail */}
-                  {article.featured_image_url && (
+                  {article.featured_image_url ? (
                     <div className="w-48 h-32 flex-shrink-0">
                       <img
                         src={article.featured_image_url}
                         alt=""
                         className="w-full h-full object-cover"
                       />
+                    </div>
+                  ) : (
+                    <div className="w-48 h-32 flex-shrink-0 bg-muted flex items-center justify-center">
+                      <span className="text-xs text-muted-foreground">No image</span>
                     </div>
                   )}
                   
@@ -145,6 +225,12 @@ export default function IncomingArticles() {
                             BabyLoveGrowth.ai
                           </Badge>
                           <Badge variant="outline">{article.category}</Badge>
+                          {!hasTranslations(article) && (
+                            <Badge variant="outline" className="text-orange-600 border-orange-300">
+                              <Languages className="h-3 w-3 mr-1" />
+                              Solo EN
+                            </Badge>
+                          )}
                         </div>
                         
                         <h3 className="font-semibold text-lg truncate">
@@ -166,14 +252,19 @@ export default function IncomingArticles() {
                           variant="default"
                           size="sm"
                           onClick={() => approveMutation.mutate(article.id)}
-                          disabled={approveMutation.isPending}
+                          disabled={approveMutation.isPending || publishingId === article.id}
                         >
-                          {approveMutation.isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                          {publishingId === article.id ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                              Traduzione...
+                            </>
                           ) : (
-                            <Check className="h-4 w-4 mr-1" />
+                            <>
+                              <Check className="h-4 w-4 mr-1" />
+                              Pubblica
+                            </>
                           )}
-                          Pubblica
                         </Button>
                         
                         <Button

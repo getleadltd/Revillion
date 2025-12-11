@@ -34,107 +34,36 @@ function generateSlug(title: string): string {
     .replace(/^-|-$/g, '');
 }
 
-// Translate content to other languages using translate-blog-post edge function
-async function translateContent(
-  supabaseUrl: string,
-  serviceRoleKey: string,
-  sourceLang: string,
-  title: string,
-  content: string,
-  metaDescription: string
-): Promise<Record<string, { title: string; content: string; meta_description: string }>> {
-  console.log(`Translating from ${sourceLang}...`);
+// Clean HTML content: remove JSON-LD scripts and extract image URL
+function cleanHtmlContent(html: string): { cleanedHtml: string; extractedImageUrl: string | null } {
+  let extractedImageUrl: string | null = null;
   
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
-    throw new Error("LOVABLE_API_KEY non configurata");
-  }
-
-  const targetLangs = ['en', 'de', 'it', 'pt', 'es'].filter(l => l !== sourceLang);
+  // Extract JSON-LD script content to get image URL
+  const jsonLdMatch = html.match(/<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
   
-  const systemPrompt = `Sei un traduttore professionista specializzato in contenuti per il settore iGaming e gambling online. 
-Traduci il seguente contenuto da ${sourceLang} verso ${targetLangs.join(', ')}.
-
-IMPORTANTE:
-- Mantieni ESATTAMENTE la stessa formattazione HTML nel contenuto
-- Usa terminologia appropriata per il settore gambling/casino
-- Le traduzioni devono essere naturali e idiomatiche, non letterali
-- Mantieni lo stesso tono professionale e coinvolgente
-- Preserva tutti i tag HTML (<h2>, <p>, <strong>, ecc.)`;
-
-  const userPrompt = `Traduci questi contenuti da ${sourceLang}:
-
-TITOLO: ${title}
-
-CONTENUTO: ${content}
-
-META DESCRIPTION: ${metaDescription || ""}`;
-
-  // Build dynamic properties based on target languages
-  const translationProperties: Record<string, any> = {};
-  for (const lang of targetLangs) {
-    translationProperties[lang] = {
-      type: "object",
-      properties: {
-        title: { type: "string", description: `Titolo tradotto in ${lang}` },
-        content: { type: "string", description: `Contenuto HTML tradotto in ${lang}` },
-        meta_description: { type: "string", description: `Meta description tradotta in ${lang}` }
-      },
-      required: ["title", "content", "meta_description"]
-    };
+  if (jsonLdMatch && jsonLdMatch[1]) {
+    try {
+      const jsonLd = JSON.parse(jsonLdMatch[1].trim());
+      // Try to extract image URL from JSON-LD
+      if (jsonLd.image?.url) {
+        extractedImageUrl = jsonLd.image.url;
+      } else if (typeof jsonLd.image === 'string') {
+        extractedImageUrl = jsonLd.image;
+      } else if (jsonLd.thumbnailUrl) {
+        extractedImageUrl = jsonLd.thumbnailUrl;
+      }
+      console.log(`Extracted image URL from JSON-LD: ${extractedImageUrl}`);
+    } catch (e) {
+      console.error('Error parsing JSON-LD:', e);
+    }
   }
-
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      tools: [
-        {
-          type: "function",
-          function: {
-            name: "return_translations",
-            description: `Restituisce le traduzioni del contenuto del blog in ${targetLangs.length} lingue`,
-            parameters: {
-              type: "object",
-              properties: {
-                translations: {
-                  type: "object",
-                  properties: translationProperties,
-                  required: targetLangs
-                }
-              },
-              required: ["translations"]
-            }
-          }
-        }
-      ],
-      tool_choice: { type: "function", function: { name: "return_translations" } }
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Errore AI Gateway:", response.status, errorText);
-    throw new Error(`Translation failed: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-  if (!toolCall || !toolCall.function?.arguments) {
-    throw new Error("Invalid AI response format");
-  }
-
-  const result = JSON.parse(toolCall.function.arguments);
-  console.log("Translations completed successfully");
-  return result.translations;
+  
+  // Remove all JSON-LD scripts from content
+  const cleanedHtml = html
+    .replace(/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '')
+    .trim();
+  
+  return { cleanedHtml, extractedImageUrl };
 }
 
 // Download and upload hero image to Supabase storage
@@ -217,7 +146,7 @@ serve(async (req) => {
     console.log('Received webhook payload:', JSON.stringify(payload).substring(0, 500));
 
     // Validate required fields
-    const { id, title, content_html, content_markdown, metaDescription, languageCode, publicUrl, createdAt } = payload;
+    const { id, title, content_html, content_markdown, metaDescription, languageCode, createdAt } = payload;
     
     if (!title || (!content_html && !content_markdown)) {
       return new Response(
@@ -232,36 +161,43 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Use HTML content if available, otherwise markdown
-    const content = content_html || content_markdown;
+    const rawContent = content_html || content_markdown;
     const sourceLang = languageCode || 'en';
     const validLangs = ['en', 'de', 'it', 'pt', 'es'];
     const normalizedSourceLang = validLangs.includes(sourceLang) ? sourceLang : 'en';
+
+    // Clean HTML content and extract image URL from JSON-LD
+    const { cleanedHtml, extractedImageUrl } = cleanHtmlContent(rawContent);
+    console.log(`Content cleaned. Extracted image: ${extractedImageUrl ? 'yes' : 'no'}`);
 
     // Generate slug from title
     const baseSlug = generateSlug(title);
     console.log(`Generated base slug: ${baseSlug} from language: ${normalizedSourceLang}`);
 
-    // Fetch hero image URL from the article details API if available
-    let heroImageUrl: string | null = null;
-    const babyloveGrowthApiKey = Deno.env.get('BABYLOVEGROWTH_API_KEY');
+    // Determine hero image URL - prefer extracted from JSON-LD, then try API
+    let heroImageUrl: string | null = extractedImageUrl;
     
-    if (babyloveGrowthApiKey && id) {
-      try {
-        console.log(`Fetching article details for ID: ${id}`);
-        const articleResponse = await fetch(`https://api.babylovegrowth.ai/api/integrations/v1/articles/${id}`, {
-          headers: {
-            'X-API-Key': babyloveGrowthApiKey,
-            'Content-Type': 'application/json'
+    // If no image from JSON-LD, try fetching from BabyLoveGrowth API
+    if (!heroImageUrl) {
+      const babyloveGrowthApiKey = Deno.env.get('BABYLOVEGROWTH_API_KEY');
+      if (babyloveGrowthApiKey && id) {
+        try {
+          console.log(`Fetching article details for ID: ${id}`);
+          const articleResponse = await fetch(`https://api.babylovegrowth.ai/api/integrations/v1/articles/${id}`, {
+            headers: {
+              'X-API-Key': babyloveGrowthApiKey,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (articleResponse.ok) {
+            const articleData = await articleResponse.json();
+            heroImageUrl = articleData.hero_image_url;
+            console.log(`Found hero image URL from API: ${heroImageUrl}`);
           }
-        });
-        
-        if (articleResponse.ok) {
-          const articleData = await articleResponse.json();
-          heroImageUrl = articleData.hero_image_url;
-          console.log(`Found hero image URL: ${heroImageUrl}`);
+        } catch (e) {
+          console.error('Error fetching article details:', e);
         }
-      } catch (e) {
-        console.error('Error fetching article details:', e);
       }
     }
 
@@ -271,22 +207,7 @@ serve(async (req) => {
       uploadedImageUrl = await handleHeroImage(supabase, heroImageUrl, baseSlug);
     }
 
-    // Translate content to other languages
-    let translations: Record<string, { title: string; content: string; meta_description: string }> = {};
-    try {
-      translations = await translateContent(
-        supabaseUrl,
-        supabaseServiceKey,
-        normalizedSourceLang,
-        title,
-        content,
-        metaDescription || ''
-      );
-    } catch (translationError) {
-      console.error('Translation failed, saving only source language:', translationError);
-    }
-
-    // Get an admin user for author_id (first user with admin role, or first user)
+    // Get an admin user for author_id
     let authorId: string | null = null;
     const { data: adminUser } = await supabase
       .from('user_roles')
@@ -311,7 +232,7 @@ serve(async (req) => {
     
     console.log(`Using author_id: ${authorId}`);
 
-    // Build the blog post data
+    // Build the blog post data - ONLY save source language, translations will be done on publish
     const blogPostData: Record<string, any> = {
       status: 'draft',
       source: 'babylovegrowth',
@@ -320,26 +241,19 @@ serve(async (req) => {
       slug: baseSlug,
       featured_image_url: uploadedImageUrl,
       created_at: createdAt || new Date().toISOString(),
+      // Set English as required field (use source content if source is en, otherwise still set it)
+      title_en: title,
+      content_en: cleanedHtml,
+      meta_description_en: metaDescription || '',
+      slug_en: baseSlug,
     };
 
-    // Set source language content
-    blogPostData[`title_${normalizedSourceLang}`] = title;
-    blogPostData[`content_${normalizedSourceLang}`] = content;
-    blogPostData[`meta_description_${normalizedSourceLang}`] = metaDescription || '';
-    blogPostData[`slug_${normalizedSourceLang}`] = baseSlug;
-
-    // Set translated content
-    for (const [lang, translation] of Object.entries(translations)) {
-      blogPostData[`title_${lang}`] = translation.title;
-      blogPostData[`content_${lang}`] = translation.content;
-      blogPostData[`meta_description_${lang}`] = translation.meta_description;
-      blogPostData[`slug_${lang}`] = generateSlug(translation.title);
-    }
-
-    // Ensure title_en and content_en are set (required fields)
-    if (!blogPostData.title_en) {
-      blogPostData.title_en = title;
-      blogPostData.content_en = content;
+    // If source language is different from English, also save in source language fields
+    if (normalizedSourceLang !== 'en') {
+      blogPostData[`title_${normalizedSourceLang}`] = title;
+      blogPostData[`content_${normalizedSourceLang}`] = cleanedHtml;
+      blogPostData[`meta_description_${normalizedSourceLang}`] = metaDescription || '';
+      blogPostData[`slug_${normalizedSourceLang}`] = baseSlug;
     }
 
     console.log('Inserting blog post with data:', Object.keys(blogPostData));
@@ -362,7 +276,7 @@ serve(async (req) => {
       JSON.stringify({ 
         status: 'received',
         post_id: insertedPost.id,
-        message: 'Article saved as draft'
+        message: 'Article saved as draft. Translations will be generated when published.'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
