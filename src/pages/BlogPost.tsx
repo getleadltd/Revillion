@@ -12,6 +12,38 @@ import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog'
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 
+// Extract FAQ items from content for schema and styling
+function extractFAQFromContent(content: string): Array<{question: string, answer: string}> {
+  const faqs: Array<{question: string, answer: string}> = [];
+  // Pattern: <p><strong>Question?</strong></p><p>Answer</p>
+  const faqPattern = /<p>\s*<strong>([^<]+\?)<\/strong>\s*<\/p>\s*<p>([^<]+)<\/p>/gi;
+  let match;
+  
+  while ((match = faqPattern.exec(content)) !== null) {
+    faqs.push({
+      question: match[1].trim(),
+      answer: match[2].trim()
+    });
+  }
+  
+  return faqs;
+}
+
+// Wrap FAQ content with styled elements
+function wrapFAQContent(html: string): string {
+  // Find FAQ section and wrap Q&A pairs
+  const faqSectionRegex = /(<h2[^>]*id="[^"]*(?:domande-frequenti|faq|frequently-asked-questions)[^"]*"[^>]*>[^<]*<\/h2>)([\s\S]*?)(?=<h2|$)/gi;
+  
+  return html.replace(faqSectionRegex, (match, header, content) => {
+    // Wrap each question-answer pair
+    const wrappedContent = content.replace(
+      /<p>\s*<strong>([^<]+\?)<\/strong>\s*<\/p>\s*<p>([^<]+)<\/p>/gi,
+      '<div class="faq-item"><div class="faq-question"><strong>$1</strong></div><div class="faq-answer">$2</div></div>'
+    );
+    return header + '<div class="faq-section">' + wrappedContent + '</div>';
+  });
+}
+
 const BlogPost = () => {
   const { t } = useTranslation();
   const { lang = 'en', slug } = useParams();
@@ -67,11 +99,17 @@ const BlogPost = () => {
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
   const formattedContent = formatHTMLContent(content);
   
+  // Extract FAQs for schema
+  const faqs = extractFAQFromContent(formattedContent);
+  
   // Add language prefix to internal blog links
   const htmlWithLangLinks = formattedContent.replace(/href="\/blog\//g, `href="/${lang}/blog/`);
   
+  // Wrap FAQ content with styled elements
+  const htmlWithFAQStyling = wrapFAQContent(htmlWithLangLinks);
+  
   // Sanitize HTML to prevent XSS attacks
-  const sanitizedContent = DOMPurify.sanitize(htmlWithLangLinks, {
+  const sanitizedContent = DOMPurify.sanitize(htmlWithFAQStyling, {
     ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'br', 'img', 'blockquote', 'code', 'pre', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
     ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height', 'id', 'tabindex'],
     ALLOW_DATA_ATTR: false,
@@ -135,6 +173,20 @@ const BlogPost = () => {
     ]
   };
 
+  // FAQ Schema for Google Rich Snippets
+  const faqSchema = faqs.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  } : null;
+
   return (
     <Layout>
       <Helmet>
@@ -172,10 +224,17 @@ const BlogPost = () => {
         )}
         <link rel="alternate" hrefLang="x-default" href={`https://revillion-partners.com/en/blog/${post.slug_en || slug}`} />
         
-        {/* Structured Data - Article only (breadcrumbs are inline) */}
+        {/* Structured Data - Article */}
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
         </script>
+        
+        {/* Structured Data - FAQ for Google Rich Snippets */}
+        {faqSchema && (
+          <script type="application/ld+json">
+            {JSON.stringify(faqSchema)}
+          </script>
+        )}
       </Helmet>
 
       <BlogCTA 
