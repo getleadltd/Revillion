@@ -213,4 +213,45 @@
   .prose td:last-child {
     color: hsl(var(--muted-foreground));
   }
+
+  /* FAQ Section Styling */
+  .prose .faq-section {
+    margin-top: 2rem;
+  }
+
+  .prose .faq-item {
+    margin-bottom: 1rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px hsl(var(--foreground) / 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .prose .faq-item:hover {
+    box-shadow: 0 4px 16px hsl(var(--foreground) / 0.12);
+    transform: translateY(-2px);
+  }
+
+  .prose .faq-question {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85));
+    color: hsl(var(--primary-foreground));
+    padding: 1.25rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 !important;
+  }
+
+  .prose .faq-question strong {
+    color: inherit !important;
+    font-weight: inherit;
+  }
+
+  .prose .faq-answer {
+    background: hsl(var(--muted) / 0.4);
+    padding: 1.25rem 1.5rem;
+    margin: 0 !important;
+    border-left: 4px solid hsl(var(--primary));
+    color: hsl(var(--foreground) / 0.9);
+    line-height: 1.7;
+  }
 }
