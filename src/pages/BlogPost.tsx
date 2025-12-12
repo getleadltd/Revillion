@@ -437,7 +437,7 @@ const BlogPost = () => {
                 prose-headings:font-bold 
                 prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
                 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                prose-p:mb-6 prose-p:leading-relaxed prose-p:text-justify
+                prose-p:mb-6 prose-p:leading-relaxed prose-p:text-left
                 prose-strong:font-bold prose-strong:text-foreground
                 prose-li:my-2
                 prose-ul:my-6 prose-ol:my-6
