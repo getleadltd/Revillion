@@ -58,9 +58,19 @@ function wrapFAQContent(html: string): string {
     const h2Elements = container.querySelectorAll('h2');
     let faqHeader: Element | null = null;
     
+    const faqKeywords = [
+      'domande frequenti',      // Italiano
+      'frequently asked',       // English
+      'faq',                    // Universal
+      'perguntas frequentes',   // Português
+      'preguntas frecuentes',   // Español
+      'häufig gestellte fragen', // Deutsch
+      'häufige fragen'          // Deutsch
+    ];
+    
     h2Elements.forEach(h2 => {
       const text = h2.textContent?.toLowerCase() || '';
-      if (text.includes('domande frequenti') || text.includes('faq') || text.includes('frequently asked')) {
+      if (faqKeywords.some(keyword => text.includes(keyword))) {
         faqHeader = h2;
       }
     });
