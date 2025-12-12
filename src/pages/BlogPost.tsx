@@ -46,6 +46,55 @@ function extractFAQFromContent(content: string): Array<{question: string, answer
   return faqs;
 }
 
+// Remove hardcoded "Consigliati" (Recommended) section from imported articles
+function removeRecommendedSection(html: string): string {
+  if (!html) return html;
+  
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const container = doc.body.firstElementChild;
+    
+    if (!container) return html;
+    
+    // Find h2 or h3 with "Consigliati", "Recommended", etc.
+    const headings = container.querySelectorAll('h2, h3');
+    let recommendedHeader: Element | null = null;
+    
+    const keywords = [
+      'consigliati',      // Italiano
+      'recommended',      // English
+      'recomendados',     // Português/Español
+      'empfohlen'         // Deutsch
+    ];
+    
+    headings.forEach(heading => {
+      const text = heading.textContent?.toLowerCase() || '';
+      if (keywords.some(keyword => text.includes(keyword))) {
+        recommendedHeader = heading;
+      }
+    });
+    
+    if (!recommendedHeader) return html;
+    
+    // Remove the header and all following elements until next h2 or end
+    const elementsToRemove: Element[] = [recommendedHeader];
+    let currentElement = recommendedHeader.nextElementSibling;
+    
+    while (currentElement && currentElement.tagName !== 'H2') {
+      elementsToRemove.push(currentElement);
+      currentElement = currentElement.nextElementSibling;
+    }
+    
+    elementsToRemove.forEach(el => el.remove());
+    
+    return container.innerHTML;
+  } catch (e) {
+    console.error('Error removing recommended section:', e);
+    return html;
+  }
+}
+
 // Wrap FAQ content with styled elements using DOM manipulation
 function wrapFAQContent(html: string): string {
   try {
@@ -183,9 +232,12 @@ const BlogPost = () => {
   }
 
   const title = post[`title_${lang}` as keyof typeof post] as string || post.title_en;
-  const content = post[`content_${lang}` as keyof typeof post] as string || post.content_en;
+  const rawContent = post[`content_${lang}` as keyof typeof post] as string || post.content_en;
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
-  const formattedContent = formatHTMLContent(content);
+  
+  // Remove hardcoded "Consigliati" section from imported articles, then format
+  const cleanedContent = removeRecommendedSection(rawContent);
+  const formattedContent = formatHTMLContent(cleanedContent);
   
   // Extract FAQs for schema
   const faqs = extractFAQFromContent(formattedContent);
@@ -372,7 +424,7 @@ const BlogPost = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                {calculateReadingTime(content)} {t('blog.readingTime')}
+                {calculateReadingTime(rawContent)} {t('blog.readingTime')}
               </div>
               <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs">
                 {t(`blog.categories.${post.category}`)}
