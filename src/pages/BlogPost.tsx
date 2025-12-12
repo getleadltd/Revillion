@@ -15,14 +15,16 @@ import { Loader2, Calendar, Clock } from 'lucide-react';
 // Extract FAQ items from content for schema and styling
 function extractFAQFromContent(content: string): Array<{question: string, answer: string}> {
   const faqs: Array<{question: string, answer: string}> = [];
-  // Pattern: <p><strong>Question?</strong></p><p>Answer</p>
-  const faqPattern = /<p>\s*<strong>([^<]+\?)<\/strong>\s*<\/p>\s*<p>([^<]+)<\/p>/gi;
+  // Pattern: <h4>Question?</h4> followed by <p>Answer</p>
+  const faqPattern = /<h4[^>]*>([^<]+\?)<\/h4>\s*<p>([^<]+(?:<[^>]+>[^<]*)*)<\/p>/gi;
   let match;
   
   while ((match = faqPattern.exec(content)) !== null) {
+    // Strip any HTML tags from the answer for clean schema
+    const cleanAnswer = match[2].replace(/<[^>]+>/g, '').trim();
     faqs.push({
       question: match[1].trim(),
-      answer: match[2].trim()
+      answer: cleanAnswer
     });
   }
   
@@ -31,14 +33,14 @@ function extractFAQFromContent(content: string): Array<{question: string, answer
 
 // Wrap FAQ content with styled elements
 function wrapFAQContent(html: string): string {
-  // Find FAQ section and wrap Q&A pairs
-  const faqSectionRegex = /(<h2[^>]*id="[^"]*(?:domande-frequenti|faq|frequently-asked-questions)[^"]*"[^>]*>[^<]*<\/h2>)([\s\S]*?)(?=<h2|$)/gi;
+  // Find FAQ section (after h2 containing FAQ-related text) and wrap Q&A pairs
+  const faqSectionRegex = /(<h2[^>]*>(?:[^<]*(?:Domande Frequenti|FAQ|Frequently Asked Questions)[^<]*)<\/h2>)([\s\S]*?)(?=<h2[^>]*>|$)/gi;
   
   return html.replace(faqSectionRegex, (match, header, content) => {
-    // Wrap each question-answer pair
+    // Wrap each h4-p question-answer pair
     const wrappedContent = content.replace(
-      /<p>\s*<strong>([^<]+\?)<\/strong>\s*<\/p>\s*<p>([^<]+)<\/p>/gi,
-      '<div class="faq-item"><div class="faq-question"><strong>$1</strong></div><div class="faq-answer">$2</div></div>'
+      /<h4[^>]*>([^<]+\?)<\/h4>\s*<p>([^<]+(?:<[^>]+>[^<]*)*)<\/p>/gi,
+      '<div class="faq-item"><div class="faq-question">$1</div><div class="faq-answer"><p>$2</p></div></div>'
     );
     return header + '<div class="faq-section">' + wrappedContent + '</div>';
   });
