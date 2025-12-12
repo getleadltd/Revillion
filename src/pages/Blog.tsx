@@ -61,9 +61,9 @@ const Blog = () => {
         <meta property="og:locale:alternate" content="es" />
       </Helmet>
 
-      <div className="bg-background py-16">
+      <div className="bg-background py-8 md:py-12">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-4 md:mb-8">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
               {t('blog.title')}
             </h1>
@@ -74,7 +74,7 @@ const Blog = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <aside className="lg:w-1/4">
