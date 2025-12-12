@@ -12,38 +12,114 @@ import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog'
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 
-// Extract FAQ items from content for schema and styling
+// Extract FAQ items from content for schema using DOM parsing
 function extractFAQFromContent(content: string): Array<{question: string, answer: string}> {
   const faqs: Array<{question: string, answer: string}> = [];
-  // Pattern: <h4>Question?</h4> followed by <p>Answer</p>
-  const faqPattern = /<h4[^>]*>([^<]+\?)<\/h4>\s*<p>([^<]+(?:<[^>]+>[^<]*)*)<\/p>/gi;
-  let match;
   
-  while ((match = faqPattern.exec(content)) !== null) {
-    // Strip any HTML tags from the answer for clean schema
-    const cleanAnswer = match[2].replace(/<[^>]+>/g, '').trim();
-    faqs.push({
-      question: match[1].trim(),
-      answer: cleanAnswer
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${content}</div>`, 'text/html');
+    
+    // Find all h4 elements that contain questions (end with ?)
+    const h4Elements = doc.querySelectorAll('h4');
+    
+    h4Elements.forEach(h4 => {
+      const questionText = h4.textContent?.trim();
+      if (questionText?.endsWith('?')) {
+        // Find the next <p> element as the answer
+        let nextElement = h4.nextElementSibling;
+        while (nextElement && nextElement.tagName !== 'P' && nextElement.tagName !== 'H4' && nextElement.tagName !== 'H2') {
+          nextElement = nextElement.nextElementSibling;
+        }
+        if (nextElement && nextElement.tagName === 'P') {
+          faqs.push({
+            question: questionText,
+            answer: nextElement.textContent?.trim() || ''
+          });
+        }
+      }
     });
+  } catch (e) {
+    console.error('Error extracting FAQ:', e);
   }
   
   return faqs;
 }
 
-// Wrap FAQ content with styled elements
+// Wrap FAQ content with styled elements using DOM manipulation
 function wrapFAQContent(html: string): string {
-  // Find FAQ section (after h2 containing FAQ-related text) and wrap Q&A pairs
-  const faqSectionRegex = /(<h2[^>]*>(?:[^<]*(?:Domande Frequenti|FAQ|Frequently Asked Questions)[^<]*)<\/h2>)([\s\S]*?)(?=<h2[^>]*>|$)/gi;
-  
-  return html.replace(faqSectionRegex, (match, header, content) => {
-    // Wrap each h4-p question-answer pair
-    const wrappedContent = content.replace(
-      /<h4[^>]*>([^<]+\?)<\/h4>\s*<p>([^<]+(?:<[^>]+>[^<]*)*)<\/p>/gi,
-      '<div class="faq-item"><div class="faq-question">$1</div><div class="faq-answer"><p>$2</p></div></div>'
-    );
-    return header + '<div class="faq-section">' + wrappedContent + '</div>';
-  });
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const container = doc.body.firstElementChild;
+    if (!container) return html;
+    
+    // Find FAQ section header (h2 with FAQ-related text)
+    const h2Elements = container.querySelectorAll('h2');
+    let faqHeader: Element | null = null;
+    
+    h2Elements.forEach(h2 => {
+      const text = h2.textContent?.toLowerCase() || '';
+      if (text.includes('domande frequenti') || text.includes('faq') || text.includes('frequently asked')) {
+        faqHeader = h2;
+      }
+    });
+    
+    if (!faqHeader) return html;
+    
+    // Create FAQ section wrapper
+    const faqSection = doc.createElement('div');
+    faqSection.className = 'faq-section';
+    
+    // Find all h4+p pairs after the FAQ header
+    let currentElement = faqHeader.nextElementSibling;
+    const elementsToRemove: Element[] = [];
+    
+    while (currentElement && currentElement.tagName !== 'H2') {
+      if (currentElement.tagName === 'H4') {
+        const questionText = currentElement.textContent?.trim();
+        if (questionText?.endsWith('?')) {
+          // Find the answer paragraph
+          let answerElement = currentElement.nextElementSibling;
+          while (answerElement && answerElement.tagName !== 'P' && answerElement.tagName !== 'H4' && answerElement.tagName !== 'H2') {
+            answerElement = answerElement.nextElementSibling;
+          }
+          
+          if (answerElement && answerElement.tagName === 'P') {
+            // Create styled FAQ item
+            const faqItem = doc.createElement('div');
+            faqItem.className = 'faq-item';
+            
+            const questionDiv = doc.createElement('div');
+            questionDiv.className = 'faq-question';
+            questionDiv.textContent = questionText;
+            
+            const answerDiv = doc.createElement('div');
+            answerDiv.className = 'faq-answer';
+            answerDiv.innerHTML = answerElement.outerHTML;
+            
+            faqItem.appendChild(questionDiv);
+            faqItem.appendChild(answerDiv);
+            faqSection.appendChild(faqItem);
+            
+            elementsToRemove.push(currentElement, answerElement);
+            currentElement = answerElement.nextElementSibling;
+            continue;
+          }
+        }
+      }
+      currentElement = currentElement.nextElementSibling;
+    }
+    
+    // Remove original elements and insert FAQ section
+    elementsToRemove.forEach(el => el.remove());
+    faqHeader.after(faqSection);
+    
+    return container.innerHTML;
+  } catch (e) {
+    console.error('Error wrapping FAQ content:', e);
+    return html;
+  }
 }
 
 const BlogPost = () => {
