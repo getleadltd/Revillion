@@ -29,6 +29,8 @@ export const CookieBanner = () => {
   };
 
   const closeBanner = () => {
+    // Treat closing without explicit choice as rejection (GDPR compliant)
+    updateConsent(false);
     setIsClosing(true);
     setTimeout(() => setIsVisible(false), 300);
   };
