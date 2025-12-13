@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -8,6 +9,54 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
+
+// Homepage FAQ Schema for structured data
+const homepageFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Revillion Partners?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Revillion Partners is a premier iGaming affiliate network offering high CPA commissions for promoting 16+ top casino brands including 22Bet, Rabona, Spinit, and more. We provide dedicated affiliate support, real-time tracking, and multiple payment options."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much can I earn as a Revillion affiliate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Affiliates earn premium CPA (Cost Per Acquisition) commissions with competitive rates depending on the brand and geographic region. We offer flexible payment terms and transparent tracking to maximize your earnings potential."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What payment methods does Revillion offer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We support multiple payment methods including bank transfers, e-wallets, and cryptocurrency payments. Payments are processed regularly with transparent reporting through our affiliate dashboard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I get started with Revillion Partners?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Getting started is simple: visit our dashboard at dashboard.revillion.com, register your affiliate account, get your unique tracking links, and start promoting our premium casino brands immediately. Our dedicated support team is available to help you succeed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which casino brands can I promote?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can promote 16+ top-tier casino brands including 22Bet, Rabona, Spinit, Nomini, Casinia, Librabet, BetLabel, SafeCasino, Spinanga, RoboCat, Onlyspins, Bassbet, TikiTaka, Burancasino, Cazeus, and AzurSlot. Each brand offers unique features and targets different markets."
+      }
+    }
+  ]
+};
 import bassbetLogo from "@/assets/Bassbet-partner.png?partner";
 import rabonaLogo from "@/assets/Rabona-partner.png?partner";
 import spinitLogo from "@/assets/Spinit-partner.png?partner";
@@ -42,6 +91,11 @@ const Index = () => {
   return (
     <Layout showScrollLinks={true}>
       <SEOHead />
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(homepageFaqSchema)}
+        </script>
+      </Helmet>
         {/* Hero Section */}
       <section id="hero" className="relative bg-gradient-to-br from-black via-gray-900 to-black text-white py-16 md:py-24 overflow-hidden">
         {/* Background Pattern */}
