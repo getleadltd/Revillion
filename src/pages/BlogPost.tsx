@@ -187,10 +187,17 @@ const BlogPost = () => {
   const navigate = useNavigate();
   const { data: post, isLoading, incrementViews } = useBlogPost(slug!, lang);
 
-  // Track article view automatically
+  // Track article view automatically (unique per session)
   useEffect(() => {
     if (post?.id) {
-      incrementViews();
+      const viewedPostsKey = 'viewed_blog_posts';
+      const viewedPosts: string[] = JSON.parse(sessionStorage.getItem(viewedPostsKey) || '[]');
+      
+      if (!viewedPosts.includes(post.id)) {
+        incrementViews();
+        viewedPosts.push(post.id);
+        sessionStorage.setItem(viewedPostsKey, JSON.stringify(viewedPosts));
+      }
     }
   }, [post?.id, incrementViews]);
 
