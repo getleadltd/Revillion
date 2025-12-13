@@ -59,7 +59,11 @@ const ContactMessages = () => {
       }
 
       if (searchQuery) {
-        query = query.or(`name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,company_name.ilike.%${searchQuery}%`);
+        // Sanitize input to prevent SQL injection - escape special characters
+        const sanitized = searchQuery.trim().replace(/[%_'"\\]/g, '');
+        if (sanitized) {
+          query = query.or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company_name.ilike.%${sanitized}%`);
+        }
       }
 
       const { data, error } = await query;

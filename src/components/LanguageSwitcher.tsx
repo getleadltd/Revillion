@@ -34,6 +34,15 @@ export const LanguageSwitcher = () => {
       if (slugMatch) {
         const currentSlug = slugMatch[1];
         
+        // Validate slug format to prevent SQL injection
+        const slugPattern = /^[a-z0-9-]+$/;
+        if (!slugPattern.test(currentSlug)) {
+          // Invalid slug, navigate without translation lookup
+          const pathWithoutLang = currentPath.replace(`/${lang}`, '');
+          navigate(`/${langCode}${pathWithoutLang}`);
+          return;
+        }
+        
         // Find the post with this slug in any language (robust fallback)
         const { data: post } = await supabase
           .from('blog_posts')
