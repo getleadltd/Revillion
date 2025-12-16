@@ -226,6 +226,10 @@
     "categories.affiliate-tips": "Consigli per Affiliati",
     "categories.industry-updates": "Aggiornamenti di Settore",
     "categories.guides": "Guide",
+    "pagination": {
+      "previous": "Precedente",
+      "next": "Successivo"
+    },
     "cta": {
       "button": "Diventa Partner Ora"
     },

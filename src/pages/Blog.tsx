@@ -133,7 +133,10 @@ const Blog = () => {
                         <PaginationPrevious
                           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                           className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                        />
+                          aria-label={t('blog.pagination.previous')}
+                        >
+                          {t('blog.pagination.previous')}
+                        </PaginationPrevious>
                       </PaginationItem>
 
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -152,7 +155,10 @@ const Blog = () => {
                         <PaginationNext
                           onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                           className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                        />
+                          aria-label={t('blog.pagination.next')}
+                        >
+                          {t('blog.pagination.next')}
+                        </PaginationNext>
                       </PaginationItem>
                     </PaginationContent>
                   </Pagination>
