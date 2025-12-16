@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -7,6 +7,16 @@ import { BlogSidebar } from '@/components/blog/BlogSidebar';
 import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { Layout } from '@/components/layout/Layout';
 import { Loader2 } from 'lucide-react';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+
+const POSTS_PER_PAGE = 9;
 
 const Blog = () => {
   const { t } = useTranslation();
@@ -14,11 +24,20 @@ const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   
-  const { data: posts, isLoading } = useBlogPosts({
+  const { data, isLoading } = useBlogPosts({
     category: selectedCategory === 'all' ? undefined : selectedCategory,
     page: currentPage,
     lang: lang as string,
   });
+
+  const posts = data?.posts;
+  const totalCount = data?.totalCount || 0;
+  const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+
+  // Reset to page 1 when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   // Dynamic meta description based on category
   const getMetaDescription = () => {
@@ -95,11 +114,45 @@ const Blog = () => {
                 <p className="text-muted-foreground">{t('blog.noPosts')}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {posts.map((post) => (
-                  <BlogCard key={post.id} post={post} lang={lang} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {posts.map((post) => (
+                    <BlogCard key={post.id} post={post} lang={lang} />
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <Pagination className="mt-8">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            isActive={currentPage === page}
+                            onClick={() => setCurrentPage(page)}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
+              </>
             )}
           </main>
         </div>
