@@ -39,6 +39,11 @@ const Blog = () => {
     setCurrentPage(1);
   }, [selectedCategory]);
 
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
   // Dynamic meta description based on category
   const getMetaDescription = () => {
     if (selectedCategory === 'all') {
