@@ -12,6 +12,19 @@ export const useBlogPosts = ({ category, page = 1, limit = 9, lang }: UseBlogPos
   return useQuery({
     queryKey: ['blog-posts', category, page, lang],
     queryFn: async () => {
+      // Build base query for counting
+      let countQuery = supabase
+        .from('blog_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'published');
+
+      if (category && category !== 'all') {
+        countQuery = countQuery.eq('category', category);
+      }
+
+      const { count } = await countQuery;
+
+      // Build query for fetching posts
       let query = supabase
         .from('blog_posts')
         .select('*')
@@ -28,7 +41,7 @@ export const useBlogPosts = ({ category, page = 1, limit = 9, lang }: UseBlogPos
       const { data, error } = await query.range(from, to);
 
       if (error) throw error;
-      return data;
+      return { posts: data, totalCount: count || 0 };
     },
   });
 };
