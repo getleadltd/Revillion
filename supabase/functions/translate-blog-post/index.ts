@@ -20,6 +20,8 @@ const LANGUAGE_NAMES: Record<Language, string> = {
 
 const MAX_CHUNK_SIZE = 6000; // Caratteri per chunk (ridotto per sicurezza)
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // Helper function to verify admin authentication
 async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: string }> {
   const authHeader = req.headers.get('authorization');
@@ -397,29 +399,42 @@ serve(async (req) => {
     const translations: Record<string, { title: string; content: string; meta_description: string }> = {};
     const failedLanguages: string[] = [];
 
-    for (const targetLang of targetLanguages) {
-      console.log(`\n--- Traduzione verso ${LANGUAGE_NAMES[targetLang]} (${targetLang}) ---`);
-      
-      const result = await translateToLanguage(
-        title,
-        content,
-        meta_description || "",
-        sourceLang,
-        targetLang,
-        LOVABLE_API_KEY
-      );
+    // Traduci tutte le lingue in parallelo per rientrare nei timeout della funzione.
+    // I chunk restano sequenziali *all'interno* di ogni lingua, ma le lingue partono insieme.
+    const results = await Promise.all(
+      targetLanguages.map(async (targetLang, idx) => {
+        // piccolo "stagger" per ridurre picchi e 429
+        await sleep(idx * 750);
 
+        console.log(`\n--- Traduzione verso ${LANGUAGE_NAMES[targetLang]} (${targetLang}) ---`);
+
+        try {
+          const result = await translateToLanguage(
+            title,
+            content,
+            meta_description || "",
+            sourceLang,
+            targetLang,
+            LOVABLE_API_KEY
+          );
+
+          return { targetLang, result };
+        } catch (err) {
+          console.error(`[${targetLang}] Errore traduzione (caught):`, err);
+          return { targetLang, result: null as any };
+        }
+      })
+    );
+
+    for (const { targetLang, result } of results) {
       if (result) {
         translations[targetLang] = result;
       } else {
         failedLanguages.push(targetLang);
       }
-
-      // Delay between languages
-      if (targetLanguages.indexOf(targetLang) < targetLanguages.length - 1) {
-        await new Promise(r => setTimeout(r, 1500));
-      }
     }
+
+
 
     console.log(`\n=== Riepilogo ===`);
     console.log(`Completate: ${Object.keys(translations).join(', ') || 'nessuna'}`);
