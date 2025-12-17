@@ -18,6 +18,8 @@ const LANGUAGE_NAMES: Record<Language, string> = {
   es: 'spagnolo',
 };
 
+const MAX_CHUNK_SIZE = 6000; // Caratteri per chunk (ridotto per sicurezza)
+
 // Helper function to verify admin authentication
 async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: string }> {
   const authHeader = req.headers.get('authorization');
@@ -46,7 +48,6 @@ async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: s
     };
   }
 
-  // Check admin role via RPC
   const { data: isAdmin, error: roleError } = await supabase
     .rpc('has_role', { _user_id: user.id, _role: 'admin' });
 
@@ -62,15 +63,55 @@ async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: s
   return { userId: user.id };
 }
 
-// Translate to a single language with retry logic
-async function translateToLanguage(
-  title: string,
-  content: string,
-  metaDescription: string,
+// Split content into chunks at safe HTML boundaries
+function splitContentIntoChunks(content: string): string[] {
+  if (content.length <= MAX_CHUNK_SIZE) {
+    return [content];
+  }
+
+  const chunks: string[] = [];
+  const splitPoints = ['</p>', '</h2>', '</h3>', '</h4>', '</ul>', '</ol>', '</blockquote>', '</div>', '</section>'];
+  
+  let remaining = content;
+  
+  while (remaining.length > MAX_CHUNK_SIZE) {
+    let splitIndex = -1;
+    
+    // Find the best split point within MAX_CHUNK_SIZE
+    for (const point of splitPoints) {
+      const idx = remaining.lastIndexOf(point, MAX_CHUNK_SIZE);
+      if (idx > splitIndex) {
+        splitIndex = idx + point.length;
+      }
+    }
+    
+    // If no good split point found, force split at MAX_CHUNK_SIZE
+    if (splitIndex <= 0) {
+      // Try to at least split at a space
+      const spaceIdx = remaining.lastIndexOf(' ', MAX_CHUNK_SIZE);
+      splitIndex = spaceIdx > MAX_CHUNK_SIZE / 2 ? spaceIdx : MAX_CHUNK_SIZE;
+    }
+    
+    chunks.push(remaining.substring(0, splitIndex).trim());
+    remaining = remaining.substring(splitIndex).trim();
+  }
+  
+  if (remaining) {
+    chunks.push(remaining);
+  }
+  
+  return chunks;
+}
+
+// Translate a single content chunk
+async function translateChunk(
+  chunk: string,
+  chunkIndex: number,
+  totalChunks: number,
   sourceLang: Language,
   targetLang: Language,
   apiKey: string
-): Promise<{ title: string; content: string; meta_description: string } | null> {
+): Promise<string | null> {
   const maxAttempts = 3;
   let attempts = 0;
 
@@ -78,26 +119,18 @@ async function translateToLanguage(
   const targetLanguageName = LANGUAGE_NAMES[targetLang];
 
   const systemPrompt = `Sei un traduttore professionista specializzato in contenuti per il settore iGaming e gambling online. 
-Traduci il seguente contenuto da ${sourceLanguageName} a ${targetLanguageName}.
+Traduci il seguente contenuto HTML da ${sourceLanguageName} a ${targetLanguageName}.
 
 IMPORTANTE:
-- Mantieni ESATTAMENTE la stessa formattazione HTML nel contenuto
+- Mantieni ESATTAMENTE la stessa formattazione HTML
 - Usa terminologia appropriata per il settore gambling/casino
-- Le traduzioni devono essere naturali e idiomatiche, non letterali
-- Mantieni lo stesso tono professionale e coinvolgente
-- Preserva tutti i tag HTML (<h2>, <p>, <strong>, ecc.)`;
-
-  const userPrompt = `Traduci questi contenuti da ${sourceLanguageName} a ${targetLanguageName}:
-
-TITOLO: ${title}
-
-CONTENUTO: ${content}
-
-META DESCRIPTION: ${metaDescription || ""}`;
+- Le traduzioni devono essere naturali e idiomatiche
+- Preserva tutti i tag HTML (<h2>, <p>, <strong>, ecc.)
+- Restituisci SOLO il contenuto HTML tradotto, nient'altro`;
 
   while (attempts < maxAttempts) {
     attempts++;
-    console.log(`[${targetLang}] Tentativo ${attempts}/${maxAttempts}...`);
+    console.log(`[${targetLang}] Chunk ${chunkIndex}/${totalChunks} - Tentativo ${attempts}/${maxAttempts}...`);
 
     try {
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -110,36 +143,16 @@ META DESCRIPTION: ${metaDescription || ""}`;
           model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt }
+            { role: "user", content: `Traduci questo contenuto HTML in ${targetLanguageName}:\n\n${chunk}` }
           ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "return_translation",
-                description: `Restituisce la traduzione del contenuto in ${targetLanguageName}`,
-                parameters: {
-                  type: "object",
-                  properties: {
-                    title: { type: "string", description: `Titolo tradotto in ${targetLanguageName}` },
-                    content: { type: "string", description: `Contenuto HTML tradotto in ${targetLanguageName}` },
-                    meta_description: { type: "string", description: `Meta description tradotta in ${targetLanguageName}` }
-                  },
-                  required: ["title", "content", "meta_description"]
-                }
-              }
-            }
-          ],
-          tool_choice: { type: "function", function: { name: "return_translation" } }
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`[${targetLang}] Errore HTTP ${response.status}: ${errorText}`);
+        console.error(`[${targetLang}] Chunk ${chunkIndex} - Errore HTTP ${response.status}: ${errorText.substring(0, 200)}`);
         
         if (response.status === 429) {
-          console.log(`[${targetLang}] Rate limit, attendo prima di riprovare...`);
           await new Promise(r => setTimeout(r, 3000 * attempts));
           continue;
         }
@@ -154,54 +167,205 @@ META DESCRIPTION: ${metaDescription || ""}`;
 
       const data = await response.json();
       
-      // Check for error in response body (e.g., 524 timeout)
       if (data.error) {
-        console.error(`[${targetLang}] Errore nel body:`, data.error);
+        console.error(`[${targetLang}] Chunk ${chunkIndex} - Errore nel body:`, data.error);
         if (data.error.code === 524 || data.error.message?.includes('timeout')) {
-          console.log(`[${targetLang}] Timeout, attendo ${2000 * attempts}ms prima di riprovare...`);
           await new Promise(r => setTimeout(r, 2000 * attempts));
           continue;
         }
         throw new Error(data.error.message || "Errore AI");
       }
 
-      // Extract translation from tool call
-      const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-      if (!toolCall || !toolCall.function?.arguments) {
-        console.error(`[${targetLang}] Risposta non valida:`, JSON.stringify(data).substring(0, 500));
+      const translatedContent = data.choices?.[0]?.message?.content;
+      if (!translatedContent) {
+        console.error(`[${targetLang}] Chunk ${chunkIndex} - Risposta vuota`);
         await new Promise(r => setTimeout(r, 2000 * attempts));
         continue;
       }
 
-      const result = JSON.parse(toolCall.function.arguments);
-      console.log(`[${targetLang}] Traduzione completata con successo`);
-      
-      return {
-        title: result.title,
-        content: result.content,
-        meta_description: result.meta_description
-      };
+      console.log(`[${targetLang}] Chunk ${chunkIndex}/${totalChunks} - Completato`);
+      return translatedContent.trim();
 
     } catch (error) {
-      console.error(`[${targetLang}] Errore tentativo ${attempts}:`, error);
+      console.error(`[${targetLang}] Chunk ${chunkIndex} - Errore:`, error);
       if (attempts < maxAttempts) {
         await new Promise(r => setTimeout(r, 2000 * attempts));
       }
     }
   }
 
-  console.error(`[${targetLang}] Fallito dopo ${maxAttempts} tentativi`);
+  console.error(`[${targetLang}] Chunk ${chunkIndex} - Fallito dopo ${maxAttempts} tentativi`);
   return null;
 }
 
+// Translate title and meta description (short texts)
+async function translateTitleAndMeta(
+  title: string,
+  metaDescription: string,
+  sourceLang: Language,
+  targetLang: Language,
+  apiKey: string
+): Promise<{ title: string; meta_description: string } | null> {
+  const maxAttempts = 3;
+  let attempts = 0;
+
+  const sourceLanguageName = LANGUAGE_NAMES[sourceLang];
+  const targetLanguageName = LANGUAGE_NAMES[targetLang];
+
+  while (attempts < maxAttempts) {
+    attempts++;
+    console.log(`[${targetLang}] Titolo/Meta - Tentativo ${attempts}/${maxAttempts}...`);
+
+    try {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { 
+              role: "system", 
+              content: `Sei un traduttore professionista specializzato in SEO e contenuti per il settore iGaming. Traduci da ${sourceLanguageName} a ${targetLanguageName}.` 
+            },
+            { 
+              role: "user", 
+              content: `Traduci in ${targetLanguageName}:\n\nTITOLO: ${title}\n\nMETA DESCRIPTION: ${metaDescription || ""}` 
+            }
+          ],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "return_translation",
+                description: `Restituisce titolo e meta description tradotti`,
+                parameters: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string", description: `Titolo tradotto in ${targetLanguageName}` },
+                    meta_description: { type: "string", description: `Meta description tradotta in ${targetLanguageName}` }
+                  },
+                  required: ["title", "meta_description"]
+                }
+              }
+            }
+          ],
+          tool_choice: { type: "function", function: { name: "return_translation" } }
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[${targetLang}] Titolo/Meta - Errore HTTP ${response.status}`);
+        
+        if (response.status === 429) {
+          await new Promise(r => setTimeout(r, 3000 * attempts));
+          continue;
+        }
+        
+        await new Promise(r => setTimeout(r, 2000 * attempts));
+        continue;
+      }
+
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error(`[${targetLang}] Titolo/Meta - Errore:`, data.error);
+        await new Promise(r => setTimeout(r, 2000 * attempts));
+        continue;
+      }
+
+      const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+      if (!toolCall || !toolCall.function?.arguments) {
+        await new Promise(r => setTimeout(r, 2000 * attempts));
+        continue;
+      }
+
+      const result = JSON.parse(toolCall.function.arguments);
+      console.log(`[${targetLang}] Titolo/Meta - Completato`);
+      
+      return {
+        title: result.title,
+        meta_description: result.meta_description
+      };
+
+    } catch (error) {
+      console.error(`[${targetLang}] Titolo/Meta - Errore:`, error);
+      if (attempts < maxAttempts) {
+        await new Promise(r => setTimeout(r, 2000 * attempts));
+      }
+    }
+  }
+
+  return null;
+}
+
+// Translate full content to a single language (with chunking)
+async function translateToLanguage(
+  title: string,
+  content: string,
+  metaDescription: string,
+  sourceLang: Language,
+  targetLang: Language,
+  apiKey: string
+): Promise<{ title: string; content: string; meta_description: string } | null> {
+  
+  // 1. Translate title and meta description first (small request)
+  const titleMeta = await translateTitleAndMeta(title, metaDescription, sourceLang, targetLang, apiKey);
+  if (!titleMeta) {
+    console.error(`[${targetLang}] Fallita traduzione titolo/meta`);
+    return null;
+  }
+
+  // 2. Split content into chunks
+  const chunks = splitContentIntoChunks(content);
+  console.log(`[${targetLang}] Contenuto diviso in ${chunks.length} chunk (totale: ${content.length} caratteri)`);
+
+  // 3. Translate each chunk
+  const translatedChunks: string[] = [];
+  
+  for (let i = 0; i < chunks.length; i++) {
+    // Small delay between chunks
+    if (i > 0) {
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    const translatedChunk = await translateChunk(
+      chunks[i],
+      i + 1,
+      chunks.length,
+      sourceLang,
+      targetLang,
+      apiKey
+    );
+
+    if (!translatedChunk) {
+      console.error(`[${targetLang}] Fallito chunk ${i + 1}/${chunks.length}`);
+      return null; // Fail if any chunk fails
+    }
+
+    translatedChunks.push(translatedChunk);
+  }
+
+  // 4. Combine translated chunks
+  const translatedContent = translatedChunks.join('\n\n');
+  console.log(`[${targetLang}] Traduzione completata - ${translatedContent.length} caratteri`);
+
+  return {
+    title: titleMeta.title,
+    content: translatedContent,
+    meta_description: titleMeta.meta_description
+  };
+}
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Verify admin authentication
     const authResult = await verifyAdmin(req);
     if (authResult.error) {
       return authResult.error;
@@ -216,7 +380,6 @@ serve(async (req) => {
       );
     }
 
-    // Validate source language
     const sourceLang = SUPPORTED_LANGUAGES.includes(source_language) ? source_language : 'it';
     const targetLanguages = SUPPORTED_LANGUAGES.filter(lang => lang !== sourceLang);
 
@@ -225,12 +388,12 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY non configurata");
     }
 
-    console.log(`=== Inizio traduzione sequenziale ===`);
+    console.log(`=== Inizio traduzione con chunking ===`);
     console.log(`Lingua sorgente: ${LANGUAGE_NAMES[sourceLang]}`);
     console.log(`Lingue target: ${targetLanguages.map(l => LANGUAGE_NAMES[l]).join(', ')}`);
     console.log(`Titolo: ${title.substring(0, 50)}...`);
+    console.log(`Lunghezza contenuto: ${content.length} caratteri`);
 
-    // Translate to each language sequentially
     const translations: Record<string, { title: string; content: string; meta_description: string }> = {};
     const failedLanguages: string[] = [];
 
@@ -252,9 +415,9 @@ serve(async (req) => {
         failedLanguages.push(targetLang);
       }
 
-      // Small delay between translations to avoid rate limiting
+      // Delay between languages
       if (targetLanguages.indexOf(targetLang) < targetLanguages.length - 1) {
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 1500));
       }
     }
 
@@ -262,7 +425,6 @@ serve(async (req) => {
     console.log(`Completate: ${Object.keys(translations).join(', ') || 'nessuna'}`);
     console.log(`Fallite: ${failedLanguages.join(', ') || 'nessuna'}`);
 
-    // If all translations failed, return error
     if (Object.keys(translations).length === 0) {
       return new Response(
         JSON.stringify({ 
@@ -273,7 +435,6 @@ serve(async (req) => {
       );
     }
 
-    // Return successful translations (even if some failed)
     const response = {
       translations,
       source_language: sourceLang,
