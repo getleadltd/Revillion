@@ -62,6 +62,138 @@ async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: s
   return { userId: user.id };
 }
 
+// Translate to a single language with retry logic
+async function translateToLanguage(
+  title: string,
+  content: string,
+  metaDescription: string,
+  sourceLang: Language,
+  targetLang: Language,
+  apiKey: string
+): Promise<{ title: string; content: string; meta_description: string } | null> {
+  const maxAttempts = 3;
+  let attempts = 0;
+
+  const sourceLanguageName = LANGUAGE_NAMES[sourceLang];
+  const targetLanguageName = LANGUAGE_NAMES[targetLang];
+
+  const systemPrompt = `Sei un traduttore professionista specializzato in contenuti per il settore iGaming e gambling online. 
+Traduci il seguente contenuto da ${sourceLanguageName} a ${targetLanguageName}.
+
+IMPORTANTE:
+- Mantieni ESATTAMENTE la stessa formattazione HTML nel contenuto
+- Usa terminologia appropriata per il settore gambling/casino
+- Le traduzioni devono essere naturali e idiomatiche, non letterali
+- Mantieni lo stesso tono professionale e coinvolgente
+- Preserva tutti i tag HTML (<h2>, <p>, <strong>, ecc.)`;
+
+  const userPrompt = `Traduci questi contenuti da ${sourceLanguageName} a ${targetLanguageName}:
+
+TITOLO: ${title}
+
+CONTENUTO: ${content}
+
+META DESCRIPTION: ${metaDescription || ""}`;
+
+  while (attempts < maxAttempts) {
+    attempts++;
+    console.log(`[${targetLang}] Tentativo ${attempts}/${maxAttempts}...`);
+
+    try {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "return_translation",
+                description: `Restituisce la traduzione del contenuto in ${targetLanguageName}`,
+                parameters: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string", description: `Titolo tradotto in ${targetLanguageName}` },
+                    content: { type: "string", description: `Contenuto HTML tradotto in ${targetLanguageName}` },
+                    meta_description: { type: "string", description: `Meta description tradotta in ${targetLanguageName}` }
+                  },
+                  required: ["title", "content", "meta_description"]
+                }
+              }
+            }
+          ],
+          tool_choice: { type: "function", function: { name: "return_translation" } }
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[${targetLang}] Errore HTTP ${response.status}: ${errorText}`);
+        
+        if (response.status === 429) {
+          console.log(`[${targetLang}] Rate limit, attendo prima di riprovare...`);
+          await new Promise(r => setTimeout(r, 3000 * attempts));
+          continue;
+        }
+        
+        if (response.status === 402) {
+          throw new Error("Crediti Lovable AI esauriti");
+        }
+        
+        await new Promise(r => setTimeout(r, 2000 * attempts));
+        continue;
+      }
+
+      const data = await response.json();
+      
+      // Check for error in response body (e.g., 524 timeout)
+      if (data.error) {
+        console.error(`[${targetLang}] Errore nel body:`, data.error);
+        if (data.error.code === 524 || data.error.message?.includes('timeout')) {
+          console.log(`[${targetLang}] Timeout, attendo ${2000 * attempts}ms prima di riprovare...`);
+          await new Promise(r => setTimeout(r, 2000 * attempts));
+          continue;
+        }
+        throw new Error(data.error.message || "Errore AI");
+      }
+
+      // Extract translation from tool call
+      const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+      if (!toolCall || !toolCall.function?.arguments) {
+        console.error(`[${targetLang}] Risposta non valida:`, JSON.stringify(data).substring(0, 500));
+        await new Promise(r => setTimeout(r, 2000 * attempts));
+        continue;
+      }
+
+      const result = JSON.parse(toolCall.function.arguments);
+      console.log(`[${targetLang}] Traduzione completata con successo`);
+      
+      return {
+        title: result.title,
+        content: result.content,
+        meta_description: result.meta_description
+      };
+
+    } catch (error) {
+      console.error(`[${targetLang}] Errore tentativo ${attempts}:`, error);
+      if (attempts < maxAttempts) {
+        await new Promise(r => setTimeout(r, 2000 * attempts));
+      }
+    }
+  }
+
+  console.error(`[${targetLang}] Fallito dopo ${maxAttempts} tentativi`);
+  return null;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -93,119 +225,66 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY non configurata");
     }
 
-    console.log(`Inizio traduzione da ${LANGUAGE_NAMES[sourceLang]} verso: ${targetLanguages.join(', ')}`);
-    console.log(`Titolo sorgente: ${title}`);
+    console.log(`=== Inizio traduzione sequenziale ===`);
+    console.log(`Lingua sorgente: ${LANGUAGE_NAMES[sourceLang]}`);
+    console.log(`Lingue target: ${targetLanguages.map(l => LANGUAGE_NAMES[l]).join(', ')}`);
+    console.log(`Titolo: ${title.substring(0, 50)}...`);
 
-    const sourceLanguageName = LANGUAGE_NAMES[sourceLang];
-    const targetLanguagesList = targetLanguages.map(lang => LANGUAGE_NAMES[lang]).join(', ');
+    // Translate to each language sequentially
+    const translations: Record<string, { title: string; content: string; meta_description: string }> = {};
+    const failedLanguages: string[] = [];
 
-    const systemPrompt = `Sei un traduttore professionista specializzato in contenuti per il settore iGaming e gambling online. 
-Traduci il seguente contenuto da ${sourceLanguageName} verso ${targetLanguagesList}.
-
-IMPORTANTE:
-- Mantieni ESATTAMENTE la stessa formattazione HTML nel contenuto
-- Usa terminologia appropriata per il settore gambling/casino
-- Le traduzioni devono essere naturali e idiomatiche, non letterali
-- Mantieni lo stesso tono professionale e coinvolgente
-- Preserva tutti i tag HTML (<h2>, <p>, <strong>, ecc.)`;
-
-    const userPrompt = `Traduci questi contenuti da ${sourceLanguageName}:
-
-TITOLO: ${title}
-
-CONTENUTO: ${content}
-
-META DESCRIPTION: ${meta_description || ""}`;
-
-    // Build dynamic translation schema based on target languages
-    const translationProperties: Record<string, any> = {};
-    for (const lang of targetLanguages) {
-      translationProperties[lang] = {
-        type: "object",
-        properties: {
-          title: { type: "string", description: `Titolo tradotto in ${LANGUAGE_NAMES[lang]}` },
-          content: { type: "string", description: `Contenuto HTML tradotto in ${LANGUAGE_NAMES[lang]}` },
-          meta_description: { type: "string", description: `Meta description tradotta in ${LANGUAGE_NAMES[lang]}` }
-        },
-        required: ["title", "content", "meta_description"]
-      };
-    }
-
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "return_translations",
-              description: `Restituisce le traduzioni del contenuto del blog in ${targetLanguages.length} lingue`,
-              parameters: {
-                type: "object",
-                properties: {
-                  translations: {
-                    type: "object",
-                    properties: translationProperties,
-                    required: targetLanguages
-                  }
-                },
-                required: ["translations"]
-              }
-            }
-          }
-        ],
-        tool_choice: { type: "function", function: { name: "return_translations" } }
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Errore AI Gateway:", response.status, errorText);
+    for (const targetLang of targetLanguages) {
+      console.log(`\n--- Traduzione verso ${LANGUAGE_NAMES[targetLang]} (${targetLang}) ---`);
       
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Limite di richieste superato. Riprova tra qualche minuto." }), 
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+      const result = await translateToLanguage(
+        title,
+        content,
+        meta_description || "",
+        sourceLang,
+        targetLang,
+        LOVABLE_API_KEY
+      );
+
+      if (result) {
+        translations[targetLang] = result;
+      } else {
+        failedLanguages.push(targetLang);
       }
-      
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Crediti Lovable AI esauriti. Contatta l'amministratore." }), 
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+
+      // Small delay between translations to avoid rate limiting
+      if (targetLanguages.indexOf(targetLang) < targetLanguages.length - 1) {
+        await new Promise(r => setTimeout(r, 1000));
       }
-      
-      throw new Error(`AI Gateway error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json();
-    console.log("Risposta AI ricevuta:", JSON.stringify(data).substring(0, 200));
+    console.log(`\n=== Riepilogo ===`);
+    console.log(`Completate: ${Object.keys(translations).join(', ') || 'nessuna'}`);
+    console.log(`Fallite: ${failedLanguages.join(', ') || 'nessuna'}`);
 
-    // Estrai le traduzioni dalla risposta tool call
-    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall || !toolCall.function?.arguments) {
-      throw new Error("Formato risposta AI non valido");
+    // If all translations failed, return error
+    if (Object.keys(translations).length === 0) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Tutte le traduzioni sono fallite. Riprova più tardi.",
+          failed_languages: failedLanguages
+        }), 
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    const result = JSON.parse(toolCall.function.arguments);
-    
-    // Add source language info to result
-    result.source_language = sourceLang;
-    
-    console.log(`Traduzioni completate: ${Object.keys(result.translations || {}).join(', ')}`);
+    // Return successful translations (even if some failed)
+    const response = {
+      translations,
+      source_language: sourceLang,
+      ...(failedLanguages.length > 0 && { 
+        warning: `Alcune traduzioni non sono riuscite: ${failedLanguages.join(', ')}`,
+        failed_languages: failedLanguages
+      })
+    };
 
     return new Response(
-      JSON.stringify(result), 
+      JSON.stringify(response), 
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
