@@ -69,19 +69,51 @@ export default function IncomingArticles() {
 
       console.log(`Generating translations for article from ${sourceLang}:`, sourceTitle);
       
-      // 3. Call translate-blog-post with source language
-      const { data: translationData, error: translationError } = await supabase.functions.invoke('translate-blog-post', {
-        body: {
-          title: sourceTitle,
-          content: sourceContent,
-          meta_description: sourceMetaDesc,
-          source_language: sourceLang,
-        }
-      });
+      // 3. Get auth session for API call
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('Not authenticated');
+      }
 
-      if (translationError) {
-        console.error('Translation error:', translationError);
-        throw new Error('Failed to generate translations');
+      // 4. Call translate-blog-post with fetch() and 3-minute timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minutes
+
+      let translationData: any;
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate-blog-post`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              title: sourceTitle,
+              content: sourceContent,
+              meta_description: sourceMetaDesc,
+              source_language: sourceLang,
+            }),
+            signal: controller.signal,
+          }
+        );
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Translation API error:', errorText);
+          throw new Error('Translation failed');
+        }
+        
+        translationData = await response.json();
+      } catch (err: any) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          throw new Error('Traduzione scaduta dopo 3 minuti - riprova');
+        }
+        throw err;
       }
 
       console.log('Translations received:', Object.keys(translationData?.translations || {}));
