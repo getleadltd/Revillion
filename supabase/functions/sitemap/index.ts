@@ -90,7 +90,15 @@ Deno.serve(async (req) => {
       urls.push(generateUrlEntry(loc, alternates, now, 'weekly', '1.0'));
     });
 
-    // 2. Blog Listing URLs (one per language)
+    // 2. Contact Page URLs (one per language)
+    LANGUAGES.forEach(lang => {
+      const loc = `${DOMAIN}/${lang}/contact`;
+      const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
+      const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/contact`, slugs);
+      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.6'));
+    });
+
+    // 3. Blog Listing URLs (one per language)
     LANGUAGES.forEach(lang => {
       const loc = `${DOMAIN}/${lang}/blog`;
       const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
@@ -98,7 +106,7 @@ Deno.serve(async (req) => {
       urls.push(generateUrlEntry(loc, alternates, now, 'daily', '0.8'));
     });
 
-    // 3. Blog Post URLs (dynamic from database)
+    // 4. Blog Post URLs (dynamic from database)
     if (posts && posts.length > 0) {
       posts.forEach((post: BlogPost) => {
         const lastmod = post.updated_at.split('T')[0];
