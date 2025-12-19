@@ -34,7 +34,6 @@ Disallow: /admin/
 Disallow: /auth/
 
 Sitemap: https://revillion-partners.com/sitemap.xml
-Sitemap: https://pvxndzwaposcttrwkwgd.supabase.co/functions/v1/sitemap
 
 # LLMs.txt - AI Crawler Discovery
 Llmstxt: https://revillion-partners.com/llms.txt

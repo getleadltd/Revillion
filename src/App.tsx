@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import ResponsibleGaming from "./pages/ResponsibleGaming";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import BlogEditor from "./pages/admin/BlogEditor";
 import BlogAnalytics from "./pages/admin/BlogAnalytics";
@@ -51,6 +54,9 @@ const App = () => (
             <Route path="/admin/*" element={<AdminRedirect />} />
             <Route path="/:lang" element={<Index />} />
             <Route path="/:lang/contact" element={<Contact />} />
+            <Route path="/:lang/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/:lang/terms-of-service" element={<TermsOfService />} />
+            <Route path="/:lang/responsible-gaming" element={<ResponsibleGaming />} />
             <Route path="/:lang/blog" element={<Blog />} />
             <Route path="/:lang/blog/:slug" element={<BlogPost />} />
             <Route path="/:lang/auth/login" element={<Login />} />
