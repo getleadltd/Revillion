@@ -98,6 +98,30 @@ Deno.serve(async (req) => {
       urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.6'));
     });
 
+    // 3. Privacy Policy URLs (one per language)
+    LANGUAGES.forEach(lang => {
+      const loc = `${DOMAIN}/${lang}/privacy-policy`;
+      const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
+      const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/privacy-policy`, slugs);
+      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.4'));
+    });
+
+    // 4. Terms of Service URLs (one per language)
+    LANGUAGES.forEach(lang => {
+      const loc = `${DOMAIN}/${lang}/terms-of-service`;
+      const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
+      const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/terms-of-service`, slugs);
+      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.4'));
+    });
+
+    // 5. Responsible Gaming URLs (one per language)
+    LANGUAGES.forEach(lang => {
+      const loc = `${DOMAIN}/${lang}/responsible-gaming`;
+      const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
+      const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/responsible-gaming`, slugs);
+      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.5'));
+    });
+
     // 3. Blog Listing URLs (one per language)
     LANGUAGES.forEach(lang => {
       const loc = `${DOMAIN}/${lang}/blog`;

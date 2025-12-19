@@ -106,12 +106,13 @@ const Contact = () => {
       <Helmet>
         <title>{t('contact.title')} {t('contact.titleHighlight')} | Revillion Partners</title>
         <meta name="description" content={t('contact.subtitle')} />
-        <link rel="canonical" href={`https://revillion.com/${lang}/contact`} />
-        <link rel="alternate" hrefLang="en" href="https://revillion.com/en/contact" />
-        <link rel="alternate" hrefLang="it" href="https://revillion.com/it/contact" />
-        <link rel="alternate" hrefLang="pt" href="https://revillion.com/pt/contact" />
-        <link rel="alternate" hrefLang="es" href="https://revillion.com/es/contact" />
-        <link rel="alternate" hrefLang="de" href="https://revillion.com/de/contact" />
+        <link rel="canonical" href={`https://revillion-partners.com/${lang}/contact`} />
+        <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en/contact" />
+        <link rel="alternate" hrefLang="de" href="https://revillion-partners.com/de/contact" />
+        <link rel="alternate" hrefLang="it" href="https://revillion-partners.com/it/contact" />
+        <link rel="alternate" hrefLang="pt" href="https://revillion-partners.com/pt/contact" />
+        <link rel="alternate" hrefLang="es" href="https://revillion-partners.com/es/contact" />
+        <link rel="alternate" hrefLang="x-default" href="https://revillion-partners.com/en/contact" />
       </Helmet>
 
       {/* Hero Section */}

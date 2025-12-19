@@ -80,19 +80,19 @@ export const Footer = () => {
             <h3 className="text-white font-bold text-lg mb-4">{t('footer.legal')}</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
+                <Link to={`/${lang}/privacy-policy`} className="hover:text-orange-400 transition-colors">
                   {t('footer.privacyPolicy')}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
+                <Link to={`/${lang}/terms-of-service`} className="hover:text-orange-400 transition-colors">
                   {t('footer.termsOfService')}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-orange-400 transition-colors">
+                <Link to={`/${lang}/responsible-gaming`} className="hover:text-orange-400 transition-colors">
                   {t('footer.responsibleGaming')}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
