@@ -219,29 +219,3 @@ ${urls.join('\n')}
     });
   }
 });
-    }
-
-    // Generate XML
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${urls.join('\n')}
-</urlset>`;
-
-    console.log(`Generated sitemap with ${urls.length} URLs`);
-
-    return new Response(xml, {
-      headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=600, s-maxage=3600, stale-while-revalidate=86400',
-        ...corsHeaders,
-      },
-    });
-  } catch (error) {
-    console.error('Sitemap generation error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
-    });
-  }
-});
