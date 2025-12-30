@@ -8,6 +8,9 @@ const corsHeaders = {
 const DOMAIN = 'https://revillion-partners.com';
 const LANGUAGES = ['en', 'de', 'it', 'pt', 'es'] as const;
 
+// Static pages last updated date (update this when content changes)
+const STATIC_PAGES_LASTMOD = '2025-06-28';
+
 interface BlogPost {
   slug_en: string | null;
   slug_de: string | null;
@@ -16,6 +19,13 @@ interface BlogPost {
   slug_es: string | null;
   updated_at: string;
   published_at: string | null;
+  featured_image_url: string | null;
+  featured_image_alt: string | null;
+  title_en: string | null;
+  title_de: string | null;
+  title_it: string | null;
+  title_pt: string | null;
+  title_es: string | null;
 }
 
 function escapeXml(unsafe: string): string {
@@ -28,13 +38,31 @@ function escapeXml(unsafe: string): string {
 }
 
 function generateAlternateLinks(baseUrl: string, slugs: Record<string, string | null>): string {
-  return LANGUAGES
+  const links = LANGUAGES
     .filter(lang => slugs[lang])
     .map(lang => {
       const url = baseUrl.replace('{lang}', lang).replace('{slug}', slugs[lang]!);
       return `    <xhtml:link rel="alternate" hreflang="${lang}" href="${escapeXml(url)}"/>`;
-    })
-    .join('\n');
+    });
+  
+  // Add x-default pointing to English version
+  const defaultSlug = slugs['en'] || LANGUAGES.find(l => slugs[l]) ? slugs[LANGUAGES.find(l => slugs[l])!] : '';
+  if (defaultSlug) {
+    const defaultUrl = baseUrl.replace('{lang}', 'en').replace('{slug}', defaultSlug);
+    links.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(defaultUrl)}"/>`);
+  }
+  
+  return links.join('\n');
+}
+
+function generateImageTag(imageUrl: string | null, imageAlt: string | null, title: string | null): string {
+  if (!imageUrl) return '';
+  
+  return `
+    <image:image>
+      <image:loc>${escapeXml(imageUrl)}</image:loc>
+      <image:title>${escapeXml(imageAlt || title || '')}</image:title>
+    </image:image>`;
 }
 
 function generateUrlEntry(
@@ -42,14 +70,15 @@ function generateUrlEntry(
   alternates: string,
   lastmod: string,
   changefreq: string,
-  priority: string
+  priority: string,
+  imageXml: string = ''
 ): string {
   return `  <url>
     <loc>${escapeXml(loc)}</loc>
 ${alternates}
     <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
+    <priority>${priority}</priority>${imageXml}
   </url>`;
 }
 
@@ -65,10 +94,10 @@ Deno.serve(async (req) => {
 
     console.log('Fetching published blog posts for sitemap...');
 
-    // Fetch all published posts
+    // Fetch all published posts with image data
     const { data: posts, error } = await supabase
       .from('blog_posts')
-      .select('slug_en, slug_de, slug_it, slug_pt, slug_es, updated_at, published_at')
+      .select('slug_en, slug_de, slug_it, slug_pt, slug_es, updated_at, published_at, featured_image_url, featured_image_alt, title_en, title_de, title_it, title_pt, title_es')
       .eq('status', 'published')
       .order('published_at', { ascending: false });
 
@@ -79,7 +108,6 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${posts?.length || 0} published posts`);
 
-    const now = new Date().toISOString().split('T')[0];
     let urls: string[] = [];
 
     // 1. Homepage URLs (one per language)
@@ -87,7 +115,7 @@ Deno.serve(async (req) => {
       const loc = `${DOMAIN}/${lang}`;
       const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
       const alternates = generateAlternateLinks(`${DOMAIN}/{lang}`, slugs);
-      urls.push(generateUrlEntry(loc, alternates, now, 'weekly', '1.0'));
+      urls.push(generateUrlEntry(loc, alternates, STATIC_PAGES_LASTMOD, 'weekly', '1.0'));
     });
 
     // 2. Contact Page URLs (one per language)
@@ -95,7 +123,7 @@ Deno.serve(async (req) => {
       const loc = `${DOMAIN}/${lang}/contact`;
       const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
       const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/contact`, slugs);
-      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.6'));
+      urls.push(generateUrlEntry(loc, alternates, STATIC_PAGES_LASTMOD, 'monthly', '0.6'));
     });
 
     // 3. Privacy Policy URLs (one per language)
@@ -103,7 +131,7 @@ Deno.serve(async (req) => {
       const loc = `${DOMAIN}/${lang}/privacy-policy`;
       const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
       const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/privacy-policy`, slugs);
-      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.4'));
+      urls.push(generateUrlEntry(loc, alternates, STATIC_PAGES_LASTMOD, 'monthly', '0.4'));
     });
 
     // 4. Terms of Service URLs (one per language)
@@ -111,7 +139,7 @@ Deno.serve(async (req) => {
       const loc = `${DOMAIN}/${lang}/terms-of-service`;
       const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
       const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/terms-of-service`, slugs);
-      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.4'));
+      urls.push(generateUrlEntry(loc, alternates, STATIC_PAGES_LASTMOD, 'monthly', '0.4'));
     });
 
     // 5. Responsible Gaming URLs (one per language)
@@ -119,18 +147,18 @@ Deno.serve(async (req) => {
       const loc = `${DOMAIN}/${lang}/responsible-gaming`;
       const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
       const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/responsible-gaming`, slugs);
-      urls.push(generateUrlEntry(loc, alternates, now, 'monthly', '0.5'));
+      urls.push(generateUrlEntry(loc, alternates, STATIC_PAGES_LASTMOD, 'monthly', '0.5'));
     });
 
-    // 3. Blog Listing URLs (one per language)
+    // 6. Blog Listing URLs (one per language)
     LANGUAGES.forEach(lang => {
       const loc = `${DOMAIN}/${lang}/blog`;
       const slugs = Object.fromEntries(LANGUAGES.map(l => [l, l]));
       const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/blog`, slugs);
-      urls.push(generateUrlEntry(loc, alternates, now, 'daily', '0.8'));
+      urls.push(generateUrlEntry(loc, alternates, STATIC_PAGES_LASTMOD, 'daily', '0.8'));
     });
 
-    // 4. Blog Post URLs (dynamic from database)
+    // 7. Blog Post URLs (dynamic from database)
     if (posts && posts.length > 0) {
       posts.forEach((post: BlogPost) => {
         const lastmod = post.updated_at.split('T')[0];
@@ -144,16 +172,53 @@ Deno.serve(async (req) => {
           es: post.slug_es,
         };
 
+        // Create title map for image alt
+        const titleMap: Record<string, string | null> = {
+          en: post.title_en,
+          de: post.title_de,
+          it: post.title_it,
+          pt: post.title_pt,
+          es: post.title_es,
+        };
+
         // Generate URL for each language that has a slug
         LANGUAGES.forEach(lang => {
           const slug = slugMap[lang];
           if (slug) {
             const loc = `${DOMAIN}/${lang}/blog/${slug}`;
             const alternates = generateAlternateLinks(`${DOMAIN}/{lang}/blog/{slug}`, slugMap);
-            urls.push(generateUrlEntry(loc, alternates, lastmod, 'monthly', '0.7'));
+            const imageXml = generateImageTag(post.featured_image_url, post.featured_image_alt, titleMap[lang]);
+            urls.push(generateUrlEntry(loc, alternates, lastmod, 'monthly', '0.7', imageXml));
           }
         });
       });
+    }
+
+    // Generate XML with image namespace
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${urls.join('\n')}
+</urlset>`;
+
+    console.log(`Generated sitemap with ${urls.length} URLs`);
+
+    return new Response(xml, {
+      headers: {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=600, s-maxage=3600, stale-while-revalidate=86400',
+        ...corsHeaders,
+      },
+    });
+  } catch (error) {
+    console.error('Sitemap generation error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
+});
     }
 
     // Generate XML
