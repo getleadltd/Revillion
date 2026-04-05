@@ -35,22 +35,9 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router')) {
-            return 'react-vendor';
-          }
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
-            return 'charts-vendor';
-          }
-          if (id.includes('node_modules/@radix-ui/') || id.includes('node_modules/lucide-react')) {
-            return 'ui-vendor';
-          }
-          if (id.includes('node_modules/@supabase/')) {
-            return 'supabase-vendor';
-          }
-          if (id.includes('node_modules/@tanstack/')) {
-            return 'query-vendor';
-          }
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui/react-scroll-area', 'lucide-react'],
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]',
