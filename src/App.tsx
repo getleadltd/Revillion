@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,22 +7,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import Contact from "./pages/Contact";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import ResponsibleGaming from "./pages/ResponsibleGaming";
-import Calculator from "./pages/Calculator";
-import BlogAdmin from "./pages/admin/BlogAdmin";
-import BlogEditor from "./pages/admin/BlogEditor";
-import BlogAnalytics from "./pages/admin/BlogAnalytics";
-import BlogQueue from "./pages/admin/BlogQueue";
-import Dashboard from "./pages/admin/Dashboard";
-import SEOMonitoring from "./pages/admin/SEOMonitoring";
-import ContactMessages from "./pages/admin/ContactMessages";
-import IncomingArticles from "./pages/admin/IncomingArticles";
-import Login from "./pages/auth/Login";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
 import { useGA4PageViews } from "./hooks/useGA4PageViews";
@@ -29,6 +14,33 @@ import { CookieBanner } from "./components/CookieBanner";
 import { RedirectHandler } from "./components/RedirectHandler";
 import { ScrollToTop } from "./components/ScrollToTop";
 import './lib/i18n';
+
+// Lazy-loaded public pages
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Contact = lazy(() => import("./pages/Contact"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const ResponsibleGaming = lazy(() => import("./pages/ResponsibleGaming"));
+const Calculator = lazy(() => import("./pages/Calculator"));
+
+// Lazy-loaded admin pages (heavy: recharts, editors, etc.)
+const BlogAdmin = lazy(() => import("./pages/admin/BlogAdmin"));
+const BlogEditor = lazy(() => import("./pages/admin/BlogEditor"));
+const BlogAnalytics = lazy(() => import("./pages/admin/BlogAnalytics"));
+const BlogQueue = lazy(() => import("./pages/admin/BlogQueue"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const SEOMonitoring = lazy(() => import("./pages/admin/SEOMonitoring"));
+const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
+const IncomingArticles = lazy(() => import("./pages/admin/IncomingArticles"));
+const Login = lazy(() => import("./pages/auth/Login"));
+
+// Minimal loading fallback
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 // Component to listen to route changes and send GA4 page views
 const GAListener = () => {
@@ -49,94 +61,96 @@ const App = () => (
           <GAListener />
           <CookieBanner />
           <RedirectHandler />
-          <Routes>
-            <Route path="/" element={<Navigate to="/en" replace />} />
-            <Route path="/admin" element={<AdminRedirect />} />
-            <Route path="/admin/*" element={<AdminRedirect />} />
-            <Route path="/:lang" element={<Index />} />
-            <Route path="/:lang/contact" element={<Contact />} />
-            <Route path="/:lang/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/:lang/terms-of-service" element={<TermsOfService />} />
-            <Route path="/:lang/responsible-gaming" element={<ResponsibleGaming />} />
-            <Route path="/:lang/calculator" element={<Calculator />} />
-            <Route path="/:lang/blog" element={<Blog />} />
-            <Route path="/:lang/blog/:slug" element={<BlogPost />} />
-            <Route path="/:lang/auth/login" element={<Login />} />
-            <Route 
-              path="/:lang/admin" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/blog" 
-              element={
-                <ProtectedRoute>
-                  <BlogAdmin />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/blog/new" 
-              element={
-                <ProtectedRoute>
-                  <BlogEditor />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/blog/edit/:id" 
-              element={
-                <ProtectedRoute>
-                  <BlogEditor />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/analytics" 
-              element={
-                <ProtectedRoute>
-                  <BlogAnalytics />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/blog/queue" 
-              element={
-                <ProtectedRoute>
-                  <BlogQueue />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/seo-monitoring" 
-              element={
-                <ProtectedRoute>
-                  <SEOMonitoring />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/contact-messages" 
-              element={
-                <ProtectedRoute>
-                  <ContactMessages />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/:lang/admin/incoming" 
-              element={
-                <ProtectedRoute>
-                  <IncomingArticles />
-                </ProtectedRoute>
-              } 
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/en" replace />} />
+              <Route path="/admin" element={<AdminRedirect />} />
+              <Route path="/admin/*" element={<AdminRedirect />} />
+              <Route path="/:lang" element={<Index />} />
+              <Route path="/:lang/contact" element={<Contact />} />
+              <Route path="/:lang/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/:lang/terms-of-service" element={<TermsOfService />} />
+              <Route path="/:lang/responsible-gaming" element={<ResponsibleGaming />} />
+              <Route path="/:lang/calculator" element={<Calculator />} />
+              <Route path="/:lang/blog" element={<Blog />} />
+              <Route path="/:lang/blog/:slug" element={<BlogPost />} />
+              <Route path="/:lang/auth/login" element={<Login />} />
+              <Route
+                path="/:lang/admin"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/blog"
+                element={
+                  <ProtectedRoute>
+                    <BlogAdmin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/blog/new"
+                element={
+                  <ProtectedRoute>
+                    <BlogEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/blog/edit/:id"
+                element={
+                  <ProtectedRoute>
+                    <BlogEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/analytics"
+                element={
+                  <ProtectedRoute>
+                    <BlogAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/blog/queue"
+                element={
+                  <ProtectedRoute>
+                    <BlogQueue />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/seo-monitoring"
+                element={
+                  <ProtectedRoute>
+                    <SEOMonitoring />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/contact-messages"
+                element={
+                  <ProtectedRoute>
+                    <ContactMessages />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/:lang/admin/incoming"
+                element={
+                  <ProtectedRoute>
+                    <IncomingArticles />
+                  </ProtectedRoute>
+                }
+              />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </HelmetProvider>

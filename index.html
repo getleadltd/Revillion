@@ -22,21 +22,19 @@
     <meta name="googlebot" content="index, follow" />
     <meta name="bingbot" content="index, follow" />
     
-    <!-- Fonts -->
+    <!-- Fonts (non-blocking) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" /></noscript>
 
     <!-- Performance Optimizations -->
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-    <link rel="modulepreload" href="/src/main.tsx" />
+    <!-- modulepreload injected by Vite at build time -->
     
-    <!-- Preload translation files for better performance -->
-    <link rel="preload" href="/src/locales/en/translation.json" as="fetch" crossorigin type="application/json" />
-    <link rel="preload" href="/src/locales/it/translation.json" as="fetch" crossorigin type="application/json" />
-    <link rel="preload" href="/src/locales/pt/translation.json" as="fetch" crossorigin type="application/json" />
-    <link rel="preload" href="/src/locales/es/translation.json" as="fetch" crossorigin type="application/json" />
+    <!-- Translation files are bundled via i18n.ts, no preload needed -->
     
     <!-- Critical CSS Inline -->
     <style>
