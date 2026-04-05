@@ -314,14 +314,30 @@ const PrivacyPolicy = () => {
         <link rel="alternate" hrefLang="pt" href="https://revillion-partners.com/pt/privacy-policy" />
         <link rel="alternate" hrefLang="es" href="https://revillion-partners.com/es/privacy-policy" />
         <link rel="alternate" hrefLang="x-default" href="https://revillion-partners.com/en/privacy-policy" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${currentContent.title} | Revillion Partners`} />
+        <meta property="og:description" content={`${currentContent.title} - Learn how Revillion Partners collects, uses, and protects your personal information.`} />
+        <meta property="og:url" content={`https://revillion-partners.com/${lang}/privacy-policy`} />
+        <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
+        <meta property="og:site_name" content="Revillion" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@revillion" />
+        <meta name="twitter:title" content={`${currentContent.title} | Revillion Partners`} />
+        <meta name="twitter:description" content={`${currentContent.title} - Learn how Revillion Partners collects, uses, and protects your personal information.`} />
+        <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
+
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
-      <section className="py-20 bg-gradient-to-br from-background via-background to-primary/5">
+      <section className="bg-[#0a0a0a] text-white pt-16 pb-12 md:pt-24 md:pb-16">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">{currentContent.title}</h1>
-            <p className="text-muted-foreground">{currentContent.lastUpdated}</p>
+            <p className="text-gray-400">{currentContent.lastUpdated}</p>
           </div>
         </div>
       </section>

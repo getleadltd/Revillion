@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @layer base {
@@ -92,6 +101,19 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Smooth section transitions */
+  section + section {
+    position: relative;
+  }
+
+  /* Better selection color */
+  ::selection {
+    background-color: rgba(249, 115, 22, 0.2);
+    color: inherit;
   }
 
   /* Miglioramenti leggibilità articoli */

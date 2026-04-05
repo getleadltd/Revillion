@@ -7,13 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Clock, Users, Building2, HeadphonesIcon } from 'lucide-react';
+import { Mail, Clock, Users, Building2, HeadphonesIcon, Shield, ArrowRight, CreditCard, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 // Temporary type until Supabase types are regenerated
@@ -113,21 +113,41 @@ const Contact = () => {
         <link rel="alternate" hrefLang="pt" href="https://revillion-partners.com/pt/contact" />
         <link rel="alternate" hrefLang="es" href="https://revillion-partners.com/es/contact" />
         <link rel="alternate" hrefLang="x-default" href="https://revillion-partners.com/en/contact" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${t('contact.title')} ${t('contact.titleHighlight')} | Revillion Partners`} />
+        <meta property="og:description" content={t('contact.subtitle')} />
+        <meta property="og:url" content={`https://revillion-partners.com/${lang}/contact`} />
+        <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
+        <meta property="og:site_name" content="Revillion" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@revillion" />
+        <meta name="twitter:title" content={`${t('contact.title')} ${t('contact.titleHighlight')} | Revillion Partners`} />
+        <meta name="twitter:description" content={t('contact.subtitle')} />
+        <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
       </Helmet>
 
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="inline-block px-4 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary/10 text-primary">
+      {/* Dark Hero Section */}
+      <section className="relative py-16 md:py-24 overflow-hidden" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-orange-500/5" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="inline-block px-4 py-1.5 mb-5 text-xs font-semibold tracking-wider uppercase rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
               {t('contact.badge')}
             </span>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {t('contact.title')} <span className="text-primary">{t('contact.titleHighlight')}</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+              {t('contact.title')} <span className="text-orange-500">{t('contact.titleHighlight')}</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-gray-400 mb-6">
               {t('contact.subtitle')}
             </p>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10">
+              <Clock className="w-4 h-4 text-orange-400" />
+              <span className="text-sm font-medium text-gray-300">We respond within 24 hours</span>
+            </div>
           </div>
         </div>
       </section>
@@ -137,171 +157,214 @@ const Contact = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {/* Contact Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('contact.form.submit')}</CardTitle>
-                <CardDescription>{t('contact.subtitle')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">{t('contact.form.name')}</Label>
-                    <Input
-                      id="name"
-                      {...register('name')}
-                      placeholder={t('contact.form.namePlaceholder')}
-                      className={errors.name ? 'border-destructive' : ''}
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
-                    )}
-                  </div>
+            <div>
+              {/* Trust Badges */}
+              <div className="flex flex-wrap items-center gap-4 mb-6 px-1">
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Shield className="w-4 h-4 text-orange-500" />
+                  <span>Secure</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Mail className="w-4 h-4 text-orange-500" />
+                  <span>24h Response</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Users className="w-4 h-4 text-orange-500" />
+                  <span>Dedicated Support</span>
+                </div>
+              </div>
 
-                  <div>
-                    <Label htmlFor="email">{t('contact.form.email')}</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...register('email')}
-                      placeholder={t('contact.form.emailPlaceholder')}
-                      className={errors.email ? 'border-destructive' : ''}
-                    />
-                    {errors.email && (
-                      <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone">{t('contact.form.phone')}</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      {...register('phone')}
-                      placeholder={t('contact.form.phonePlaceholder')}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="contactType">{t('contact.form.contactType')}</Label>
-                    <Select
-                      onValueChange={(value) => {
-                        setSelectedType(value);
-                        setValue('contactType', value as 'affiliate' | 'partner' | 'general');
-                      }}
-                      value={selectedType}
-                    >
-                      <SelectTrigger className={errors.contactType ? 'border-destructive' : ''}>
-                        <SelectValue placeholder={t('contact.form.contactType')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="affiliate">{t('contact.form.contactTypeOptions.affiliate')}</SelectItem>
-                        <SelectItem value="partner">{t('contact.form.contactTypeOptions.partner')}</SelectItem>
-                        <SelectItem value="general">{t('contact.form.contactTypeOptions.general')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.contactType && (
-                      <p className="text-sm text-destructive mt-1">{errors.contactType.message}</p>
-                    )}
-                  </div>
-
-                  {selectedType === 'partner' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('contact.form.submit')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
-                      <Label htmlFor="companyName">{t('contact.form.company')}</Label>
+                      <Label htmlFor="name">{t('contact.form.name')}</Label>
                       <Input
-                        id="companyName"
-                        {...register('companyName')}
-                        placeholder={t('contact.form.companyPlaceholder')}
+                        id="name"
+                        {...register('name')}
+                        placeholder={t('contact.form.namePlaceholder')}
+                        className={errors.name ? 'border-destructive' : ''}
+                      />
+                      {errors.name && (
+                        <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="email">{t('contact.form.email')}</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        {...register('email')}
+                        placeholder={t('contact.form.emailPlaceholder')}
+                        className={errors.email ? 'border-destructive' : ''}
+                      />
+                      {errors.email && (
+                        <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone">{t('contact.form.phone')}</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        {...register('phone')}
+                        placeholder={t('contact.form.phonePlaceholder')}
                       />
                     </div>
-                  )}
 
-                  <div>
-                    <Label htmlFor="subject">{t('contact.form.subject')}</Label>
-                    <Input
-                      id="subject"
-                      {...register('subject')}
-                      placeholder={t('contact.form.subjectPlaceholder')}
-                      className={errors.subject ? 'border-destructive' : ''}
-                    />
-                    {errors.subject && (
-                      <p className="text-sm text-destructive mt-1">{errors.subject.message}</p>
+                    <div>
+                      <Label htmlFor="contactType">{t('contact.form.contactType')}</Label>
+                      <Select
+                        onValueChange={(value) => {
+                          setSelectedType(value);
+                          setValue('contactType', value as 'affiliate' | 'partner' | 'general');
+                        }}
+                        value={selectedType}
+                      >
+                        <SelectTrigger className={errors.contactType ? 'border-destructive' : ''}>
+                          <SelectValue placeholder={t('contact.form.contactType')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="affiliate">{t('contact.form.contactTypeOptions.affiliate')}</SelectItem>
+                          <SelectItem value="partner">{t('contact.form.contactTypeOptions.partner')}</SelectItem>
+                          <SelectItem value="general">{t('contact.form.contactTypeOptions.general')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.contactType && (
+                        <p className="text-sm text-destructive mt-1">{errors.contactType.message}</p>
+                      )}
+                    </div>
+
+                    {selectedType === 'partner' && (
+                      <div>
+                        <Label htmlFor="companyName">{t('contact.form.company')}</Label>
+                        <Input
+                          id="companyName"
+                          {...register('companyName')}
+                          placeholder={t('contact.form.companyPlaceholder')}
+                        />
+                      </div>
                     )}
-                  </div>
 
-                  <div>
-                    <Label htmlFor="message">{t('contact.form.message')}</Label>
-                    <Textarea
-                      id="message"
-                      {...register('message')}
-                      placeholder={t('contact.form.messagePlaceholder')}
-                      rows={5}
-                      className={errors.message ? 'border-destructive' : ''}
-                    />
-                    {errors.message && (
-                      <p className="text-sm text-destructive mt-1">{errors.message.message}</p>
-                    )}
-                  </div>
+                    <div>
+                      <Label htmlFor="subject">{t('contact.form.subject')}</Label>
+                      <Input
+                        id="subject"
+                        {...register('subject')}
+                        placeholder={t('contact.form.subjectPlaceholder')}
+                        className={errors.subject ? 'border-destructive' : ''}
+                      />
+                      {errors.subject && (
+                        <p className="text-sm text-destructive mt-1">{errors.subject.message}</p>
+                      )}
+                    </div>
 
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? t('contact.form.submitting') : t('contact.form.submit')}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                    <div>
+                      <Label htmlFor="message">{t('contact.form.message')}</Label>
+                      <Textarea
+                        id="message"
+                        {...register('message')}
+                        placeholder={t('contact.form.messagePlaceholder')}
+                        rows={5}
+                        className={errors.message ? 'border-destructive' : ''}
+                      />
+                      {errors.message && (
+                        <p className="text-sm text-destructive mt-1">{errors.message.message}</p>
+                      )}
+                    </div>
+
+                    <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white" disabled={isSubmitting}>
+                      {isSubmitting ? t('contact.form.submitting') : t('contact.form.submit')}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Info Section */}
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('contact.info.title')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <Users className="w-5 h-5 text-primary mt-0.5" />
+              {/* Partnership Opportunities */}
+              <div className="rounded-xl border border-border/60 p-6" style={{ backgroundColor: '#0a0a0a' }}>
+                <h2 className="text-lg font-bold text-white mb-5">{t('contact.info.title')}</h2>
+                <div className="space-y-5">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-orange-400" />
+                    </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{t('contact.info.affiliate.title')}</h3>
-                      <p className="text-sm text-muted-foreground">{t('contact.info.affiliate.description')}</p>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.info.affiliate.title')}</h3>
+                      <p className="text-sm text-gray-400">{t('contact.info.affiliate.description')}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <Building2 className="w-5 h-5 text-primary mt-0.5" />
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                      <Building2 className="w-5 h-5 text-orange-400" />
+                    </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{t('contact.info.partner.title')}</h3>
-                      <p className="text-sm text-muted-foreground">{t('contact.info.partner.description')}</p>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.info.partner.title')}</h3>
+                      <p className="text-sm text-gray-400">{t('contact.info.partner.description')}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <HeadphonesIcon className="w-5 h-5 text-primary mt-0.5" />
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                      <HeadphonesIcon className="w-5 h-5 text-orange-400" />
+                    </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{t('contact.info.support.title')}</h3>
-                      <p className="text-sm text-muted-foreground">{t('contact.info.support.description')}</p>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.info.support.title')}</h3>
+                      <p className="text-sm text-gray-400">{t('contact.info.support.description')}</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
+                <div className="mt-6 pt-5 border-t border-white/10">
+                  <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold" size="lg">
+                    Start Earning <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Contact Details */}
               <Card>
                 <CardHeader>
                   <CardTitle>{t('contact.contactDetails.title')}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium">{t('contact.contactDetails.email')}</p>
-                    <a href="mailto:info@revillion.com" className="text-sm text-primary hover:underline">
-                      {t('contact.contactDetails.emailValue')}
-                    </a>
-                  </div>
+                    <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                      <Mail className="w-4 h-4 text-orange-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{t('contact.contactDetails.email')}</p>
+                      <a href="mailto:info@revillion.com" className="text-sm text-orange-500 hover:underline">
+                        {t('contact.contactDetails.emailValue')}
+                      </a>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-primary" />
+                    <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                      <Clock className="w-4 h-4 text-orange-500" />
+                    </div>
                     <div>
                       <p className="text-sm font-medium">{t('contact.contactDetails.response')}</p>
                       <p className="text-sm text-muted-foreground">{t('contact.contactDetails.responseValue')}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                      <Wallet className="w-4 h-4 text-orange-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Payment Methods</p>
+                      <p className="text-sm text-muted-foreground">Skrill, Neteller, Crypto, Bank Transfer</p>
                     </div>
                   </div>
                 </CardContent>

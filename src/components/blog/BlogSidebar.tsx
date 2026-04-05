@@ -1,6 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { useCategories } from '@/hooks/useCategories';
 
 interface BlogSidebarProps {
@@ -20,27 +18,42 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
   ];
 
   return (
-    <Card className="sticky top-4">
-      <CardHeader>
-        <CardTitle>{t('blog.categories')}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
+    <div className="sticky top-24 rounded-xl border border-border/60 bg-card p-5 shadow-sm">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+        {t('blog.categories')}
+      </h3>
+      <div className="space-y-1.5">
         {allCategories.map((category) => {
           const count = categories?.find((c) => c.category === category.id)?.count || 0;
-          
+          const isActive = selectedCategory === category.id;
+
           return (
-            <Button
+            <button
               key={category.id}
-              variant={selectedCategory === category.id ? 'default' : 'ghost'}
-              className="w-full justify-between"
               onClick={() => onCategoryChange(category.id)}
+              className={`
+                w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                ${isActive
+                  ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent'
+                }
+              `}
             >
-              <span>{category.label}</span>
-              {category.id !== 'all' && <span className="text-sm">({count})</span>}
-            </Button>
+              <span className="flex items-center gap-2">
+                {isActive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
+                )}
+                {category.label}
+              </span>
+              {category.id !== 'all' && (
+                <span className={`text-xs ${isActive ? 'text-orange-400' : 'text-muted-foreground/60'}`}>
+                  {count}
+                </span>
+              )}
+            </button>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

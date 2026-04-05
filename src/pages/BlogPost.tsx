@@ -349,7 +349,15 @@ const BlogPost = () => {
         <meta property="article:published_time" content={post.published_at || post.created_at} />
         {post.updated_at && <meta property="article:modified_time" content={post.updated_at} />}
         <meta property="article:section" content={post.category} />
-        
+        <meta property="og:site_name" content="Revillion" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@revillion" />
+        <meta name="twitter:title" content={`${title} | Revillion Partners`} />
+        <meta name="twitter:description" content={metaDesc || title} />
+        {post.featured_image_url && <meta name="twitter:image" content={post.featured_image_url} />}
+
         {/* Canonical URL */}
         <link rel="canonical" href={currentUrl} />
         
