@@ -72,7 +72,7 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
               to={`/${lang}/calculator`}
               className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 hover:border-orange-500/50 transition-all duration-200 font-semibold text-[13px] rounded-full px-4 py-1.5 ml-1"
             >
-              <span>💰</span> Calculator
+              <span>💰</span> {t('nav.calculator')}
             </Link>
             <Link
               to={`/${lang}/contact`}
@@ -84,7 +84,7 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
               to={`/${lang}/blog`}
               className="text-gray-400 hover:text-white transition-colors duration-200 font-medium text-[13px] tracking-wide px-3 py-2 rounded-lg hover:bg-white/5"
             >
-              Blog
+              {t('nav.blog')}
             </Link>
             <div className="ml-2 mr-3">
               <LanguageSwitcher />
@@ -95,7 +95,7 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
               rel="noopener noreferrer"
               className="group/cta flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-[13px] rounded-full px-5 py-2 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.03]"
             >
-              Start Earning
+              {t('nav.startEarning')}
               <ArrowRight className="w-3.5 h-3.5 group-hover/cta:translate-x-0.5 transition-transform duration-200" />
             </a>
           </nav>
@@ -159,7 +159,7 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
                 className="text-orange-400 hover:text-orange-300 transition-colors font-semibold text-left"
                 onClick={() => setIsMenuOpen(false)}
               >
-                💰 Calculator
+                💰 {t('nav.calculator')}
               </Link>
               <Link
                 to={`/${lang}/contact`}
@@ -173,7 +173,7 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
                 className="text-gray-400 hover:text-white transition-colors font-semibold text-left"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Blog
+                {t('nav.blog')}
               </Link>
               <a
                 href="https://dashboard.revillion.com"
@@ -182,7 +182,7 @@ export const Header = ({ showScrollLinks = false }: HeaderProps) => {
                 className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-sm rounded-full px-5 py-3 mt-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Start Earning
+                {t('nav.startEarning')}
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>

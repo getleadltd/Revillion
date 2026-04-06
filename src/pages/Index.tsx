@@ -115,26 +115,29 @@ const CountUpStat = ({ prefix = '', target, suffix = '', label, support }: {
   );
 };
 
-const CountUpStats = () => (
-  <motion.div
-    className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center"
-    variants={stagger(0.1, 0)}
-    initial="hidden"
-    whileInView="visible"
-    viewport={viewport}
-  >
-    {[
-      { prefix: '$', target: 10, suffix: 'M+', label: 'Paid to Affiliates', support: 'And counting' },
-      { prefix: '$', target: 220, suffix: '', label: 'Top CPA Rate', support: 'Per depositor' },
-      { prefix: '', target: 7, suffix: ' Days', label: 'Average Payment', support: 'Fast & reliable' },
-      { prefix: '', target: 800, suffix: '+', label: 'Active Affiliates', support: 'Worldwide' },
-    ].map((s) => (
-      <motion.div key={s.label} variants={scaleIn}>
-        <CountUpStat {...s} />
-      </motion.div>
-    ))}
-  </motion.div>
-);
+const CountUpStats = () => {
+  const { t } = useTranslation();
+  return (
+    <motion.div
+      className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center"
+      variants={stagger(0.1, 0)}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewport}
+    >
+      {[
+        { prefix: '$', target: 10, suffix: 'M+', label: t('numbers.stat1Label'), support: t('numbers.stat1Support') },
+        { prefix: '$', target: 220, suffix: '', label: t('numbers.stat2Label'), support: t('numbers.stat2Support') },
+        { prefix: '', target: 7, suffix: ' Days', label: t('numbers.stat3Label'), support: t('numbers.stat3Support') },
+        { prefix: '', target: 800, suffix: '+', label: t('numbers.stat4Label'), support: t('numbers.stat4Support') },
+      ].map((s) => (
+        <motion.div key={s.label} variants={scaleIn}>
+          <CountUpStat {...s} />
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+};
 
 const Index = () => {
   const { t, i18n } = useTranslation();
@@ -199,15 +202,15 @@ const Index = () => {
               </motion.div>
 
               <motion.h1 variants={fadeUp} className="text-[2.6rem] sm:text-5xl md:text-[5.5rem] font-black mb-5 md:mb-6 leading-[0.95] tracking-tight">
-                Earn Up to{' '}
+                {t('hero.headingPrefix')}{' '}
                 <span className="text-orange-500">$220 CPA</span>
                 <br />
-                Per Player
+                {t('hero.headingSuffix')}
               </motion.h1>
 
               <motion.p variants={fadeUp} className="text-base sm:text-lg text-gray-400 mb-7 md:mb-10 leading-relaxed">
-                Premier iGaming affiliate network. <span className="text-white font-semibold">16+ licensed casino brands.</span>{' '}
-                Paid <span className="text-orange-400 font-semibold">$10M+</span> to partners. Get your first payment in 7 days.
+                {t('hero.descPart1')} <span className="text-white font-semibold">{t('hero.descBold')}</span>{' '}
+                {t('hero.descPaidPrefix')} <span className="text-orange-400 font-semibold">$10M+</span> {t('hero.descSuffix')}
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-10">
@@ -219,7 +222,7 @@ const Index = () => {
                   className="w-full sm:w-auto"
                 >
                   <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
-                    Start Earning Now
+                    {t('hero.ctaPrimary')}
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </a>
@@ -228,7 +231,7 @@ const Index = () => {
                     variant="outline"
                     className="w-full sm:w-auto border border-white/15 text-white hover:bg-white/8 hover:border-white/30 font-semibold py-4 px-8 text-base rounded-full transition-all duration-200 bg-transparent"
                   >
-                    Calculate Your Earnings
+                    {t('hero.ctaSecondary')}
                   </Button>
                 </RouterLink>
               </motion.div>
@@ -237,15 +240,15 @@ const Index = () => {
               <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-6 mb-10 md:mb-14">
                 <div className="flex items-center gap-2 text-gray-400 text-sm">
                   <Zap className="w-4 h-4 text-orange-500" />
-                  <span>7-Day Payments</span>
+                  <span>{t('hero.trust1')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-400 text-sm">
                   <BarChart3 className="w-4 h-4 text-orange-500" />
-                  <span>Real-Time Tracking</span>
+                  <span>{t('hero.trust2')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-400 text-sm">
                   <Users className="w-4 h-4 text-orange-500" />
-                  <span>Dedicated Manager</span>
+                  <span>{t('hero.trust3')}</span>
                 </div>
               </motion.div>
 
@@ -313,7 +316,7 @@ const Index = () => {
 
                   {/* Mini revenue chart */}
                   <div className="bg-white/4 rounded-xl p-4">
-                    <div className="text-gray-500 text-xs font-semibold mb-3 uppercase tracking-wider">Revenue — Last 7 days</div>
+                    <div className="text-gray-500 text-xs font-semibold mb-3 uppercase tracking-wider">{t('dashboard.revenueChart')}</div>
                     <svg viewBox="0 0 280 70" className="w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <defs>
                         <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
@@ -360,7 +363,7 @@ const Index = () => {
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl mb-8 md:mb-10">
           <div className="flex items-center gap-5">
             <div className="h-px flex-1 bg-gray-300" />
-            <span className="text-gray-900 font-semibold text-sm uppercase tracking-widest shrink-0">Promote World-Class Brands</span>
+            <span className="text-gray-900 font-semibold text-sm uppercase tracking-widest shrink-0">{t('marquee.title')}</span>
             <div className="h-px flex-1 bg-gray-300" />
           </div>
         </div>
@@ -388,7 +391,7 @@ const Index = () => {
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl mt-8 md:mt-10">
           <div className="flex items-center justify-center gap-2 text-gray-500 text-sm text-center">
             <Shield className="w-4 h-4 text-green-600 shrink-0" />
-            <span>All brands licensed & regulated &middot; Multi-GEO coverage &middot; Exclusive deals available</span>
+            <span>{t('marquee.trust')}</span>
           </div>
         </div>
       </section>
@@ -399,10 +402,10 @@ const Index = () => {
 
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative">
           <div className="text-center mb-12 md:mb-16">
-            <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">The Numbers</span>
+            <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('numbers.badge')}</span>
             <h2 className="text-4xl md:text-6xl font-black mt-3 leading-tight tracking-tight">
-              Results That{' '}
-              <span className="text-orange-500">Speak</span>
+              {t('numbers.heading')}{' '}
+              <span className="text-orange-500">{t('numbers.headingHighlight')}</span>
             </h2>
           </div>
 
@@ -413,7 +416,7 @@ const Index = () => {
               to={`/${lang || 'en'}/calculator`}
               className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-semibold text-sm transition-colors"
             >
-              See what you could earn
+              {t('numbers.cta')}
               <ArrowRight className="w-4 h-4" />
             </RouterLink>
           </div>
@@ -538,7 +541,7 @@ const Index = () => {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-sm transition-colors"
                   >
-                    See the dashboard live
+                    {t('dashboard.seeLive')}
                     <ArrowRight className="w-4 h-4" />
                   </a>
                 </div>
@@ -666,7 +669,7 @@ const Index = () => {
               {/* Urgency text */}
               <div className="mt-5 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
-                <span className="text-orange-400 text-sm font-semibold">Limited slots available for Q2 2026</span>
+                <span className="text-orange-400 text-sm font-semibold">{t('offers.urgency')}</span>
               </div>
 
               <div className="mt-8 pt-8 border-t border-white/8 grid grid-cols-3 gap-4 md:gap-6">
@@ -778,9 +781,9 @@ const Index = () => {
       <section className="py-16 md:py-28 bg-[#F8F7F4]">
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           <div className="text-center mb-12 md:mb-16">
-            <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">Testimonials</span>
+            <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('testimonials.badge')}</span>
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mt-3 leading-tight tracking-tight">
-              What Our Affiliates <span className="text-orange-500">Say</span>
+              {t('testimonials.heading')} <span className="text-orange-500">{t('testimonials.headingHighlight')}</span>
             </h2>
           </div>
 
@@ -792,24 +795,9 @@ const Index = () => {
             viewport={viewport}
           >
             {[
-              {
-                quote: "Switched from another network and my earnings doubled in the first month. The CPA rates are unbeatable.",
-                name: "Alex M.",
-                role: "Content Creator",
-                earning: "$8K+/month",
-              },
-              {
-                quote: "Best tracking system I've used. Real-time postbacks, dedicated manager, payments always on time.",
-                name: "Maria S.",
-                role: "SEO Specialist",
-                earning: "$12K+/month",
-              },
-              {
-                quote: "16+ brands to promote means I can always find the right offer for my traffic. The dashboard makes it easy.",
-                name: "David R.",
-                role: "Media Buyer",
-                earning: "$25K+/month",
-              },
+              { quote: t('testimonials.t1Quote'), name: t('testimonials.t1Name'), role: t('testimonials.t1Role'), earning: t('testimonials.t1Earning') },
+              { quote: t('testimonials.t2Quote'), name: t('testimonials.t2Name'), role: t('testimonials.t2Role'), earning: t('testimonials.t2Earning') },
+              { quote: t('testimonials.t3Quote'), name: t('testimonials.t3Name'), role: t('testimonials.t3Role'), earning: t('testimonials.t3Earning') },
             ].map(({ quote, name, role, earning }) => (
               <motion.div key={name} variants={fadeUp} className="bg-white border border-gray-200 rounded-2xl p-7 md:p-8 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
                 <p className="text-gray-700 italic leading-relaxed mb-6">"{quote}"</p>
@@ -831,7 +819,7 @@ const Index = () => {
               className="inline-block"
             >
               <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
-                Join Them
+                {t('testimonials.cta')}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </a>
@@ -857,7 +845,7 @@ const Index = () => {
           viewport={viewport}
         >
           <motion.span variants={fadeUp} className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('finalCta.title')}</motion.span>
-          <motion.p variants={fadeUp} className="text-gray-400 text-lg mt-4 mb-2 font-medium">Join 800+ affiliates already earning</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-lg mt-4 mb-2 font-medium">{t('finalCta.lead')}</motion.p>
           <motion.h2 variants={fadeUp} className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-5 md:mb-6 leading-tight tracking-tight">
             {t('finalCta.subtitle')}
           </motion.h2>
@@ -880,13 +868,13 @@ const Index = () => {
           {/* Trust icons */}
           <motion.div variants={fadeUp} className="flex flex-wrap items-center justify-center gap-6 mt-8 md:mt-10">
             <span className="text-gray-400 text-sm flex items-center gap-1.5">
-              <span className="text-green-400">&#10003;</span> Free to join
+              <span className="text-green-400">&#10003;</span> {t('finalCta.trust1')}
             </span>
             <span className="text-gray-400 text-sm flex items-center gap-1.5">
-              <span className="text-green-400">&#10003;</span> No setup fees
+              <span className="text-green-400">&#10003;</span> {t('finalCta.trust2')}
             </span>
             <span className="text-gray-400 text-sm flex items-center gap-1.5">
-              <span className="text-green-400">&#10003;</span> First payment in 7 days
+              <span className="text-green-400">&#10003;</span> {t('finalCta.trust3')}
             </span>
           </motion.div>
         </motion.div>

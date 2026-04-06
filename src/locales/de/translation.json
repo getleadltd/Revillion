@@ -5,7 +5,10 @@
     "tools": "Tools",
     "offers": "Angebote",
     "faq": "FAQ",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "calculator": "Rechner",
+    "blog": "Blog",
+    "startEarning": "Jetzt verdienen"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate-Netzwerk",
@@ -15,12 +18,41 @@
     "descriptionHighlight": "hohe CPA-Provisionen",
     "descriptionEnd": "durch die Promotion von Premium-Casino-Angeboten in globalen Märkten",
     "cta": "Jetzt Partner werden",
-    "learnMore": "Erfahre mehr"
+    "learnMore": "Erfahre mehr",
+    "headingPrefix": "Verdiene bis zu",
+    "headingSuffix": "pro Spieler",
+    "descPart1": "Führendes iGaming-Affiliate-Netzwerk.",
+    "descBold": "16+ lizenzierte Casino-Marken.",
+    "descPaidPrefix": "Bereits",
+    "descSuffix": "an Partner ausgezahlt. Erste Zahlung in 7 Tagen.",
+    "ctaPrimary": "Jetzt verdienen",
+    "ctaSecondary": "Einnahmen berechnen",
+    "trust1": "7-Tage-Zahlungen",
+    "trust2": "Echtzeit-Tracking",
+    "trust3": "Dedizierter Manager"
   },
   "stats": {
     "paid": "An Affiliates ausgezahlt",
     "affiliates": "Aktive Affiliates",
     "markets": "Globale Märkte"
+  },
+  "marquee": {
+    "title": "Weltklasse-Marken bewerben",
+    "trust": "Alle Marken lizenziert & reguliert · Multi-GEO-Abdeckung · Exklusive Deals verfügbar"
+  },
+  "numbers": {
+    "badge": "Die Zahlen",
+    "heading": "Ergebnisse, die",
+    "headingHighlight": "sprechen",
+    "cta": "Sieh dir an, was du verdienen könntest",
+    "stat1Label": "An Affiliates ausgezahlt",
+    "stat1Support": "Und wächst",
+    "stat2Label": "Höchste CPA-Rate",
+    "stat2Support": "Pro Einzahler",
+    "stat3Label": "Durchschnittliche Zahlung",
+    "stat3Support": "Schnell & zuverlässig",
+    "stat4Label": "Aktive Affiliates",
+    "stat4Support": "Weltweit"
   },
   "partners": {
     "badge": "PREMIUM-PARTNER",
@@ -94,7 +126,9 @@
     "deposits": "Einzahlungen",
     "earned": "$4.250 verdient",
     "realtimeUpdate": "Echtzeit-Postback-Aktualisierungen",
-    "accessButton": "Zum Dashboard"
+    "accessButton": "Zum Dashboard",
+    "seeLive": "Dashboard live ansehen",
+    "revenueChart": "Einnahmen — Letzte 7 Tage"
   },
   "offers": {
     "badge": "TOP-ANGEBOTE",
@@ -114,7 +148,26 @@
       "africa": "🌍 Afrika: Südafrika, Nigeria, Kenia",
       "moreMarkets": "📍 Und über 30 weitere Märkte weltweit"
     },
-    "exploreButton": "Unsere Angebote erkunden"
+    "exploreButton": "Unsere Angebote erkunden",
+    "urgency": "Begrenzte Plätze für Q2 2026 verfügbar"
+  },
+  "testimonials": {
+    "badge": "Erfahrungsberichte",
+    "heading": "Was unsere Affiliates",
+    "headingHighlight": "sagen",
+    "cta": "Jetzt mitmachen",
+    "t1Quote": "Ich habe das Netzwerk gewechselt und meine Einnahmen verdoppelten sich im ersten Monat. Die CPA-Raten sind unschlagbar.",
+    "t1Name": "Alex M.",
+    "t1Role": "Content Creator",
+    "t1Earning": "$8K+/Monat",
+    "t2Quote": "Das beste Tracking-System, das ich je benutzt habe. Echtzeit-Postbacks, dedizierter Manager, pünktliche Zahlungen.",
+    "t2Name": "Maria S.",
+    "t2Role": "SEO-Spezialist",
+    "t2Earning": "$12K+/Monat",
+    "t3Quote": "16+ Marken bedeuten, dass ich immer das richtige Angebot für meinen Traffic finde. Das Dashboard macht alles einfach.",
+    "t3Name": "David R.",
+    "t3Role": "Media Buyer",
+    "t3Earning": "$25K+/Monat"
   },
   "socialMedia": {
     "badge": "SOCIAL-MEDIA-OPTIMIERUNG",
@@ -167,7 +220,11 @@
     "stat2": "Tracking & Statistiken",
     "stat3": "Support verfügbar",
     "button": "Jetzt Partner werden",
-    "footer": "Keine Einrichtungsgebühr • Kostenlos beitreten • Jetzt starten"
+    "footer": "Keine Einrichtungsgebühr • Kostenlos beitreten • Jetzt starten",
+    "lead": "Schließ dich 800+ Affiliates an, die bereits verdienen",
+    "trust1": "Kostenlos beitreten",
+    "trust2": "Keine Einrichtungsgebühren",
+    "trust3": "Erste Zahlung in 7 Tagen"
   },
   "faq": {
     "badge": "FAQ",

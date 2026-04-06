@@ -5,7 +5,10 @@
     "tools": "Ferramentas",
     "offers": "Ofertas",
     "faq": "FAQ",
-    "contact": "Contacto"
+    "contact": "Contacto",
+    "calculator": "Calculadora",
+    "blog": "Blog",
+    "startEarning": "Comece a Ganhar"
   },
   "hero": {
     "badge": "#1 Rede de Afiliados iGaming",
@@ -15,12 +18,41 @@
     "descriptionHighlight": "altas comissões CPA",
     "descriptionEnd": "promovendo ofertas de cassino premium em mercados globais",
     "cta": "Torne-se Afiliado",
-    "learnMore": "Saiba Mais"
+    "learnMore": "Saiba Mais",
+    "headingPrefix": "Ganhe até",
+    "headingSuffix": "por Jogador",
+    "descPart1": "Principal rede de afiliados iGaming.",
+    "descBold": "16+ marcas de cassino licenciadas.",
+    "descPaidPrefix": "Pago",
+    "descSuffix": "aos parceiros. Receba seu primeiro pagamento em 7 dias.",
+    "ctaPrimary": "Comece a Ganhar",
+    "ctaSecondary": "Calcule seus Ganhos",
+    "trust1": "Pagamentos em 7 Dias",
+    "trust2": "Rastreamento em Tempo Real",
+    "trust3": "Gerente Dedicado"
   },
   "stats": {
     "paid": "Pagos aos Afiliados",
     "affiliates": "Afiliados Ativos",
     "markets": "Mercados Globais"
+  },
+  "marquee": {
+    "title": "Promova Marcas de Classe Mundial",
+    "trust": "Todas as marcas licenciadas e regulamentadas · Cobertura multi-GEO · Acordos exclusivos disponíveis"
+  },
+  "numbers": {
+    "badge": "Os Números",
+    "heading": "Resultados que",
+    "headingHighlight": "Falam",
+    "cta": "Veja quanto você poderia ganhar",
+    "stat1Label": "Pagos aos Afiliados",
+    "stat1Support": "E contando",
+    "stat2Label": "CPA Máximo",
+    "stat2Support": "Por depositante",
+    "stat3Label": "Pagamento Médio",
+    "stat3Support": "Rápido & confiável",
+    "stat4Label": "Afiliados Ativos",
+    "stat4Support": "Em todo o mundo"
   },
   "partners": {
     "badge": "PARCEIROS PREMIUM",
@@ -94,7 +126,9 @@
     "deposits": "Depósitos",
     "earned": "$4,250 ganhos",
     "realtimeUpdate": "Atualizações de postback em tempo real",
-    "accessButton": "Acesse Seu Dashboard"
+    "accessButton": "Acesse Seu Dashboard",
+    "seeLive": "Ver o painel ao vivo",
+    "revenueChart": "Receita — Últimos 7 dias"
   },
   "offers": {
     "badge": "TOP OFERTAS",
@@ -114,7 +148,26 @@
       "africa": "🌍 África: África do Sul, Nigéria, Quênia",
       "moreMarkets": "📍 E mais de 30 mercados em todo o mundo"
     },
-    "exploreButton": "Explore Nossas Ofertas"
+    "exploreButton": "Explore Nossas Ofertas",
+    "urgency": "Vagas limitadas disponíveis para Q2 2026"
+  },
+  "testimonials": {
+    "badge": "Depoimentos",
+    "heading": "O que Nossos Afiliados",
+    "headingHighlight": "Dizem",
+    "cta": "Junte-se a Eles",
+    "t1Quote": "Mudei de rede e meus ganhos dobraram no primeiro mês. As taxas CPA são imbatíveis.",
+    "t1Name": "Alex M.",
+    "t1Role": "Content Creator",
+    "t1Earning": "$8K+/mês",
+    "t2Quote": "Melhor sistema de rastreamento que já usei. Postbacks em tempo real, gerente dedicado, pagamentos sempre pontuais.",
+    "t2Name": "Maria S.",
+    "t2Role": "SEO Specialist",
+    "t2Earning": "$12K+/mês",
+    "t3Quote": "16+ marcas para promover significa que sempre encontro a oferta certa para meu tráfego. O painel facilita tudo.",
+    "t3Name": "David R.",
+    "t3Role": "Media Buyer",
+    "t3Earning": "$25K+/mês"
   },
   "socialMedia": {
     "badge": "OTIMIZAÇÃO DE MÍDIAS SOCIAIS",
@@ -167,7 +220,11 @@
     "stat2": "Rastreamento & Estatísticas",
     "stat3": "Suporte Disponível",
     "button": "Torne-se Afiliado Agora",
-    "footer": "Sem taxas de configuração • Inscrição gratuita • Comece a ganhar hoje"
+    "footer": "Sem taxas de configuração • Inscrição gratuita • Comece a ganhar hoje",
+    "lead": "Junte-se a 800+ afiliados que já ganham",
+    "trust1": "Grátis para entrar",
+    "trust2": "Sem taxas de configuração",
+    "trust3": "Primeiro pagamento em 7 dias"
   },
   "faq": {
     "badge": "FAQ",

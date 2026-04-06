@@ -5,7 +5,10 @@
     "tools": "Tools",
     "offers": "Offers",
     "faq": "FAQ",
-    "contact": "Contact"
+    "contact": "Contact",
+    "calculator": "Calculator",
+    "blog": "Blog",
+    "startEarning": "Start Earning"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate Network",
@@ -15,12 +18,41 @@
     "descriptionHighlight": "high CPA commissions",
     "descriptionEnd": "promoting premium casino offers across global markets",
     "cta": "Become an Affiliate",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "headingPrefix": "Earn Up to",
+    "headingSuffix": "Per Player",
+    "descPart1": "Premier iGaming affiliate network.",
+    "descBold": "16+ licensed casino brands.",
+    "descPaidPrefix": "Paid",
+    "descSuffix": "to partners. Get your first payment in 7 days.",
+    "ctaPrimary": "Start Earning Now",
+    "ctaSecondary": "Calculate Your Earnings",
+    "trust1": "7-Day Payments",
+    "trust2": "Real-Time Tracking",
+    "trust3": "Dedicated Manager"
   },
   "stats": {
     "paid": "Paid to Affiliates",
     "affiliates": "Active Affiliates",
     "markets": "Global Markets"
+  },
+  "marquee": {
+    "title": "Promote World-Class Brands",
+    "trust": "All brands licensed & regulated · Multi-GEO coverage · Exclusive deals available"
+  },
+  "numbers": {
+    "badge": "The Numbers",
+    "heading": "Results That",
+    "headingHighlight": "Speak",
+    "cta": "See what you could earn",
+    "stat1Label": "Paid to Affiliates",
+    "stat1Support": "And counting",
+    "stat2Label": "Top CPA Rate",
+    "stat2Support": "Per depositor",
+    "stat3Label": "Average Payment",
+    "stat3Support": "Fast & reliable",
+    "stat4Label": "Active Affiliates",
+    "stat4Support": "Worldwide"
   },
   "partners": {
     "badge": "PREMIUM PARTNERS",
@@ -94,7 +126,9 @@
     "deposits": "Deposits",
     "earned": "$4,250 earned",
     "realtimeUpdate": "Real-time postback updates",
-    "accessButton": "Access Your Dashboard"
+    "accessButton": "Access Your Dashboard",
+    "seeLive": "See the dashboard live",
+    "revenueChart": "Revenue — Last 7 days"
   },
   "offers": {
     "badge": "TOP OFFERS",
@@ -114,7 +148,26 @@
       "africa": "🌍 Africa: South Africa, Nigeria, Kenya",
       "moreMarkets": "📍 And 30+ more markets worldwide"
     },
-    "exploreButton": "Explore Our Offers"
+    "exploreButton": "Explore Our Offers",
+    "urgency": "Limited slots available for Q2 2026"
+  },
+  "testimonials": {
+    "badge": "Testimonials",
+    "heading": "What Our Affiliates",
+    "headingHighlight": "Say",
+    "cta": "Join Them",
+    "t1Quote": "Switched from another network and my earnings doubled in the first month. The CPA rates are unbeatable.",
+    "t1Name": "Alex M.",
+    "t1Role": "Content Creator",
+    "t1Earning": "$8K+/month",
+    "t2Quote": "Best tracking system I've used. Real-time postbacks, dedicated manager, payments always on time.",
+    "t2Name": "Maria S.",
+    "t2Role": "SEO Specialist",
+    "t2Earning": "$12K+/month",
+    "t3Quote": "16+ brands to promote means I can always find the right offer for my traffic. The dashboard makes it easy.",
+    "t3Name": "David R.",
+    "t3Role": "Media Buyer",
+    "t3Earning": "$25K+/month"
   },
   "socialMedia": {
     "badge": "SOCIAL MEDIA OPTIMIZATION",
@@ -167,7 +220,11 @@
     "stat2": "Tracking & Stats",
     "stat3": "Support Available",
     "button": "Become an Affiliate Now",
-    "footer": "No setup fees • Free to join • Start earning today"
+    "footer": "No setup fees • Free to join • Start earning today",
+    "lead": "Join 800+ affiliates already earning",
+    "trust1": "Free to join",
+    "trust2": "No setup fees",
+    "trust3": "First payment in 7 days"
   },
   "faq": {
     "badge": "FAQ",
