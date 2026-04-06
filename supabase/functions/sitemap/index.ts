@@ -9,7 +9,7 @@ const DOMAIN = 'https://revillion-partners.com';
 const LANGUAGES = ['en', 'de', 'it', 'pt', 'es'] as const;
 
 // Static pages last updated date (update this when content changes)
-const STATIC_PAGES_LASTMOD = '2025-06-28';
+const STATIC_PAGES_LASTMOD = '2026-04-06';
 
 interface BlogPost {
   slug_en: string | null;

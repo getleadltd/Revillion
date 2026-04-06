@@ -6,6 +6,12 @@
   NODE_VERSION = "20"
 
 [[redirects]]
+  from = "/sitemap-content.xml"
+  to = "https://pvxndzwaposcttrwkwgd.supabase.co/functions/v1/sitemap"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
