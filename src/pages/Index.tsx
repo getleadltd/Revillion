@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -72,6 +72,55 @@ import librabetLogo from "@/assets/librabet-partner.png?partner";
 import nominiLogo from "@/assets/nomini-partner.png?partner";
 import tikitakaLogo from "@/assets/tikitaka-partner.png?partner";
 import spinangaLogo from "@/assets/spinanga-partner.png?partner";
+
+const CountUpStat = ({ prefix = '', target, suffix = '', label, support }: {
+  prefix?: string; target: number; suffix?: string; label: string; support: string;
+}) => {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setStarted(true); observer.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    const duration = 1800;
+    const startTime = performance.now();
+    const animate = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [started, target]);
+
+  return (
+    <div ref={ref} className="flex flex-col items-center">
+      <div className="text-4xl sm:text-5xl md:text-6xl font-black text-white tabular-nums leading-none">
+        {prefix}{count.toLocaleString()}{suffix}
+      </div>
+      <div className="text-orange-400 font-semibold text-sm mt-3">{label}</div>
+      <div className="text-gray-500 text-xs mt-1">{support}</div>
+    </div>
+  );
+};
+
+const CountUpStats = () => (
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center">
+    <CountUpStat prefix="$" target={10} suffix="M+" label="Paid to Affiliates" support="And counting" />
+    <CountUpStat prefix="$" target={220} label="Top CPA Rate" support="Per depositor" />
+    <CountUpStat target={7} suffix=" Days" label="Average Payment" support="Fast & reliable" />
+    <CountUpStat target={800} suffix="+" label="Active Affiliates" support="Worldwide" />
+  </div>
+);
 
 const Index = () => {
   const { t, i18n } = useTranslation();
@@ -333,20 +382,7 @@ const Index = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center">
-            {[
-              { number: '$10M+', label: 'Paid to Affiliates', support: 'And counting' },
-              { number: '$220', label: 'Top CPA Rate', support: 'Per depositor' },
-              { number: '7 Days', label: 'Average Payment', support: 'Fast & reliable' },
-              { number: '800+', label: 'Active Affiliates', support: 'Worldwide' },
-            ].map(({ number, label, support }) => (
-              <div key={label} className="flex flex-col items-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-black text-white tabular-nums leading-none">{number}</div>
-                <div className="text-orange-400 font-semibold text-sm mt-3">{label}</div>
-                <div className="text-gray-500 text-xs mt-1">{support}</div>
-              </div>
-            ))}
-          </div>
+          <CountUpStats />
 
           <div className="text-center mt-10 md:mt-14">
             <RouterLink

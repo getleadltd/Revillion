@@ -114,8 +114,8 @@ const Blog = () => {
       </section>
 
       <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Sidebar / Mobile pills */}
           <aside className="lg:w-1/4">
             <BlogSidebar
               selectedCategory={selectedCategory}

@@ -18,35 +18,25 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
   ];
 
   return (
-    <div className="sticky top-24 rounded-xl border border-border/60 bg-card p-5 shadow-sm">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-        {t('blog.categories')}
-      </h3>
-      <div className="space-y-1.5">
+    <>
+      {/* Mobile: horizontal pills */}
+      <div className="lg:hidden flex flex-wrap gap-2 pb-2">
         {allCategories.map((category) => {
           const count = categories?.find((c) => c.category === category.id)?.count || 0;
           const isActive = selectedCategory === category.id;
-
           return (
             <button
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
-              className={`
-                w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                ${isActive
-                  ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
-                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent'
-                }
-              `}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-150 ${
+                isActive
+                  ? 'bg-orange-500 border-orange-500 text-white'
+                  : 'bg-white border-gray-200 text-gray-600 hover:border-orange-400 hover:text-orange-500'
+              }`}
             >
-              <span className="flex items-center gap-2">
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
-                )}
-                {category.label}
-              </span>
-              {category.id !== 'all' && (
-                <span className={`text-xs ${isActive ? 'text-orange-400' : 'text-muted-foreground/60'}`}>
+              {category.label}
+              {category.id !== 'all' && count > 0 && (
+                <span className={`text-xs ${isActive ? 'text-orange-100' : 'text-gray-400'}`}>
                   {count}
                 </span>
               )}
@@ -54,6 +44,42 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
           );
         })}
       </div>
-    </div>
+
+      {/* Desktop: vertical sidebar */}
+      <div className="hidden lg:block sticky top-24 rounded-xl border border-border/60 bg-card p-5 shadow-sm">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+          {t('blog.categories')}
+        </h3>
+        <div className="space-y-1.5">
+          {allCategories.map((category) => {
+            const count = categories?.find((c) => c.category === category.id)?.count || 0;
+            const isActive = selectedCategory === category.id;
+            return (
+              <button
+                key={category.id}
+                onClick={() => onCategoryChange(category.id)}
+                className={`
+                  w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                  ${isActive
+                    ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent'
+                  }
+                `}
+              >
+                <span className="flex items-center gap-2">
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />}
+                  {category.label}
+                </span>
+                {category.id !== 'all' && (
+                  <span className={`text-xs ${isActive ? 'text-orange-400' : 'text-muted-foreground/60'}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
 };

@@ -1,40 +1,7 @@
-User-agent: Googlebot
-Allow: /en/
-Allow: /de/
-Allow: /it/
-Allow: /pt/
-Allow: /es/
-Allow: /*.js
-Allow: /*.css
-Allow: /*.png
-Allow: /*.jpg
-Allow: /*.webp
-
-User-agent: Bingbot
-Allow: /en/
-Allow: /de/
-Allow: /it/
-Allow: /pt/
-Allow: /es/
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
-Allow: /en/
-Allow: /de/
-Allow: /it/
-Allow: /pt/
-Allow: /es/
+Allow: /
+Disallow: /*/admin/
+Disallow: /*/auth/
 Disallow: /api/
-Disallow: /admin/
-Disallow: /auth/
 
 Sitemap: https://revillion-partners.com/sitemap.xml
-
-# LLMs.txt - AI Crawler Discovery
-Llmstxt: https://revillion-partners.com/llms.txt
-Llmstxt: https://revillion-partners.com/llms-full.txt

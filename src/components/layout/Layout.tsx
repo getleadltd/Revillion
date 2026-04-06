@@ -1,5 +1,6 @@
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { StickyCtaMobile } from '@/components/StickyCtaMobile';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export const Layout = ({ children, showScrollLinks = false }: LayoutProps) => {
         {children}
       </main>
       <Footer />
+      <StickyCtaMobile />
     </div>
   );
 };
