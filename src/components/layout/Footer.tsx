@@ -135,10 +135,10 @@ export const Footer = () => {
 
         {/* Bottom bar */}
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-gray-600 text-xs">
+          <p className="text-gray-500 text-xs">
             {t('footer.copyright')}
           </p>
-          <p className="text-gray-700 text-xs">
+          <p className="text-gray-500 text-xs">
             18+ | Gamble Responsibly
           </p>
         </div>

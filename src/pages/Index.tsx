@@ -712,8 +712,6 @@ const Index = () => {
             ))}
           </div>
 
-          <p className="text-center text-gray-400 text-xs mt-6">Results vary. These are placeholder testimonials.</p>
-
           <div className="text-center mt-8">
             <a
               href="https://dashboard.revillion.com/en/registration"

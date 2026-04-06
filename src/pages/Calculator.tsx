@@ -217,6 +217,54 @@ const Calculator = () => {
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
           <div className="grid lg:grid-cols-[1fr_420px] gap-8 items-start">
 
+            {/* ── Right: Results (sticky) — shown first on mobile ──────── */}
+            <div className="lg:hidden space-y-4">
+              {/* Main result card */}
+              <div className="bg-[#0a0a0a] text-white rounded-2xl p-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/10 rounded-full blur-[60px] pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-4">
+                    <BarChart3 className="w-4 h-4 text-orange-400" />
+                    <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">Estimated Earnings</span>
+                  </div>
+                  <div className="mb-1">
+                    <div className="text-5xl font-black text-white tabular-nums leading-none">
+                      {fmt(stats.monthly)}
+                    </div>
+                    <div className="text-gray-400 text-sm mt-2">per month, month 1</div>
+                  </div>
+                  <div className="border-t border-white/10 mt-5 pt-5 grid grid-cols-3 gap-3">
+                    <div>
+                      <div className="text-lg font-black text-white tabular-nums">{fmt(stats.q1)}</div>
+                      <div className="text-gray-400 text-xs mt-1">3 months</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-black text-white tabular-nums">{fmt(stats.q2)}</div>
+                      <div className="text-gray-400 text-xs mt-1">6 months</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-black text-orange-400 tabular-nums">{fmt(stats.annual)}</div>
+                      <div className="text-gray-400 text-xs mt-1">12 months</div>
+                    </div>
+                  </div>
+                  <div className="mt-5 pt-5 border-t border-white/10">
+                    <a
+                      href="https://dashboard.revillion.com/en/registration"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackCTAClick('calculator_results_panel_mobile')}
+                      className="block"
+                    >
+                      <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 text-base rounded-xl">
+                        Start Earning Now
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* ── Left: Inputs ─────────────────────────────────────────── */}
             <div className="space-y-6">
 
@@ -506,8 +554,8 @@ const Calculator = () => {
               </div>
             </div>
 
-            {/* ── Right: Results (sticky) ───────────────────────────────── */}
-            <div className="lg:sticky lg:top-24 space-y-4">
+            {/* ── Right: Results (sticky) — desktop only ───────────────── */}
+            <div className="hidden lg:block lg:sticky lg:top-24 space-y-4">
 
               {/* Main result card */}
               <div className="bg-[#0a0a0a] text-white rounded-2xl p-6 md:p-8 relative overflow-hidden">
@@ -571,15 +619,15 @@ const Calculator = () => {
                   <h3 className="text-sm font-bold text-gray-900">6-Month Growth</h3>
                   <span className="text-xs text-gray-400 font-mono uppercase tracking-wider">{commType}</span>
                 </div>
-                <div className="flex items-end gap-2 h-28">
+                <div className="flex items-end gap-2 h-32">
                   {chartData.map((d) => (
-                    <div key={d.month} className="flex-1 flex flex-col items-center gap-1.5">
-                      <div className="text-xs text-gray-400 font-mono tabular-nums">{fmt(d.value)}</div>
+                    <div key={d.month} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="text-[10px] text-gray-400 font-mono tabular-nums truncate w-full text-center">{fmt(d.value)}</div>
                       <div
-                        className="w-full rounded-t-md bg-orange-500 transition-all duration-500"
-                        style={{ height: `${Math.max(d.pct, 4)}%` }}
+                        className="w-full rounded-t-md bg-orange-500 transition-all duration-500 min-h-[4px]"
+                        style={{ height: `${Math.max(d.pct * 0.7, 4)}%` }}
                       />
-                      <div className="text-xs text-gray-400 font-mono">{d.month}</div>
+                      <div className="text-[10px] text-gray-400 font-mono">{d.month}</div>
                     </div>
                   ))}
                 </div>

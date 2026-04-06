@@ -324,9 +324,16 @@ const Contact = () => {
                 </div>
 
                 <div className="mt-6 pt-5 border-t border-white/10">
-                  <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold" size="lg">
-                    Start Earning <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <a
+                    href="https://dashboard.revillion.com/en/registration"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold" size="lg">
+                      Start Earning <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
                 </div>
               </div>
 
