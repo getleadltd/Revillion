@@ -104,8 +104,8 @@ const Contact = () => {
   return (
     <Layout>
       <Helmet>
-        <title>{t('contact.title')} {t('contact.titleHighlight')} | Revillion Partners</title>
-        <meta name="description" content={t('contact.subtitle')} />
+        <title>{t('contact.metaTitle')}</title>
+        <meta name="description" content={t('contact.metaDescription')} />
         <link rel="canonical" href={`https://revillion-partners.com/${lang}/contact`} />
         <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en/contact" />
         <link rel="alternate" hrefLang="de" href="https://revillion-partners.com/de/contact" />
@@ -116,8 +116,8 @@ const Contact = () => {
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${t('contact.title')} ${t('contact.titleHighlight')} | Revillion Partners`} />
-        <meta property="og:description" content={t('contact.subtitle')} />
+        <meta property="og:title" content={t('contact.metaTitle')} />
+        <meta property="og:description" content={t('contact.metaDescription')} />
         <meta property="og:url" content={`https://revillion-partners.com/${lang}/contact`} />
         <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
         <meta property="og:site_name" content="Revillion" />
@@ -125,8 +125,8 @@ const Contact = () => {
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@revillion" />
-        <meta name="twitter:title" content={`${t('contact.title')} ${t('contact.titleHighlight')} | Revillion Partners`} />
-        <meta name="twitter:description" content={t('contact.subtitle')} />
+        <meta name="twitter:title" content={t('contact.metaTitle')} />
+        <meta name="twitter:description" content={t('contact.metaDescription')} />
         <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
       </Helmet>
 

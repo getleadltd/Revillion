@@ -265,6 +265,8 @@
   "blog": {
     "title": "Blog & News",
     "subtitle": "Latest insights from the affiliate world",
+    "metaTitle": "iGaming Affiliate Blog & News | Revillion Partners",
+    "metaDescription": "Expert tips, casino affiliate strategies, and iGaming industry news. Learn how to maximize CPA commissions and grow your affiliate business with Revillion Partners.",
     "readMore": "Read More",
     "categories": "Categories",
     "allPosts": "All Posts",
@@ -327,6 +329,8 @@
     "title": "Contact",
     "titleHighlight": "Revillion",
     "subtitle": "Get in touch with our team for partnership opportunities or support",
+    "metaTitle": "Contact Revillion Partners | iGaming Affiliate Network",
+    "metaDescription": "Contact the Revillion Partners team to join our iGaming affiliate network, discuss CPA commission rates, or get support for your affiliate campaigns.",
     "form": {
       "name": "Full Name",
       "namePlaceholder": "John Doe",

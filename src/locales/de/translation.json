@@ -265,6 +265,8 @@
   "blog": {
     "title": "Blog & News",
     "subtitle": "Neueste Einblicke aus der Affiliate-Welt",
+    "metaTitle": "iGaming Affiliate Blog & News | Revillion Partners",
+    "metaDescription": "Expertentipps, Casino-Affiliate-Strategien und iGaming-Branchennews. Erfahre, wie du CPA-Provisionen maximierst mit Revillion Partners.",
     "readMore": "Mehr Lesen",
     "categories": "Kategorien",
     "allPosts": "Alle Beiträge",
@@ -324,6 +326,8 @@
   },
   "contact": {
     "badge": "KONTAKTIEREN SIE UNS",
+    "metaTitle": "Revillion Partners kontaktieren | iGaming Affiliate-Netzwerk",
+    "metaDescription": "Kontaktiere das Revillion Partners Team, um unserem iGaming-Affiliate-Netzwerk beizutreten, CPA-Provisionssätze zu besprechen oder Support zu erhalten.",
     "title": "Kontaktieren Sie",
     "titleHighlight": "Revillion",
     "subtitle": "Kontaktieren Sie unser Team für Partnerschaftsmöglichkeiten oder Support",

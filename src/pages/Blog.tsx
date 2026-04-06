@@ -58,8 +58,8 @@ const Blog = () => {
   return (
     <Layout>
       <Helmet>
-        <title>{t('blog.title')} | Revillion Partners</title>
-        <meta name="description" content={getMetaDescription()} />
+        <title>{t('blog.metaTitle')}</title>
+        <meta name="description" content={t('blog.metaDescription')} />
 
         {/* Canonical URL */}
         <link rel="canonical" href={currentUrl} />
@@ -74,8 +74,8 @@ const Blog = () => {
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${t('blog.title')} | Revillion Partners`} />
-        <meta property="og:description" content={getMetaDescription()} />
+        <meta property="og:title" content={t('blog.metaTitle')} />
+        <meta property="og:description" content={t('blog.metaDescription')} />
         <meta property="og:url" content={currentUrl} />
         <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
         <meta property="og:site_name" content="Revillion" />
@@ -84,8 +84,8 @@ const Blog = () => {
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@revillion" />
-        <meta name="twitter:title" content={`${t('blog.title')} | Revillion Partners`} />
-        <meta name="twitter:description" content={getMetaDescription()} />
+        <meta name="twitter:title" content={t('blog.metaTitle')} />
+        <meta name="twitter:description" content={t('blog.metaDescription')} />
         <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
       </Helmet>
 

@@ -265,6 +265,8 @@
   "blog": {
     "title": "Blog e Notizie",
     "subtitle": "Le ultime novità dal mondo delle affiliazioni",
+    "metaTitle": "Blog iGaming Affiliazione & Notizie | Revillion Partners",
+    "metaDescription": "Consigli esperti, strategie per affiliati casino e notizie dal settore iGaming. Scopri come massimizzare le commissioni CPA con Revillion Partners.",
     "readMore": "Leggi di più",
     "categories": "Categorie",
     "allPosts": "Tutti i Post",
@@ -327,6 +329,8 @@
     "title": "Contatta",
     "titleHighlight": "Revillion",
     "subtitle": "Contatta il nostro team per opportunità di partnership o supporto",
+    "metaTitle": "Contatta Revillion Partners | Network Affiliazione iGaming",
+    "metaDescription": "Contatta il team di Revillion Partners per unirti al nostro network iGaming, discutere le commissioni CPA o ricevere supporto per le tue campagne.",
     "form": {
       "name": "Nome Completo",
       "namePlaceholder": "Mario Rossi",

@@ -265,6 +265,8 @@
   "blog": {
     "title": "Blog e Notícias",
     "subtitle": "Últimas novidades do mundo das afiliações",
+    "metaTitle": "Blog de Afiliados iGaming & Notícias | Revillion Partners",
+    "metaDescription": "Dicas de especialistas, estratégias para afiliados de cassino e notícias do setor iGaming. Aprenda a maximizar comissões CPA com Revillion Partners.",
     "readMore": "Ler Mais",
     "categories": "Categorias",
     "allPosts": "Todos os Posts",
@@ -324,6 +326,8 @@
   },
   "contact": {
     "badge": "ENTRE EM CONTATO",
+    "metaTitle": "Contatar Revillion Partners | Rede de Afiliados iGaming",
+    "metaDescription": "Contate a equipe da Revillion Partners para se juntar à nossa rede de afiliados iGaming, discutir taxas de comissão CPA ou obter suporte para suas campanhas.",
     "title": "Contacte",
     "titleHighlight": "Revillion",
     "subtitle": "Entre em contato com nossa equipe para oportunidades de parceria ou suporte",

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { fadeUp, fadeRight, stagger, scaleIn, viewport } from '@/lib/motion';
@@ -75,7 +75,7 @@ import nominiLogo from "@/assets/nomini-partner.png?partner";
 import tikitakaLogo from "@/assets/tikitaka-partner.png?partner";
 import spinangaLogo from "@/assets/spinanga-partner.png?partner";
 
-const CountUpStat = ({ prefix = '', target, suffix = '', label, support }: {
+const CountUpStat = memo(({ prefix = '', target, suffix = '', label, support }: {
   prefix?: string; target: number; suffix?: string; label: string; support: string;
 }) => {
   const [count, setCount] = useState(0);
@@ -113,7 +113,7 @@ const CountUpStat = ({ prefix = '', target, suffix = '', label, support }: {
       <div className="text-gray-500 text-xs mt-1">{support}</div>
     </div>
   );
-};
+});
 
 const CountUpStats = () => {
   const { t } = useTranslation();
