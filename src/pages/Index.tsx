@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
+import { fadeUp, fadeRight, stagger, scaleIn, viewport } from '@/lib/motion';
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { trackCTAClick } from "@/lib/analytics";
@@ -114,12 +116,24 @@ const CountUpStat = ({ prefix = '', target, suffix = '', label, support }: {
 };
 
 const CountUpStats = () => (
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center">
-    <CountUpStat prefix="$" target={10} suffix="M+" label="Paid to Affiliates" support="And counting" />
-    <CountUpStat prefix="$" target={220} label="Top CPA Rate" support="Per depositor" />
-    <CountUpStat target={7} suffix=" Days" label="Average Payment" support="Fast & reliable" />
-    <CountUpStat target={800} suffix="+" label="Active Affiliates" support="Worldwide" />
-  </div>
+  <motion.div
+    className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center"
+    variants={stagger(0.1, 0)}
+    initial="hidden"
+    whileInView="visible"
+    viewport={viewport}
+  >
+    {[
+      { prefix: '$', target: 10, suffix: 'M+', label: 'Paid to Affiliates', support: 'And counting' },
+      { prefix: '$', target: 220, suffix: '', label: 'Top CPA Rate', support: 'Per depositor' },
+      { prefix: '', target: 7, suffix: ' Days', label: 'Average Payment', support: 'Fast & reliable' },
+      { prefix: '', target: 800, suffix: '+', label: 'Active Affiliates', support: 'Worldwide' },
+    ].map((s) => (
+      <motion.div key={s.label} variants={scaleIn}>
+        <CountUpStat {...s} />
+      </motion.div>
+    ))}
+  </motion.div>
 );
 
 const Index = () => {
@@ -174,25 +188,29 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
             {/* Left col */}
-            <div>
-              <div className="inline-flex items-center gap-2.5 border border-orange-500/30 bg-orange-500/5 rounded-full px-4 py-2 mb-6 md:mb-10">
+            <motion.div
+              variants={stagger(0.1, 0)}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div variants={fadeUp} className="inline-flex items-center gap-2.5 border border-orange-500/30 bg-orange-500/5 rounded-full px-4 py-2 mb-6 md:mb-10">
                 <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
                 <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">Trusted by 800+ Affiliates</span>
-              </div>
+              </motion.div>
 
-              <h1 className="text-[2.6rem] sm:text-5xl md:text-[5.5rem] font-black mb-5 md:mb-6 leading-[0.95] tracking-tight">
+              <motion.h1 variants={fadeUp} className="text-[2.6rem] sm:text-5xl md:text-[5.5rem] font-black mb-5 md:mb-6 leading-[0.95] tracking-tight">
                 Earn Up to{' '}
                 <span className="text-orange-500">$220 CPA</span>
                 <br />
                 Per Player
-              </h1>
+              </motion.h1>
 
-              <p className="text-base sm:text-lg text-gray-400 mb-7 md:mb-10 leading-relaxed">
+              <motion.p variants={fadeUp} className="text-base sm:text-lg text-gray-400 mb-7 md:mb-10 leading-relaxed">
                 Premier iGaming affiliate network. <span className="text-white font-semibold">16+ licensed casino brands.</span>{' '}
                 Paid <span className="text-orange-400 font-semibold">$10M+</span> to partners. Get your first payment in 7 days.
-              </p>
+              </motion.p>
 
-              <div className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-10">
+              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-10">
                 <a
                   href="https://dashboard.revillion.com/en/registration"
                   target="_blank"
@@ -213,10 +231,10 @@ const Index = () => {
                     Calculate Your Earnings
                   </Button>
                 </RouterLink>
-              </div>
+              </motion.div>
 
               {/* Trust bar */}
-              <div className="flex flex-wrap items-center gap-6 mb-10 md:mb-14">
+              <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-6 mb-10 md:mb-14">
                 <div className="flex items-center gap-2 text-gray-400 text-sm">
                   <Zap className="w-4 h-4 text-orange-500" />
                   <span>7-Day Payments</span>
@@ -229,10 +247,10 @@ const Index = () => {
                   <Users className="w-4 h-4 text-orange-500" />
                   <span>Dedicated Manager</span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Inline stats */}
-              <div className="flex items-center gap-5 sm:gap-8 border-t border-white/8 pt-6 md:pt-7">
+              <motion.div variants={fadeUp} className="flex items-center gap-5 sm:gap-8 border-t border-white/8 pt-6 md:pt-7">
                 <div>
                   <div className="text-xl sm:text-2xl font-black text-white tabular-nums">$10M+</div>
                   <div className="text-gray-500 text-xs mt-1">{t('stats.paid')}</div>
@@ -247,11 +265,17 @@ const Index = () => {
                   <div className="text-xl sm:text-2xl font-black text-white tabular-nums">40+</div>
                   <div className="text-gray-500 text-xs mt-1">{t('stats.markets')}</div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Right col — dashboard card */}
-            <div className="relative hidden lg:block">
+            <motion.div
+              className="relative hidden lg:block"
+              variants={fadeRight}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+            >
               <div className="absolute -inset-4 bg-orange-500/15 rounded-3xl blur-[60px]" />
               <div className="relative bg-[#141414] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
                 {/* Browser chrome */}
@@ -325,7 +349,7 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
@@ -410,10 +434,16 @@ const Index = () => {
             <p className="text-gray-400 text-lg md:text-xl mt-4 max-w-2xl leading-relaxed">{t('tools.subtitle')}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            variants={stagger(0.1, 0)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
 
             {/* Smart URLs — large card */}
-            <div className="lg:col-span-2 bg-[#1a0a2e] border border-purple-500/20 rounded-2xl p-8 group hover:border-purple-500/40 transition-all duration-300">
+            <motion.div variants={fadeUp} className="lg:col-span-2 bg-[#1a0a2e] border border-purple-500/20 rounded-2xl p-8 group hover:border-purple-500/40 transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Link className="w-6 h-6 text-purple-400" />
               </div>
@@ -424,28 +454,28 @@ const Index = () => {
                 <span className="text-purple-400">rev.ly/</span>
                 <span className="text-orange-400">casino-win</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Analytics */}
-            <div className="bg-[#0a1528] border border-blue-500/20 rounded-2xl p-8 group hover:border-blue-500/40 transition-all duration-300">
+            <motion.div variants={fadeUp} className="bg-[#0a1528] border border-blue-500/20 rounded-2xl p-8 group hover:border-blue-500/40 transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <BarChart3 className="w-6 h-6 text-blue-400" />
               </div>
               <h3 className="text-2xl font-bold mb-3 text-white">{t('tools.analytics.title')}</h3>
               <p className="text-gray-400 leading-relaxed text-sm">{t('tools.analytics.description')}</p>
-            </div>
+            </motion.div>
 
             {/* Postback */}
-            <div className="bg-[#0a1f0a] border border-green-500/20 rounded-2xl p-8 group hover:border-green-500/40 transition-all duration-300">
+            <motion.div variants={fadeUp} className="bg-[#0a1f0a] border border-green-500/20 rounded-2xl p-8 group hover:border-green-500/40 transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Zap className="w-6 h-6 text-green-400" />
               </div>
               <h3 className="text-2xl font-bold mb-3 text-white">{t('tools.postback.title')}</h3>
               <p className="text-gray-400 leading-relaxed text-sm">{t('tools.postback.description')}</p>
-            </div>
+            </motion.div>
 
             {/* Tracking — large card */}
-            <div className="lg:col-span-2 bg-[#1f0a0a] border border-orange-500/20 rounded-2xl p-8 group hover:border-orange-500/40 transition-all duration-300">
+            <motion.div variants={fadeUp} className="lg:col-span-2 bg-[#1f0a0a] border border-orange-500/20 rounded-2xl p-8 group hover:border-orange-500/40 transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Shield className="w-6 h-6 text-orange-400" />
               </div>
@@ -456,9 +486,9 @@ const Index = () => {
                   <span key={tag} className="text-xs bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-full px-3 py-1 font-mono">{tag}</span>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-          </div>
+          </motion.div>
 
           {/* Micro-CTA */}
           <div className="text-center mt-8 md:mt-10">
@@ -473,57 +503,70 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
             {/* Left — text */}
-            <div>
-              <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('dashboard.badge')}</span>
-              <h2 className="text-4xl md:text-6xl font-black text-gray-900 mt-3 mb-5 md:mb-6 leading-tight tracking-tight">
+            <motion.div
+              variants={stagger(0.1, 0)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewport}
+            >
+              <motion.span variants={fadeUp} className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('dashboard.badge')}</motion.span>
+              <motion.h2 variants={fadeUp} className="text-4xl md:text-6xl font-black text-gray-900 mt-3 mb-5 md:mb-6 leading-tight tracking-tight">
                 {t('dashboard.title')}{' '}
                 <span className="text-orange-500">{t('dashboard.titleHighlight')}</span>{' '}
                 {t('dashboard.titleEnd')}
-              </h2>
-              <p className="text-gray-500 text-lg md:text-xl leading-relaxed mb-8 md:mb-10">
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-gray-500 text-lg md:text-xl leading-relaxed mb-8 md:mb-10">
                 {t('dashboard.subtitle')}
-              </p>
-              <a
-                href="https://dashboard.revillion.com/en/registration"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackCTAClick('dashboard_section')}
-              >
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
-                  {t('dashboard.accessButton')}
-                  <BarChart3 className="ml-2 w-4 h-4" />
-                </Button>
-              </a>
-              {/* Micro-CTA */}
-              <div className="mt-4">
+              </motion.p>
+              <motion.div variants={fadeUp}>
                 <a
                   href="https://dashboard.revillion.com/en/registration"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-sm transition-colors"
+                  onClick={() => trackCTAClick('dashboard_section')}
                 >
-                  See the dashboard live
-                  <ArrowRight className="w-4 h-4" />
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
+                    {t('dashboard.accessButton')}
+                    <BarChart3 className="ml-2 w-4 h-4" />
+                  </Button>
                 </a>
-              </div>
-            </div>
+                {/* Micro-CTA */}
+                <div className="mt-4">
+                  <a
+                    href="https://dashboard.revillion.com/en/registration"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-sm transition-colors"
+                  >
+                    See the dashboard live
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+              </motion.div>
+            </motion.div>
 
             {/* Right — stat cards */}
-            <div className="grid grid-cols-2 gap-3 md:gap-4">
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 md:p-6 shadow-sm">
+            <motion.div
+              className="grid grid-cols-2 gap-3 md:gap-4"
+              variants={stagger(0.1, 0.2)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewport}
+            >
+              <motion.div variants={scaleIn} className="bg-white border border-gray-100 rounded-2xl p-4 md:p-6 shadow-sm">
                 <div className="text-3xl md:text-4xl font-black text-gray-900 tabular-nums mb-1">1,247</div>
                 <div className="text-gray-500 text-sm font-medium">{t('dashboard.liveClicks')}</div>
                 <div className="flex items-center gap-1.5 mt-4">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   <span className="text-green-600 text-xs font-semibold">{t('dashboard.realTime')}</span>
                 </div>
-              </div>
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 md:p-6 shadow-sm">
+              </motion.div>
+              <motion.div variants={scaleIn} className="bg-white border border-gray-100 rounded-2xl p-4 md:p-6 shadow-sm">
                 <div className="text-3xl md:text-4xl font-black text-gray-900 tabular-nums mb-1">89</div>
                 <div className="text-gray-500 text-sm font-medium">{t('dashboard.registrations')}</div>
                 <div className="text-green-600 text-xs font-semibold mt-3 md:mt-4">+12% {t('dashboard.today')}</div>
-              </div>
-              <div className="col-span-2 bg-[#0a0a0a] border border-white/5 rounded-2xl p-4 md:p-6">
+              </motion.div>
+              <motion.div variants={fadeUp} className="col-span-2 bg-[#0a0a0a] border border-white/5 rounded-2xl p-4 md:p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-gray-400 text-sm font-semibold">Revenue trend</div>
                   <div className="flex items-center gap-1.5">
@@ -543,8 +586,8 @@ const Index = () => {
                 </svg>
                 <div className="text-4xl font-black text-white tabular-nums mt-2">34</div>
                 <div className="text-gray-500 text-sm">{t('dashboard.deposits')} — {t('dashboard.earned')}</div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
           </div>
         </div>
@@ -556,32 +599,44 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
             {/* Left — markets as pills */}
-            <div>
-              <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('offers.badge')}</span>
-              <h2 className="text-4xl md:text-6xl font-black mt-3 mb-5 md:mb-6 leading-tight tracking-tight">
+            <motion.div
+              variants={stagger(0.1, 0)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewport}
+            >
+              <motion.span variants={fadeUp} className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('offers.badge')}</motion.span>
+              <motion.h2 variants={fadeUp} className="text-4xl md:text-6xl font-black mt-3 mb-5 md:mb-6 leading-tight tracking-tight">
                 {t('offers.title')}{' '}
                 <span className="text-orange-500">{t('offers.titleHighlight')}</span>
-              </h2>
-              <p className="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 md:mb-10">{t('offers.subtitle')}</p>
-              <a
-                href="https://dashboard.revillion.com/en/registration"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackCTAClick('offers_section')}
-              >
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
-                  {t('offers.exploreButton')}
-                  <Globe className="ml-2 w-4 h-4" />
-                </Button>
-              </a>
-            </div>
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 md:mb-10">{t('offers.subtitle')}</motion.p>
+              <motion.div variants={fadeUp}>
+                <a
+                  href="https://dashboard.revillion.com/en/registration"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackCTAClick('offers_section')}
+                >
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
+                    {t('offers.exploreButton')}
+                    <Globe className="ml-2 w-4 h-4" />
+                  </Button>
+                </a>
+              </motion.div>
+            </motion.div>
 
             {/* Right — markets as structured grid */}
-            <div>
-              <h3 className="text-gray-400 font-mono text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
+            <motion.div
+              variants={stagger(0.08, 0.1)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewport}
+            >
+              <motion.h3 variants={fadeUp} className="text-gray-400 font-mono text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
                 <Shield className="w-4 h-4 text-orange-500" />
                 {t('offers.marketsTitle')}
-              </h3>
+              </motion.h3>
 
               <div className="space-y-3">
                 {[
@@ -591,8 +646,9 @@ const Index = () => {
                   { region: t('offers.marketsData.northAmerica'), brands: '2 brands', flag: '🇺🇸' },
                   { region: t('offers.marketsData.africa'), brands: '3 brands', flag: '🌍' },
                 ].map((market) => (
-                  <div
+                  <motion.div
                     key={market.region}
+                    variants={fadeUp}
                     className="group flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-xl px-5 py-4 hover:bg-white/[0.06] hover:border-white/10 transition-all duration-200"
                   >
                     <div className="flex items-center gap-3">
@@ -603,7 +659,7 @@ const Index = () => {
                       </div>
                     </div>
                     <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-orange-400 transition-colors" />
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
@@ -627,7 +683,7 @@ const Index = () => {
                   <div className="text-gray-500 text-sm mt-1">{t('finalCta.stat3')}</div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
@@ -636,17 +692,29 @@ const Index = () => {
       {/* ── 7. HOW IT WORKS ─────────────────────────────────────────────── */}
       <section className="py-16 md:py-32 bg-[#F8F7F4]">
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-          <div className="text-center mb-12 md:mb-20">
-            <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('socialMedia.badge')}</span>
-            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mt-3 leading-tight tracking-tight">
+          <motion.div
+            className="text-center mb-12 md:mb-20"
+            variants={stagger(0.1, 0)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
+            <motion.span variants={fadeUp} className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('socialMedia.badge')}</motion.span>
+            <motion.h2 variants={fadeUp} className="text-4xl md:text-6xl font-black text-gray-900 mt-3 leading-tight tracking-tight">
               {t('socialMedia.title')}{' '}
               <span className="text-orange-500">{t('socialMedia.titleHighlight')}</span>{' '}
               {t('socialMedia.titleEnd')}
-            </h2>
-          </div>
+            </motion.h2>
+          </motion.div>
 
           {/* Desktop: 4-col grid with connector; Mobile: vertical list */}
-          <div className="hidden md:grid md:grid-cols-4 gap-0 relative">
+          <motion.div
+            className="hidden md:grid md:grid-cols-4 gap-0 relative"
+            variants={stagger(0.12, 0)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
             <div className="absolute top-9 left-[12.5%] right-[12.5%] h-px bg-gray-200 z-0" />
             {[
               { step: '01', icon: Users, title: t('socialMedia.telegram.title'), desc: t('socialMedia.telegram.description'), iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
@@ -654,16 +722,16 @@ const Index = () => {
               { step: '03', icon: Link, title: t('socialMedia.instagram.title'), desc: t('socialMedia.instagram.description'), iconBg: 'bg-pink-100', iconColor: 'text-pink-600' },
               { step: '04', icon: DollarSign, title: t('socialMedia.urlExamplesTitle'), desc: t('socialMedia.urlExample1'), iconBg: 'bg-green-100', iconColor: 'text-green-600' },
             ].map(({ step, icon: Icon, title, desc, iconBg, iconColor }) => (
-              <div key={step} className="relative z-10 flex flex-col items-center text-center px-6">
+              <motion.div key={step} variants={fadeUp} className="relative z-10 flex flex-col items-center text-center px-6">
                 <div className={`w-[72px] h-[72px] rounded-2xl ${iconBg} flex items-center justify-center mb-6 shadow-sm border border-gray-100`}>
                   <Icon className={`w-7 h-7 ${iconColor}`} />
                 </div>
                 <div className="text-orange-500 font-mono text-xs uppercase tracking-widest mb-2">{step}</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Mobile: vertical stepper */}
           <div className="flex flex-col gap-6 md:hidden">
@@ -716,7 +784,13 @@ const Index = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-5"
+            variants={stagger(0.12, 0)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
             {[
               {
                 quote: "Switched from another network and my earnings doubled in the first month. The CPA rates are unbeatable.",
@@ -737,16 +811,16 @@ const Index = () => {
                 earning: "$25K+/month",
               },
             ].map(({ quote, name, role, earning }) => (
-              <div key={name} className="bg-white border border-gray-200 rounded-2xl p-7 md:p-8 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+              <motion.div key={name} variants={fadeUp} className="bg-white border border-gray-200 rounded-2xl p-7 md:p-8 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
                 <p className="text-gray-700 italic leading-relaxed mb-6">"{quote}"</p>
                 <div>
                   <div className="font-bold text-gray-900">{name}</div>
                   <div className="text-gray-500 text-sm">{role}</div>
                   <div className="text-orange-500 font-black text-lg mt-2">{earning}</div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           <div className="text-center mt-8">
             <a
@@ -775,15 +849,21 @@ const Index = () => {
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="container mx-auto px-4 sm:px-6 max-w-5xl text-center relative z-10">
-          <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('finalCta.title')}</span>
-          <p className="text-gray-400 text-lg mt-4 mb-2 font-medium">Join 800+ affiliates already earning</p>
-          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-5 md:mb-6 leading-tight tracking-tight">
+        <motion.div
+          className="container mx-auto px-4 sm:px-6 max-w-5xl text-center relative z-10"
+          variants={stagger(0.1, 0)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
+          <motion.span variants={fadeUp} className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('finalCta.title')}</motion.span>
+          <motion.p variants={fadeUp} className="text-gray-400 text-lg mt-4 mb-2 font-medium">Join 800+ affiliates already earning</motion.p>
+          <motion.h2 variants={fadeUp} className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-5 md:mb-6 leading-tight tracking-tight">
             {t('finalCta.subtitle')}
-          </h2>
-          <p className="text-gray-400 text-base md:text-xl mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base md:text-xl mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
             {t('finalCta.footer')}
-          </p>
+          </motion.p>
           <a
             href="https://dashboard.revillion.com/en/registration"
             target="_blank"
@@ -798,7 +878,7 @@ const Index = () => {
           </a>
 
           {/* Trust icons */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 md:mt-10">
+          <motion.div variants={fadeUp} className="flex flex-wrap items-center justify-center gap-6 mt-8 md:mt-10">
             <span className="text-gray-400 text-sm flex items-center gap-1.5">
               <span className="text-green-400">&#10003;</span> Free to join
             </span>
@@ -808,8 +888,8 @@ const Index = () => {
             <span className="text-gray-400 text-sm flex items-center gap-1.5">
               <span className="text-green-400">&#10003;</span> First payment in 7 days
             </span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ── 10. FAQ — Editorial ─────────────────────────────────────────── */}
@@ -819,16 +899,22 @@ const Index = () => {
           <div className="grid lg:grid-cols-[1fr_2fr] gap-10 lg:gap-24 items-start">
 
             {/* Left — sticky heading */}
-            <div className="lg:sticky lg:top-28">
-              <div className="flex items-center gap-2 mb-4">
+            <motion.div
+              className="lg:sticky lg:top-28"
+              variants={stagger(0.1, 0)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewport}
+            >
+              <motion.div variants={fadeUp} className="flex items-center gap-2 mb-4">
                 <HelpCircle className="w-4 h-4 text-orange-500" />
                 <span className="text-orange-500 font-mono text-xs uppercase tracking-widest">{t('faq.badge')}</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight tracking-tight mb-4">
+              </motion.div>
+              <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-black text-gray-900 leading-tight tracking-tight mb-4">
                 {t('faq.title')}
-              </h2>
-              <p className="text-gray-500 leading-relaxed">{t('faq.subtitle')}</p>
-            </div>
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-gray-500 leading-relaxed">{t('faq.subtitle')}</motion.p>
+            </motion.div>
 
             {/* Right — accordion */}
             <Accordion type="single" collapsible className="space-y-0 divide-y divide-gray-200">

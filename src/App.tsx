@@ -3,8 +3,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
+import { AnimatePresence, motion } from "framer-motion";
+import { pageVariants } from "./lib/motion";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -48,6 +50,49 @@ const GAListener = () => {
   return null;
 };
 
+// Animated page wrapper
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        <Suspense fallback={<PageLoader />}>
+          <Routes location={location}>
+            <Route path="/" element={<Navigate to="/en" replace />} />
+            <Route path="/admin" element={<AdminRedirect />} />
+            <Route path="/admin/*" element={<AdminRedirect />} />
+            <Route path="/:lang" element={<Index />} />
+            <Route path="/:lang/contact" element={<Contact />} />
+            <Route path="/:lang/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/:lang/terms-of-service" element={<TermsOfService />} />
+            <Route path="/:lang/responsible-gaming" element={<ResponsibleGaming />} />
+            <Route path="/:lang/calculator" element={<Calculator />} />
+            <Route path="/:lang/blog" element={<Blog />} />
+            <Route path="/:lang/blog/:slug" element={<BlogPost />} />
+            <Route path="/:lang/auth/login" element={<Login />} />
+            <Route path="/:lang/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/:lang/admin/blog" element={<ProtectedRoute><BlogAdmin /></ProtectedRoute>} />
+            <Route path="/:lang/admin/blog/new" element={<ProtectedRoute><BlogEditor /></ProtectedRoute>} />
+            <Route path="/:lang/admin/blog/edit/:id" element={<ProtectedRoute><BlogEditor /></ProtectedRoute>} />
+            <Route path="/:lang/admin/analytics" element={<ProtectedRoute><BlogAnalytics /></ProtectedRoute>} />
+            <Route path="/:lang/admin/blog/queue" element={<ProtectedRoute><BlogQueue /></ProtectedRoute>} />
+            <Route path="/:lang/admin/seo-monitoring" element={<ProtectedRoute><SEOMonitoring /></ProtectedRoute>} />
+            <Route path="/:lang/admin/contact-messages" element={<ProtectedRoute><ContactMessages /></ProtectedRoute>} />
+            <Route path="/:lang/admin/incoming" element={<ProtectedRoute><IncomingArticles /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -61,96 +106,7 @@ const App = () => (
           <GAListener />
           <CookieBanner />
           <RedirectHandler />
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/en" replace />} />
-              <Route path="/admin" element={<AdminRedirect />} />
-              <Route path="/admin/*" element={<AdminRedirect />} />
-              <Route path="/:lang" element={<Index />} />
-              <Route path="/:lang/contact" element={<Contact />} />
-              <Route path="/:lang/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/:lang/terms-of-service" element={<TermsOfService />} />
-              <Route path="/:lang/responsible-gaming" element={<ResponsibleGaming />} />
-              <Route path="/:lang/calculator" element={<Calculator />} />
-              <Route path="/:lang/blog" element={<Blog />} />
-              <Route path="/:lang/blog/:slug" element={<BlogPost />} />
-              <Route path="/:lang/auth/login" element={<Login />} />
-              <Route
-                path="/:lang/admin"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/blog"
-                element={
-                  <ProtectedRoute>
-                    <BlogAdmin />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/blog/new"
-                element={
-                  <ProtectedRoute>
-                    <BlogEditor />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/blog/edit/:id"
-                element={
-                  <ProtectedRoute>
-                    <BlogEditor />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/analytics"
-                element={
-                  <ProtectedRoute>
-                    <BlogAnalytics />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/blog/queue"
-                element={
-                  <ProtectedRoute>
-                    <BlogQueue />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/seo-monitoring"
-                element={
-                  <ProtectedRoute>
-                    <SEOMonitoring />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/contact-messages"
-                element={
-                  <ProtectedRoute>
-                    <ContactMessages />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/:lang/admin/incoming"
-                element={
-                  <ProtectedRoute>
-                    <IncomingArticles />
-                  </ProtectedRoute>
-                }
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+          <AnimatedRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </HelmetProvider>
