@@ -9,20 +9,14 @@ const corsHeaders = {
 
 async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: string }> {
   const authHeader = req.headers.get('authorization');
-  if (!authHeader) {
-    return { error: new Response(JSON.stringify({ error: 'Missing authorization header' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
-  }
+  if (!authHeader) return { error: new Response(JSON.stringify({ error: 'Missing authorization header' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseAnonKey, { global: { headers: { Authorization: authHeader } } });
   const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return { error: new Response(JSON.stringify({ error: 'Invalid authentication' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
-  }
+  if (authError || !user) return { error: new Response(JSON.stringify({ error: 'Invalid authentication' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
   const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' });
-  if (roleError || !isAdmin) {
-    return { error: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
-  }
+  if (roleError || !isAdmin) return { error: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
   return { userId: user.id };
 }
 
@@ -46,192 +40,249 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch recent articles for internal linking
-    const { data: existingArticles } = await supabase
+    // ═══════════════════════════════════════════════════
+    // SILO ARCHITECTURE: Separate same-cluster from cross-cluster links
+    // Pillar = most-viewed article in same category
+    // ═══════════════════════════════════════════════���═══
+
+    const currentCategory = category || 'affiliate-tips';
+
+    // 1. Same-category articles (cluster) — ordered by views DESC (most viewed = pillar candidate)
+    const { data: clusterArticles } = await supabase
       .from('blog_posts')
-      .select('slug_it, slug_en, title_it, title_en, category')
+      .select('slug_it, slug_en, title_it, title_en, category, views')
       .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .limit(60);
+      .eq('category', currentCategory)
+      .order('views', { ascending: false })
+      .limit(15);
 
-    const articlesForLinking = existingArticles || [];
+    // 2. Cross-cluster articles (other categories) — ordered by views DESC
+    const { data: crossClusterArticles } = await supabase
+      .from('blog_posts')
+      .select('slug_it, slug_en, title_it, title_en, category, views')
+      .eq('status', 'published')
+      .neq('category', currentCategory)
+      .order('views', { ascending: false })
+      .limit(10);
 
-    // Target word counts per length
-    const wordCounts = { short: 600, medium: 1100, long: 2000 };
-    const targetWords = wordCounts[length as keyof typeof wordCounts] || 1100;
+    const cluster = clusterArticles || [];
+    const crossCluster = crossClusterArticles || [];
 
-    // Tone guide
+    // Pillar = first item in cluster (most viewed in same category)
+    const pillarArticle = cluster[0] || null;
+    const clusterLinks = cluster.slice(1, 8); // exclude pillar itself from cluster list
+
+    console.log(`Silo: category=${currentCategory}, cluster=${cluster.length}, cross=${crossCluster.length}, pillar="${pillarArticle?.title_it || 'none'}"`);
+
+    // ═══════════════════════════════════════════════════
+    // ARTICLE PARAMETERS
+    // ═══════════════════════════════════════════════════
+
+    const wordCounts = { short: 650, medium: 1200, long: 2200 };
+    const targetWords = wordCounts[length as keyof typeof wordCounts] || 1200;
+
     const toneGuide = {
-      professional: 'professionale e autorevole, usa terminologia tecnica del settore',
-      casual: 'informale e coinvolgente, diretto e amichevole, parla come un insider del gambling',
-      technical: 'tecnico e dettagliato, approfondisci matematica, probabilità, statistiche'
+      professional: 'professionale e autorevole, usa terminologia tecnica del settore affiliate',
+      casual: 'diretto e amichevole come un collega esperto che condivide insider tips',
+      technical: 'tecnico e preciso, approfondisci numeri, percentuali, configurazioni specifiche'
     }[tone || 'professional'];
 
-    // Content format guide
     const formatGuide = {
-      listicle: 'Struttura come lista numerata dei punti principali con H2 per ogni punto',
-      howto: 'Struttura come guida step-by-step con passi chiari e numerati',
-      review: 'Struttura come recensione con pro/contro, valutazione e verdetto finale',
-      comparison: 'Struttura come confronto diretto con tabella HTML comparativa',
-      news: 'Struttura come articolo di notizia con le informazioni più importanti prima'
-    }[content_format || 'guides'] || 'Struttura con sezioni H2 logiche e fluide';
+      listicle: 'Lista numerata: ogni punto è un H2 con sottoparagrafi concreti. Es: "5 strategie che funzionano davvero"',
+      howto: 'Step-by-step con <ol> per i passi. Ogni step spiegato con dettagli pratici. Adatto per HowTo schema.',
+      review: 'Recensione strutturata: panoramica → funzionalità → pro/contro → verdetto finale in <blockquote>',
+      comparison: 'Confronto con tabella HTML nella prima metà. Analisi pro/contro per ogni opzione.',
+      news: 'Notizia con lead paragraph (chi/cosa/quando/perché) → dettagli → implicazioni per affiliati'
+    }[content_format || 'howto'] || 'Struttura con H2 logici per un affiliato che vuole applicare subito';
 
-    // Search intent guide
     const intentGuide = {
-      informational: 'L\'utente vuole capire qualcosa. Spiega in modo chiaro ed esaustivo. Includi definizioni e contesto.',
-      transactional: 'L\'utente vuole agire. Includi CTA chiare, link all\'azione, benefici concreti.',
-      commercial: 'L\'utente sta valutando opzioni. Includi confronti, pro/contro, raccomandazioni chiare.',
-      navigational: 'L\'utente cerca informazioni specifiche. Sii diretto e preciso.'
+      informational: 'Utente vuole capire un concetto. Inizia con definizione chiara, poi approfondisci con esempi pratici.',
+      transactional: 'Utente pronto ad agire. Enfatizza benefici concreti, cifre reali, passi immediati.',
+      commercial: 'Utente sta valutando opzioni. Includi tabella comparativa, pro/contro, raccomandazione chiara.',
+      navigational: 'Utente cerca info specifiche. Sii diretto, nessuna intro prolissa.'
     }[search_intent || 'informational'];
 
-    const systemPrompt = `SEI UN ESPERTO DI AFFILIATE MARKETING NEL SETTORE iGAMING. Scrivi come un professionista con anni di esperienza nell'affiliazione casino online.
+    // ═══════════════════════════════════════════════════
+    // TITLE FORMULA GUIDE (proven SEO patterns)
+    // ═══════════════════════════════════════════════════
+    const titleFormulas = `
+FORMULE TITOLO PROVATE (scegli la più adatta):
+- "Come [fare X]: Guida Completa per Affiliati Casino [Anno]"
+- "[Numero] Strategie per [Risultato] come Affiliato iGaming"
+- "CPA vs RevShare [Argomento]: Quale Conviene di Più?"
+- "Come Guadagnare [Cifra] con [Metodo] nel [Settore]"
+- "[Argomento] per Affiliati Casino: Tutto Quello che Devi Sapere"
+- "I Migliori [Categoria] per Affiliati iGaming nel [Anno]"
+REGOLA: keyword principale nelle prime 4 parole quando possibile. Max 62 caratteri.`;
 
-🚨 AUDIENCE CRITICA — LEGGI CON ATTENZIONE:
-Il sito è Revillion Partners, una RETE DI AFFILIAZIONE iGaming.
-Il pubblico di questo blog sono AFFILIATI: publisher, influencer, content creator, SEO specialist che PROMUOVONO casino online per guadagnare commissioni CPA.
-NON sono giocatori di casino. NON scrivere strategie per vincere alle slot o al blackjack.
-Scrivi per persone che vogliono GUADAGNARE COME AFFILIATI, non per persone che vogliono giocare.
+    // ═══════════════════════════════════════════════════
+    // SYSTEM PROMPT
+    // ═══════════════════════════════════════════════════
 
-DOMANDE CHE UN AFFILIATO SI FA (e a cui l'articolo deve rispondere):
-- Come trovo traffico qualificato per promuovere casino?
-- Come aumento le mie conversioni CPA?
-- Quali mercati GEO convertono meglio?
-- Come scelgo il programma di affiliazione giusto?
-- Come gestisco le campagne Telegram/social per casino?
-- CPA vs RevShare: cosa mi conviene?
-- Come costruisco un sito casino affiliato che rankia su Google?
+    const systemPrompt = `SEI UN ESPERTO DI AFFILIATE MARKETING iGAMING con 8+ anni di esperienza diretta.
+Scrivi per Revillion Partners (revillion-partners.com) — una rete di affiliazione casino di livello elite.
 
-🎯 OBIETTIVO PRIMARIO: Articolo che conquisti la POSIZIONE #1 su Google e compaia nelle AI Overviews di ChatGPT/Gemini/Perplexity.
+══════════════════════════════════════════════
+🚨 AUDIENCE: CHI LEGGE QUESTI ARTICOLI
+══════════════════════════════════════════════
 
-════════════════════════════════════════
+Lettori = AFFILIATI (publisher, SEO, influencer, channel manager) che vogliono:
+- Guadagnare commissioni CPA promuovendo casino online
+- Imparare tecniche di marketing per il settore iGaming
+- Scegliere il miglior programma di affiliazione
+- Ottimizzare campagne e conversioni
+
+NON sono giocatori. Non scrivere su come vincere, slot machines, strategie di gioco.
+
+══════════════════════════════════════════════
+🚫 COMPETITOR BAN ASSOLUTO
+══════════════════════════════════════════════
+
+NON menzionare MAI queste reti affiliate competitor:
+Income Access, Bet365 Partners, GVC Affiliates, Kindred Affiliates, LeoVegas Partners,
+888 Partners, Betsson Affiliates, William Hill Partners, Unibet Partners, PokerStars Affiliates,
+Catena Media, Better Collective, Raketech, XLMedia, NordicBet, Gaming Innovation Group,
+affiliaXe, Reflex Gaming, Gig Affiliates, MaxBounty, ClickBank (nel contesto iGaming)
+
+Se devi fare un esempio generico di programma affiliati, usa formulazioni come:
+"altri network del settore", "programmi concorrenti", "alternative sul mercato"
+
+══════════════════════════════════════════════
 📊 PARAMETRI ARTICOLO
-════════════════════════════════════════
-- LUNGHEZZA TARGET: esattamente ~${targetWords} parole (RISPETTA questo numero)
+══════════════════════════════════════════════
+
+- LUNGHEZZA TARGET: ~${targetWords} parole (±10%, NON ignorare)
 - TONO: ${toneGuide}
 - FORMATO: ${formatGuide}
-- INTENTO DI RICERCA: ${intentGuide}
-- CATEGORIA: ${category || 'casino/gambling'}
+- INTENTO RICERCA: ${intentGuide}
+- CATEGORIA: ${currentCategory}
+${keywords ? `- KEYWORDS TARGET: ${keywords}` : ''}
 
-════════════════════════════════════════
-✍️ STILE: SCRIVI COME UN UMANO ESPERTO
-════════════════════════════════════════
+══════════════════════════════════════════════
+✍️ SCRIVI COME UN ESPERTO UMANO
+══════════════════════════════════════════════
 
-USA queste tecniche per sembrare umano (non AI):
-✅ Prima persona: "nella mia esperienza", "ho notato", "ti consiglio"
-✅ Opinioni dirette: "Personalmente ritengo che...", "Il mio consiglio?"
-✅ Espressioni italiane naturali: "diciamoci la verità", "a dirla tutta", "lascia che ti spieghi"
-✅ Domande retoriche: "Ti sei mai chiesto perché?", "E allora?"
-✅ Incisi tra parentesi (come questo)
-✅ Frasi di lunghezza variabile: alcune corte. Altre più elaborate.
-✅ Ammetti i limiti: "Non sempre funziona così", "Dipende dal caso"
+TECNICA UMANA:
+✅ Prima persona: "nella mia esperienza", "ho testato", "consiglio sempre"
+✅ Dati concreti: usa cifre realistiche (es: "CPA medio £80-140 per il mercato UK")
+✅ Aneddoti di settore: "un affiliato che conosco ha triplicato le conversioni..."
+✅ Opinioni schiette: "diciamoci la verità", "la verità scomoda è che..."
+✅ Contraddici il senso comune: "Molti affiliati pensano che X, ma in realtà..."
+✅ Varia lunghezza frasi — alcune brevi. Altre più elaborate e articolate.
 
-EVITA (segni di AI):
-❌ "Nel mondo del gambling...", "In questo articolo scoprirai..."
-❌ Paragrafi tutti uguali (150 parole ciascuno)
-❌ Transizioni formali: "Inoltre", "Pertanto", "In conclusione"
-❌ Liste di 8-10 elementi (max 5-6)
-❌ Eccessiva perfezione grammaticale
+EVITA SEGNALI AI:
+❌ "In questo articolo scoprirai..."
+❌ "Nel mondo dell'affiliate marketing..."
+❌ Paragrafi tutti da 150 parole
+❌ "In conclusione", "Pertanto", "Inoltre"
+❌ Liste con più di 6 elementi
 
-════════════════════════════════════════
-🏆 SEO DI LIVELLO PROFESSIONALE
-════════════════════════════════════════
+══════════════════════════════════════════════
+🏆 SEO AVANZATO — POSIZIONE #1 + AI OVERVIEWS
+══════════════════════════════════════════════
 
-${keywords ? `KEYWORDS TARGET: ${keywords}` : ''}
+${titleFormulas}
 
-REGOLE SEO (critica):
-✅ Keyword principale: titolo + primo paragrafo + 1 H2 + ultima sezione
-✅ MAX 3-4 ripetizioni della keyword principale (no stuffing)
-✅ LSI keywords e sinonimi naturali (più importanti delle ripetizioni)
-✅ FEATURED SNIPPET: inizia con un paragrafo definitivo di 40-60 parole che risponde direttamente alla query
-✅ PAA (People Also Ask): considera le domande correlate che gli utenti fanno su Google
-✅ HEADING HIERARCHY: H1 implicito nel titolo → H2 per sezioni → H3 per sottosezioni
-✅ OGNI H2 deve includere una keyword secondaria o semanticamente correlata
+REGOLE SEO CRITICHE:
+✅ Keyword principale: titolo + definition paragraph + 1 H2 + ultima sezione
+✅ MAX 3-4 ripetizioni keyword principale totali
+✅ LSI keywords e sinonimi naturali (peso > ripetizioni)
+✅ Ogni H2 contiene keyword secondaria o termine LSI
+✅ FEATURED SNIPPET: primo paragrafo = definizione/risposta diretta (40-60 parole)
 
-STRUTTURA PER FEATURED SNIPPET (obbligatoria):
-- Primo paragrafo dopo introduzione: risposta breve e diretta (40-60 parole)
-- Usa almeno UNA tabella HTML dove ha senso (confronti, dati, esempi)
-- Per guide: usa <ol> con passi numerati
-- Per recensioni: includi un "verdetto" in <blockquote> o <strong>
+STRUCTURED DATA HINTS (guida la formattazione):
+- Se howto: usa <ol> con passi chiari numerati
+- Se comparison: tabella HTML nella prima metà
+- Se review: <blockquote> per il verdetto finale
+- Sempre: sezione FAQ in <h4>+<p> alla fine
 
-════════════════════════════════════════
-📋 FAQ SCHEMA (OBBLIGATORIO - fondamentale per SEO)
-════════════════════════════════════════
+══════════════════════════════════════════════
+🏗️ SILO SEO — LINK BUILDING INTERNO
+══════════════════════════════════════════════
 
-Genera ESATTAMENTE 4-6 domande FAQ pertinenti al topic.
-Queste verranno usate per:
-1. Sezione FAQ visibile nell'articolo
-2. JSON-LD FAQ Schema markup automatico (aumenta visibilità su Google)
-3. Risponde alle "People Also Ask" di Google
+STRUTTURA SILO:
+Il blog è organizzato in CLUSTER TEMATICI (categorie). Ogni cluster ha:
+- 1 ARTICOLO PILLAR (il più autorevole del cluster, più letto)
+- N ARTICOLI CLUSTER (approfondiscono sottotopici del pillar)
 
-FORMATO HTML OBBLIGATORIO PER LA SEZIONE FAQ (sistema lo legge automaticamente):
+REGOLE DI LINKING (OBBLIGATORIE):
+
+1. LINK AL PILLAR (priorità massima):
+${pillarArticle ? `   → PILLAR del tuo cluster: "${pillarArticle.title_it || pillarArticle.title_en}"
+   → Slug: /blog/${pillarArticle.slug_it || pillarArticle.slug_en}
+   → Inserisci SEMPRE un link a questo articolo (è il pillar del tuo cluster)
+   → Posizionalo nella prima metà dell'articolo` : '   → Nessun articolo pillar trovato (questo sarà il primo pillar del cluster)'}
+
+2. LINK CLUSTER (stesso tema, 2-3 link):
+${clusterLinks.length > 0 ? clusterLinks.map((a: any) => `   [${a.category}] "${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : '   Nessun articolo cluster disponibile ancora.'}
+
+3. LINK CROSS-CLUSTER (altri temi, 1-2 link per diversità tematica):
+${crossCluster.length > 0 ? crossCluster.slice(0, 6).map((a: any) => `   [${a.category}] "${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : '   Nessun articolo cross-cluster disponibile.'}
+
+FORMATO LINK: <a href="/blog/{slug}">anchor text naturale e descrittivo</a>
+ANCHOR TEXT: descrittivo e naturale (NO "clicca qui", "leggi qui", "questo articolo")
+TOTALE LINK: 4-6 interni (pillar + 2-3 cluster + 1-2 cross-cluster)
+DISTRIBUZIONE: intro → prima metà → seconda metà → conclusione
+
+══════════════════════════════════════════════
+📋 FAQ SCHEMA — GOOGLE RICH RESULTS
+══════════════════════════════════════════════
+
+FORMATO OBBLIGATORIO (il sistema estrae automaticamente per JSON-LD):
 <h2>Domande Frequenti</h2>
 
-<h4>La domanda va qui, scritta come la farebbe un utente su Google?</h4>
-<p>La risposta va qui, 40-80 parole, diretta e completa, pronta per featured snippet.</p>
+<h4>Domanda scritta come un utente la cerca su Google?</h4>
+<p>Risposta completa 40-80 parole, diretta, pronta per featured snippet.</p>
 
-<h4>Seconda domanda pertinente?</h4>
-<p>Seconda risposta...</p>
+REGOLE:
+- Ogni domanda DEVE finire con "?"
+- Tag esatti: <h4> per domanda, <p> subito dopo per risposta
+- 4-6 coppie
+- Domande reali ("Quanto guadagna un affiliato casino?" non "Qual è il compenso?")
 
-REGOLE CRITICHE:
-- Ogni domanda DEVE terminare con "?"
-- Ogni domanda è in <h4> (non <h3>, non <strong>, solo <h4>)
-- Ogni risposta è in <p> subito dopo l'<h4>
-- 4-6 coppie domanda/risposta
-- Domande come utenti reali cercano su Google (es: "Quanto guadagna un affiliato casino?" non "Qual è il guadagno?")
+══════════════════════════════════════════════
+🎯 CTA REVILLION (OBBLIGATORIA)
+══════════════════════════════════════════════
 
-════════════════════════════════════════
-🔗 LINK BUILDING INTERNO (OBBLIGATORIO)
-════════════════════════════════════════
+Nella CONCLUSIONE (ultima sezione prima della FAQ), includi SEMPRE:
+- Menzione naturale di Revillion Partners come esempio/soluzione
+- Link esterno: <a href="https://dashboard.revillion.com/en/registration">iscriviti a Revillion Partners</a>
+- Tono non pubblicitario — come un'informazione utile, non spam
+- Esempio: "Se stai cercando un network che offra tutto questo, Revillion Partners è tra le
+  opzioni più complete: <a href="https://dashboard.revillion.com/en/registration">scopri le commissioni</a>."
 
-✅ INSERISCI 3-5 link interni contestuali
-✅ DISTRIBUZIONE: intro + prima metà + seconda metà + conclusione
-✅ FORMATO: <a href="/blog/{slug}">anchor text naturale descrittivo</a>
-✅ USA slug_it o slug_en dall'elenco sotto
-✅ ANCHOR TEXT descrittivi (no "clicca qui", "leggi di più")
-
-${articlesForLinking.length > 0 ? `ARTICOLI DISPONIBILI:
-${articlesForLinking.map((a: any) => `- [${a.category}] "${a.title_it || a.title_en}" → slug_it: ${a.slug_it || a.slug_en || ''}`).join('\n')}` : 'Nessun articolo disponibile per linking.'}
-
-════════════════════════════════════════
+══════════════════════════════════════════════
 🎨 FORMATTAZIONE HTML
-════════════════════════════════════════
+══════════════════════════════════════════════
 
-ELEMENTI OBBLIGATORI:
-- <h2> per sezioni principali (4-7 sezioni)
-- <h3> per sottosezioni quando appropriato
-- <p> per paragrafi
-- <strong> per concetti chiave (non esagerare)
-- <ul>/<ol> per liste (max 5-6 elementi)
-- <table> dove c'è un confronto da fare (struttura dati)
-- <blockquote> per citazioni o verdetti importanti
-- NO wrapper html/body/article
+OBBLIGATORI:
+- <h2> sezioni principali (4-7)
+- <h3> sottosezioni dove logico
+- <p> paragrafi
+- <strong> concetti chiave (con parsimonia)
+- <ul>/<ol> liste (max 5-6 elementi)
+- <table> per confronti e dati
+- <blockquote> per verdetti/citazioni importanti
+- NO wrapper html/body/article — inizia direttamente col contenuto
 
-TABELLA ESEMPIO (quando pertinente):
-<table>
-<thead><tr><th>Elemento</th><th>Dettaglio</th></tr></thead>
-<tbody>
-<tr><td>Valore 1</td><td>Descrizione 1</td></tr>
-</tbody>
-</table>
+SPAZIATURA: riga vuota tra sezioni H2, riga vuota tra paragrafi <p>`;
 
-Spaziatura:
-- Riga vuota tra sezioni H2
-- Riga vuota tra paragrafi <p>`;
+    const userPrompt = `Scrivi un articolo SEO per affiliati iGaming su: "${topic}"
 
-    const userPrompt = `Scrivi un articolo SEO-ottimizzato su: "${topic}"
+Scrivi come un ESPERTO REALE dell'affiliate marketing casino, non come un AI.
 
-Scrivi come un ESPERTO REALE del settore iGaming con esperienza concreta, non come un AI.
+CHECKLIST OBBLIGATORIA:
+□ ~${targetWords} parole (±10%)
+□ Definition paragraph 40-60 parole (featured snippet) come primo paragrafo
+□ Almeno una tabella HTML dove pertinente
+□ Link al PILLAR del cluster (se presente nell'elenco sopra)
+□ 2-3 link cluster (stessa categoria)
+□ 1-2 link cross-cluster (altra categoria)
+□ CTA naturale a Revillion Partners nella conclusione
+□ Sezione FAQ (4-6 coppie <h4>?</h4><p>risposta</p>)
+□ Zero menzioni di competitor o reti affiliate concorrenti
 
-REQUISITI ESSENZIALI:
-1. ~${targetWords} parole di contenuto (rispetta il conteggio)
-2. Inizia con un "definition paragraph" di 40-60 parole (ottimizzato per featured snippet)
-3. Includi almeno una tabella HTML dove pertinente
-4. 3-5 link interni contestuali al flusso del discorso
-5. Sezione FAQ finale con 4-6 domande/risposte (per FAQ schema JSON-LD)
-6. Termina con una conclusione con CTA verso Revillion Partners
-
-IMPORTANTE per la FAQ: Genera domande come le farebbe un utente reale su Google.
-Ogni risposta FAQ deve essere self-contained (40-80 parole), pronta per featured snippet.`;
+TITOLO: usa una delle formule provate, keyword principale nelle prime 4 parole.`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -250,39 +301,39 @@ Ogni risposta FAQ deve essere self-contained (40-80 parole), pronta per featured
             type: 'function',
             function: {
               name: 'create_blog_post',
-              description: 'Crea articolo blog SEO-ottimizzato con FAQ schema',
+              description: 'Crea articolo blog SEO per affiliati iGaming con silo links e FAQ schema',
               parameters: {
                 type: 'object',
                 properties: {
                   title_it: {
                     type: 'string',
-                    description: 'Titolo SEO ottimizzato (55-65 caratteri, keyword principale all\'inizio se possibile)'
+                    description: 'Titolo SEO (max 62 caratteri, keyword principale entro le prime 4 parole, usa formule provate)'
                   },
                   content_it: {
                     type: 'string',
-                    description: 'Contenuto HTML completo. Deve includere: definition paragraph, sezioni H2/H3, almeno una tabella HTML dove pertinente, link interni, sezione FAQ con domande/risposte in HTML. NO wrapper html/body.'
+                    description: 'Contenuto HTML completo. Deve includere: definition paragraph (40-60 parole), sezioni H2/H3, tabella dove pertinente, link interni silo (pillar + cluster + cross-cluster), CTA a Revillion Partners, sezione FAQ in formato <h4>?</h4><p>risposta</p>. NO wrapper html/body.'
                   },
                   meta_description_it: {
                     type: 'string',
-                    description: 'Meta description ottimizzata (145-158 caratteri) con keyword principale e CTA'
+                    description: 'Meta description (148-158 caratteri): keyword principale + benefit per affiliati + CTA'
                   },
                   slug: {
                     type: 'string',
-                    description: 'Slug URL-friendly (lowercase, trattini, no caratteri speciali, max 60 caratteri)'
+                    description: 'Slug URL (max 55 caratteri, lowercase, trattini, no stopwords)'
                   },
                   keywords: {
                     type: 'array',
                     items: { type: 'string' },
-                    description: '4-6 keywords: prima la principale, poi secondarie, poi LSI'
+                    description: 'Keywords: [principale, secondaria1, secondaria2, LSI1, LSI2, LSI3]'
                   },
                   faq_items: {
                     type: 'array',
-                    description: '4-6 FAQ per JSON-LD schema markup (People Also Ask)',
+                    description: '4-6 FAQ per JSON-LD FAQPage schema',
                     items: {
                       type: 'object',
                       properties: {
-                        question: { type: 'string', description: 'Domanda come la farebbe un utente reale su Google' },
-                        answer: { type: 'string', description: 'Risposta completa 40-80 parole, pronta per featured snippet' }
+                        question: { type: 'string', description: 'Domanda come la cerca un utente su Google (termina con ?)' },
+                        answer: { type: 'string', description: 'Risposta 40-80 parole, self-contained, pronta per featured snippet' }
                       },
                       required: ['question', 'answer']
                     }
@@ -290,11 +341,20 @@ Ogni risposta FAQ deve essere self-contained (40-80 parole), pronta per featured
                   schema_type: {
                     type: 'string',
                     enum: ['Article', 'HowTo', 'Review', 'FAQPage'],
-                    description: 'Schema.org type più appropriato per questo contenuto'
+                    description: 'Schema.org type più appropriato'
                   },
                   estimated_word_count: {
                     type: 'number',
-                    description: 'Stima del conteggio parole del contenuto generato'
+                    description: 'Conteggio parole stimato del contenuto generato'
+                  },
+                  silo_links_used: {
+                    type: 'object',
+                    description: 'Report dei link silo inseriti',
+                    properties: {
+                      pillar: { type: 'string', description: 'Slug del pillar linkato (o vuoto)' },
+                      cluster_count: { type: 'number', description: 'Numero link cluster inseriti' },
+                      cross_cluster_count: { type: 'number', description: 'Numero link cross-cluster inseriti' }
+                    }
                   }
                 },
                 required: ['title_it', 'content_it', 'meta_description_it', 'slug', 'keywords', 'faq_items', 'schema_type'],
@@ -310,38 +370,37 @@ Ogni risposta FAQ deve essere self-contained (40-80 parole), pronta per featured
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       console.error('AI error:', aiResponse.status, errorText);
-      if (aiResponse.status === 429) return new Response(JSON.stringify({ error: 'Rate limit raggiunto. Riprova tra qualche minuto.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (aiResponse.status === 429) return new Response(JSON.stringify({ error: 'Rate limit. Riprova tra qualche minuto.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       if (aiResponse.status === 402) return new Response(JSON.stringify({ error: 'Crediti AI esauriti.' }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
     const aiData = await aiResponse.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall || toolCall.function.name !== 'create_blog_post') {
-      throw new Error('Formato risposta AI non valido');
-    }
+    if (!toolCall || toolCall.function.name !== 'create_blog_post') throw new Error('Formato risposta AI non valido');
 
-    const generatedContent = JSON.parse(toolCall.function.arguments);
+    const gen = JSON.parse(toolCall.function.arguments);
 
-    // Validate internal links
-    const linkMatches = (generatedContent.content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []);
-    console.log(`✅ Internal links: ${linkMatches.length}`);
-    console.log(`✅ FAQ items: ${generatedContent.faq_items?.length || 0}`);
-    console.log(`✅ Schema type: ${generatedContent.schema_type}`);
-    console.log(`✅ Estimated words: ${generatedContent.estimated_word_count}`);
+    // Validate
+    const internalLinks = (gen.content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []).length;
+    const externalRevillion = (gen.content_it.match(/revillion/gi) || []).length;
+    console.log(`✅ Silo links: ${internalLinks} internal, Revillion mentions: ${externalRevillion}`);
+    console.log(`✅ FAQ items: ${gen.faq_items?.length || 0}, Schema: ${gen.schema_type}, Words: ${gen.estimated_word_count}`);
+    if (gen.silo_links_used) console.log(`✅ Silo report:`, gen.silo_links_used);
 
     return new Response(
       JSON.stringify({
         generated: {
-          title_it: generatedContent.title_it,
-          content_it: generatedContent.content_it,
-          meta_description_it: generatedContent.meta_description_it,
-          slug: generatedContent.slug,
-          category: category || 'news',
-          keywords: generatedContent.keywords,
-          faq_items: generatedContent.faq_items || [],
-          schema_type: generatedContent.schema_type || 'Article',
-          estimated_word_count: generatedContent.estimated_word_count,
+          title_it: gen.title_it,
+          content_it: gen.content_it,
+          meta_description_it: gen.meta_description_it,
+          slug: gen.slug,
+          category: currentCategory,
+          keywords: gen.keywords,
+          faq_items: gen.faq_items || [],
+          schema_type: gen.schema_type || 'Article',
+          estimated_word_count: gen.estimated_word_count,
+          silo_links_used: gen.silo_links_used || null,
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
