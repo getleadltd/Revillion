@@ -196,8 +196,8 @@ const Calculator = () => {
       {/* ── Presets ──────────────────────────────────────────────────── */}
       <section className="bg-[#F8F7F4] border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl py-5">
-          <div className="flex flex-wrap gap-3 items-center">
-            <span className="text-gray-400 font-mono text-xs uppercase tracking-widest mr-2 shrink-0">Quick presets:</span>
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-gray-400 font-mono text-xs uppercase tracking-widest mr-1 shrink-0">Quick presets:</span>
             {PRESETS.map((p) => (
               <button
                 key={p.label}
@@ -217,7 +217,7 @@ const Calculator = () => {
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
           <div className="grid lg:grid-cols-[1fr_420px] gap-8 items-start">
 
-            {/* ── Right: Results (sticky) — shown first on mobile ──────── */}
+            {/* ── Right: Results — shown first on mobile ───────────────── */}
             <div className="lg:hidden space-y-4">
               {/* Main result card */}
               <div className="bg-[#0a0a0a] text-white rounded-2xl p-6 relative overflow-hidden">
@@ -247,6 +247,12 @@ const Calculator = () => {
                       <div className="text-gray-400 text-xs mt-1">12 months</div>
                     </div>
                   </div>
+                  {commType !== 'CPA' && (
+                    <div className="mt-4 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-xl px-3 py-2">
+                      <TrendingUp className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                      <span className="text-orange-300 text-xs">Earnings grow as your player base accumulates each month</span>
+                    </div>
+                  )}
                   <div className="mt-5 pt-5 border-t border-white/10">
                     <a
                       href="https://dashboard.revillion.com/en/registration"
@@ -260,7 +266,46 @@ const Calculator = () => {
                         <ArrowRight className="ml-2 w-4 h-4" />
                       </Button>
                     </a>
+                    <p className="text-center text-xs text-gray-500 mt-2">No setup fees · Free to join · Instant access</p>
                   </div>
+                </div>
+              </div>
+
+              {/* 6-month bar chart — mobile */}
+              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-bold text-gray-900">6-Month Growth</h3>
+                  <span className="text-xs text-gray-400 font-mono uppercase tracking-wider">{commType}</span>
+                </div>
+                <div className="flex items-end gap-2 h-28">
+                  {chartData.map((d) => (
+                    <div key={d.month} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="text-[9px] text-gray-400 font-mono tabular-nums truncate w-full text-center">{fmt(d.value)}</div>
+                      <div
+                        className="w-full rounded-t-md bg-orange-500 transition-all duration-500 min-h-[4px]"
+                        style={{ height: `${Math.max(d.pct * 0.7, 4)}%` }}
+                      />
+                      <div className="text-[9px] text-gray-400 font-mono">{d.month}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Funnel summary — mobile */}
+              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                <h3 className="text-sm font-bold text-gray-900 mb-3">Your Funnel Summary</h3>
+                <div className="space-y-2.5">
+                  {[
+                    { label: 'Monthly visitors', value: fmtNum(traffic), color: 'text-gray-700' },
+                    { label: 'Clicks on affiliate link', value: fmtNum(stats.clicks), color: 'text-orange-600' },
+                    { label: 'Registered players', value: fmtNum(stats.regs), color: 'text-blue-600' },
+                    { label: 'Depositing players', value: fmtNum(stats.depositors), color: 'text-green-600' },
+                  ].map(({ label, value, color }) => (
+                    <div key={label} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">{label}</span>
+                      <span className={`font-black tabular-nums ${color}`}>{value}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
