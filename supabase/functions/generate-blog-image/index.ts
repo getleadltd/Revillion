@@ -349,7 +349,8 @@ ${visualConcept}
 
 TECHNICAL REQUIREMENTS:
 - Photo-realistic, not illustration, CGI, or AI art style
-- Aspect ratio: 16:9 landscape orientation
+- MANDATORY aspect ratio: 16:9 WIDESCREEN LANDSCAPE — wide horizontal format, NOT square, NOT portrait
+- Image must be significantly wider than tall (landscape orientation)
 - Ultra high resolution, sharp details
 - Professional color grading with rich tones
 - NO generic stock photo feel — this should feel editorial and premium
@@ -379,7 +380,13 @@ REMINDER: ABSOLUTELY ZERO text, letters, numbers, or symbols visible anywhere in
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash-image-preview',
         messages: [{ role: 'user', content: finalPrompt }],
-        modalities: ['image', 'text']
+        modalities: ['image', 'text'],
+        size: '1792x1024',
+        generation_config: {
+          image_generation_config: {
+            aspect_ratio: '16:9',
+          }
+        }
       }),
     });
 
