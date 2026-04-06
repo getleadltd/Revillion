@@ -79,11 +79,11 @@ export function AIContentGeneratorDialog({
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
-    setProgress("🤖 Analisi dell'argomento...");
+    setProgress("🔍 Gemini 2.5 Pro analizza argomento e keyword...");
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setProgress("✍️ Generazione contenuto SEO-friendly...");
+      await new Promise(resolve => setTimeout(resolve, 600));
+      setProgress("✍️ Generazione contenuto long-form con FAQ schema...");
 
       const { data, error } = await supabase.functions.invoke('generate-blog-content', {
         body: {
@@ -104,15 +104,18 @@ export function AIContentGeneratorDialog({
         throw new Error('Risposta non valida dal server');
       }
 
-      setProgress("🎨 Creazione struttura HTML...");
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      setProgress("✅ Contenuto pronto!");
+      setProgress("🔗 Integrazione link interni e FAQ schema...");
+      await new Promise(resolve => setTimeout(resolve, 400));
+      setProgress("✅ Articolo pronto!");
       await new Promise(resolve => setTimeout(resolve, 300));
 
+      const faqCount = data.generated.faq_items?.length || 0;
+      const wordCount = data.generated.estimated_word_count;
+      const schemaType = data.generated.schema_type;
+
       toast({
-        title: "✨ Contenuto generato con successo!",
-        description: "Revisionalo e modifica come preferisci prima di salvare.",
+        title: "✨ Articolo generato!",
+        description: `${wordCount ? `~${wordCount} parole · ` : ''}${faqCount} FAQ · Schema ${schemaType || 'Article'} · Revisiona prima di pubblicare.`,
       });
 
       onContentGenerated(data.generated);
@@ -151,7 +154,7 @@ export function AIContentGeneratorDialog({
             Genera Articolo con AI
           </DialogTitle>
           <DialogDescription>
-            Inserisci l'argomento e i parametri. L'AI creerà un articolo completo, unico e ottimizzato SEO in italiano.
+            Powered by Gemini 2.5 Pro. Genera articolo con FAQ schema, internal links, featured snippet, tabelle HTML e struttura ottimizzata per posizione #1 su Google.
           </DialogDescription>
         </DialogHeader>
 
@@ -259,8 +262,8 @@ export function AIContentGeneratorDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="short">Breve (~500 parole)</SelectItem>
-                        <SelectItem value="medium">Medio (~1000 parole)</SelectItem>
+                        <SelectItem value="short">Breve (~600 parole)</SelectItem>
+                        <SelectItem value="medium">Medio (~1100 parole)</SelectItem>
                         <SelectItem value="long">Lungo (~2000 parole)</SelectItem>
                       </SelectContent>
                     </Select>

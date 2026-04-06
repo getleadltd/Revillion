@@ -80,21 +80,23 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `Sei un esperto SEO e content strategist specializzato in gambling e casino online.
-Analizza il titolo fornito e determina i parametri ottimali per la generazione dell'articolo.`;
+    const systemPrompt = `Sei un esperto SEO e content strategist specializzato in iGaming, gambling online e affiliate marketing.
+Analizza il titolo e determina i parametri ottimali per generare un articolo che conquisti la posizione #1 su Google.`;
 
     const userPrompt = `Analizza questo titolo di articolo: "${title}"
 
-Determina:
-1. **Categoria** (scegli UNA tra: news, guides, reviews, tips)
-2. **Keywords** (3-5 keywords SEO principali in italiano)
-3. **Tone** (scegli UNO tra: professional, casual, technical)
-4. **Length** (scegli UNO tra: short, medium, long)
+Determina i parametri ottimali per creare il miglior articolo SEO possibile:
+1. **Categoria** (news, guides, reviews, tips)
+2. **Keywords** (4-6 keywords: prima la principale, poi secondarie, poi LSI)
+3. **Tone** (professional, casual, technical)
+4. **Length** (short=600 parole, medium=1100 parole, long=2000 parole)
+5. **Search intent** (informational, transactional, commercial, navigational)
+6. **Content format** (listicle, howto, review, comparison, news)
 
-Basati su:
-- Intento del titolo (informativo, guida, recensione, notizia)
-- Complessità dell'argomento
-- Target audience (principianti vs esperti)
+Criteri per length:
+- short: argomenti semplici, notizie, glossario
+- medium: guide pratiche, recensioni, consigli
+- long: guide complete, confronti approfonditi, tutorial step-by-step
 
 Rispondi SOLO con i parametri richiesti in formato strutturato.`;
 
@@ -128,9 +130,9 @@ Rispondi SOLO con i parametri richiesti in formato strutturato.`;
                 keywords: {
                   type: 'array',
                   items: { type: 'string' },
-                  minItems: 3,
-                  maxItems: 5,
-                  description: 'SEO keywords'
+                  minItems: 4,
+                  maxItems: 6,
+                  description: 'SEO keywords: primary first, then secondary, then LSI'
                 },
                 tone: {
                   type: 'string',
@@ -141,9 +143,19 @@ Rispondi SOLO con i parametri richiesti in formato strutturato.`;
                   type: 'string',
                   enum: ['short', 'medium', 'long'],
                   description: 'Article length'
+                },
+                search_intent: {
+                  type: 'string',
+                  enum: ['informational', 'transactional', 'commercial', 'navigational'],
+                  description: 'Primary search intent of users searching this title'
+                },
+                content_format: {
+                  type: 'string',
+                  enum: ['listicle', 'howto', 'review', 'comparison', 'news'],
+                  description: 'Best content format for this topic'
                 }
               },
-              required: ['category', 'keywords', 'tone', 'length'],
+              required: ['category', 'keywords', 'tone', 'length', 'search_intent', 'content_format'],
               additionalProperties: false
             }
           }

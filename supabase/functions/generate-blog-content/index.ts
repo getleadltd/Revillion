@@ -7,304 +7,216 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Helper function to verify admin authentication
 async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: string }> {
   const authHeader = req.headers.get('authorization');
   if (!authHeader) {
-    return {
-      error: new Response(
-        JSON.stringify({ error: 'Missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    };
+    return { error: new Response(JSON.stringify({ error: 'Missing authorization header' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
   }
-
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: authHeader } }
-  });
-
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, { global: { headers: { Authorization: authHeader } } });
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
-    return {
-      error: new Response(
-        JSON.stringify({ error: 'Invalid authentication' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    };
+    return { error: new Response(JSON.stringify({ error: 'Invalid authentication' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
   }
-
-  // Check admin role via RPC
-  const { data: isAdmin, error: roleError } = await supabase
-    .rpc('has_role', { _user_id: user.id, _role: 'admin' });
-
+  const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' });
   if (roleError || !isAdmin) {
-    return {
-      error: new Response(
-        JSON.stringify({ error: 'Unauthorized - admin access required' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    };
+    return { error: new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
   }
-
   return { userId: user.id };
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    // Verify admin authentication
     const authResult = await verifyAdmin(req);
-    if (authResult.error) {
-      return authResult.error;
-    }
+    if (authResult.error) return authResult.error;
 
-    const { topic, keywords, category, tone, length } = await req.json();
+    const { topic, keywords, category, tone, length, search_intent, content_format } = await req.json();
 
-    if (!topic || topic.trim() === '') {
-      return new Response(
-        JSON.stringify({ error: 'Topic è obbligatorio' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (!topic?.trim()) {
+      return new Response(JSON.stringify({ error: 'Topic è obbligatorio' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY non configurato');
-    }
+    if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY non configurato');
 
-    // Inizializza Supabase client per recuperare articoli esistenti
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Query articoli pubblicati per link building interno
-    console.log('Fetching existing articles for internal linking...');
-    const { data: existingArticles, error: articlesError } = await supabase
+    // Fetch recent articles for internal linking
+    const { data: existingArticles } = await supabase
       .from('blog_posts')
-      .select('slug, title_it, category')
+      .select('slug_it, slug_en, title_it, title_en, category')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
-      .limit(50); // Limita a 50 articoli più recenti
-
-    if (articlesError) {
-      console.error('Error fetching articles:', articlesError);
-    }
+      .limit(60);
 
     const articlesForLinking = existingArticles || [];
-    console.log(`Found ${articlesForLinking.length} articles for potential internal linking`);
 
-    // Mapping lunghezza a parole target
-    const lengthGuide = {
-      short: '~500 parole (3-4 sezioni principali)',
-      medium: '~1000 parole (5-6 sezioni principali)',
-      long: '~2000 parole (8-10 sezioni principali con sottosezioni)'
-    }[length || 'medium'];
+    // Target word counts per length
+    const wordCounts = { short: 600, medium: 1100, long: 2000 };
+    const targetWords = wordCounts[length as keyof typeof wordCounts] || 1100;
 
-    // Mapping tono a stile
+    // Tone guide
     const toneGuide = {
-      professional: 'professionale e autorevole, usa terminologia tecnica quando appropriato',
-      casual: 'informale e coinvolgente, usa un linguaggio accessibile e amichevole',
-      technical: 'tecnico e dettagliato, approfondisci aspetti matematici e strategici'
+      professional: 'professionale e autorevole, usa terminologia tecnica del settore',
+      casual: 'informale e coinvolgente, diretto e amichevole, parla come un insider del gambling',
+      technical: 'tecnico e dettagliato, approfondisci matematica, probabilità, statistiche'
     }[tone || 'professional'];
 
-    const systemPrompt = `SEI UN ESPERTO REALE DEL SETTORE iGAMING, NON UN BOT.
-Scrivi come se fossi un professionista del gambling online che sta condividendo la propria esperienza con colleghi e appassionati.
+    // Content format guide
+    const formatGuide = {
+      listicle: 'Struttura come lista numerata dei punti principali con H2 per ogni punto',
+      howto: 'Struttura come guida step-by-step con passi chiari e numerati',
+      review: 'Struttura come recensione con pro/contro, valutazione e verdetto finale',
+      comparison: 'Struttura come confronto diretto con tabella HTML comparativa',
+      news: 'Struttura come articolo di notizia con le informazioni più importanti prima'
+    }[content_format || 'guides'] || 'Struttura con sezioni H2 logiche e fluide';
 
-🎯 OBIETTIVO: Creare articoli che SEMBRINO SCRITTI DA UN UMANO
-Gli AI detector devono darti meno del 40% di probabilità AI. Come? Essendo naturale, imperfetto, personale.
+    // Search intent guide
+    const intentGuide = {
+      informational: 'L\'utente vuole capire qualcosa. Spiega in modo chiaro ed esaustivo. Includi definizioni e contesto.',
+      transactional: 'L\'utente vuole agire. Includi CTA chiare, link all\'azione, benefici concreti.',
+      commercial: 'L\'utente sta valutando opzioni. Includi confronti, pro/contro, raccomandazioni chiare.',
+      navigational: 'L\'utente cerca informazioni specifiche. Sii diretto e preciso.'
+    }[search_intent || 'informational'];
 
-═══════════════════════════════════════
-📝 STILE DI SCRITTURA (FONDAMENTALE)
-═══════════════════════════════════════
+    const systemPrompt = `SEI UN ESPERTO REALE DEL SETTORE iGAMING. Scrivi come un professionista del gambling online con anni di esperienza pratica.
 
-TONO: ${toneGuide}
+🎯 OBIETTIVO PRIMARIO: Articolo che conquisti la POSIZIONE #1 su Google e compaia nelle AI Overviews di ChatGPT/Gemini/Perplexity.
 
-COME SCRIVERE:
-✅ Usa la prima persona quando sensato ("nella mia esperienza", "ho notato che", "ti consiglio")
-✅ Aggiungi opinioni personali chiare ("Personalmente preferisco...", "A mio avviso...", "Il mio consiglio?")
-✅ Includi domande retoriche ("Ti sei mai chiesto perché?", "Cosa significa questo per te?")
-✅ Usa espressioni colloquiali italiane naturali:
-   - "diciamoci la verità", "a dirla tutta", "in poche parole"
-   - "vediamo meglio", "ecco il punto interessante", "ora ti starai chiedendo"
-   - "ma attenzione", "lascia che ti spieghi", "ti faccio un esempio"
-✅ Aggiungi incisi tra parentesi (tipo questo) per dare un tono più conversazionale
-✅ Varia lunghezza frasi: alcune corte. Altre più lunghe e articolate che sviluppano il concetto in modo più dettagliato.
-✅ Ammetti limiti quando opportuno ("Non sempre funziona", "In certi casi può essere complicato")
+════════════════════════════════════════
+📊 PARAMETRI ARTICOLO
+════════════════════════════════════════
+- LUNGHEZZA TARGET: esattamente ~${targetWords} parole (RISPETTA questo numero)
+- TONO: ${toneGuide}
+- FORMATO: ${formatGuide}
+- INTENTO DI RICERCA: ${intentGuide}
+- CATEGORIA: ${category || 'casino/gambling'}
 
-EVITA ASSOLUTAMENTE (segni distintivi di AI):
-❌ "Nel mondo del gambling online..." (troppo generico e da AI)
-❌ "In questo articolo scoprirai..." (linguaggio da assistente AI)
-❌ "Ecco i vantaggi/svantaggi:" seguito da lista (troppo meccanico)
-❌ Frasi tutte della stessa lunghezza
-❌ Paragrafi tutti uguali (150-200 parole)
-❌ Transizioni formali tipo "Inoltre", "Pertanto", "In conclusione", "Infine"
-❌ Liste puntate di 8-10 elementi (max 5-6)
-❌ Linguaggio da manuale o enciclopedia
-❌ Perfezione eccessiva (qualche frase più complessa è OK)
+════════════════════════════════════════
+✍️ STILE: SCRIVI COME UN UMANO ESPERTO
+════════════════════════════════════════
 
-═══════════════════════════════════════
-📐 STRUTTURA VARIABILE (NON SEMPRE UGUALE)
-═══════════════════════════════════════
+USA queste tecniche per sembrare umano (non AI):
+✅ Prima persona: "nella mia esperienza", "ho notato", "ti consiglio"
+✅ Opinioni dirette: "Personalmente ritengo che...", "Il mio consiglio?"
+✅ Espressioni italiane naturali: "diciamoci la verità", "a dirla tutta", "lascia che ti spieghi"
+✅ Domande retoriche: "Ti sei mai chiesto perché?", "E allora?"
+✅ Incisi tra parentesi (come questo)
+✅ Frasi di lunghezza variabile: alcune corte. Altre più elaborate.
+✅ Ammetti i limiti: "Non sempre funziona così", "Dipende dal caso"
 
-NON seguire sempre lo stesso schema. Varia tra queste alternative:
+EVITA (segni di AI):
+❌ "Nel mondo del gambling...", "In questo articolo scoprirai..."
+❌ Paragrafi tutti uguali (150 parole ciascuno)
+❌ Transizioni formali: "Inoltre", "Pertanto", "In conclusione"
+❌ Liste di 8-10 elementi (max 5-6)
+❌ Eccessiva perfezione grammaticale
 
-ALTERNATIVA 1 - Domanda + Risposta:
-- Inizia con domanda provocatoria
-- Dai risposta diretta nel primo paragrafo
-- Poi sviluppa sezioni
+════════════════════════════════════════
+🏆 SEO DI LIVELLO PROFESSIONALE
+════════════════════════════════════════
 
-ALTERNATIVA 2 - Storia/Esempio:
-- Racconta mini-caso pratico o aneddoto
-- Poi analizza teoria dietro
+${keywords ? `KEYWORDS TARGET: ${keywords}` : ''}
 
-ALTERNATIVA 3 - Dati Sorprendenti:
-- Apri con statistica o dato interessante
-- Analizza implicazioni
+REGOLE SEO (critica):
+✅ Keyword principale: titolo + primo paragrafo + 1 H2 + ultima sezione
+✅ MAX 3-4 ripetizioni della keyword principale (no stuffing)
+✅ LSI keywords e sinonimi naturali (più importanti delle ripetizioni)
+✅ FEATURED SNIPPET: inizia con un paragrafo definitivo di 40-60 parole che risponde direttamente alla query
+✅ PAA (People Also Ask): considera le domande correlate che gli utenti fanno su Google
+✅ HEADING HIERARCHY: H1 implicito nel titolo → H2 per sezioni → H3 per sottosezioni
+✅ OGNI H2 deve includere una keyword secondaria o semanticamente correlata
 
-SEZIONI:
-- Varia numero H2 (non sempre 5-6): anche 4 o 7 va bene
-- Alcune sezioni più lunghe (300+ parole), altre più brevi (100-150 parole)
-- Non tutte le sezioni devono avere H3
-- Alcune sezioni possono avere più H3, altre nessuno
-- ASIMMETRIA = NATURALE
+STRUTTURA PER FEATURED SNIPPET (obbligatoria):
+- Primo paragrafo dopo introduzione: risposta breve e diretta (40-60 parole)
+- Usa almeno UNA tabella HTML dove ha senso (confronti, dati, esempi)
+- Per guide: usa <ol> con passi numerati
+- Per recensioni: includi un "verdetto" in <blockquote> o <strong>
 
-═══════════════════════════════════════
-💡 CONTENUTO PRATICO E CONCRETO
-═══════════════════════════════════════
+════════════════════════════════════════
+📋 FAQ SCHEMA (OBBLIGATORIO - fondamentale per SEO)
+════════════════════════════════════════
 
-INCLUDI SEMPRE (almeno 3-4 di questi):
-✅ Esempi numerici specifici: "Con un bonus di €500 e requisito 35x, dovresti scommettere €17.500..."
-✅ Scenari pratici: "Supponiamo che tu stia promuovendo Casumo in Italia..."
-✅ Confronti diretti: "NetEnt vs Pragmatic Play? Dipende dal target..."
-✅ Errori comuni da evitare (tono da insider): "Un errore che vedo spesso è..."
-✅ Case study veloci (anche inventati ma realistici): "Un affiliato mio conoscente..."
-✅ Pro e contro bilanciati (non sempre tutto positivo)
+Genera ESATTAMENTE 4-6 domande FAQ pertinenti al topic.
+Queste verranno usate per:
+1. Sezione FAQ visibile nell'articolo
+2. JSON-LD FAQ Schema markup automatico (aumenta visibilità su Google)
+3. Risponde alle "People Also Ask" di Google
 
-═══════════════════════════════════════
-🔍 SEO NATURALE (NON FORZATO)
-═══════════════════════════════════════
+FORMATO HTML OBBLIGATORIO PER LA SEZIONE FAQ (sistema lo legge automaticamente):
+<h2>Domande Frequenti</h2>
 
-${keywords ? `KEYWORDS DA USARE: ${keywords}` : ''}
+<h4>La domanda va qui, scritta come la farebbe un utente su Google?</h4>
+<p>La risposta va qui, 40-80 parole, diretta e completa, pronta per featured snippet.</p>
 
-REGOLE SEO:
-✅ Keyword principale: nel titolo, primo paragrafo, 1-2 H2
-✅ NON ripetere keyword principale più di 3-4 volte totali
-✅ Usa sinonimi e variazioni (es: "casino online" → "piattaforme gambling", "siti casinò", "operatori online")
-✅ LSI keywords (semanticamente correlate) contano più delle ripetizioni
-✅ Se una keyword suona forzata in una frase, riscrivila o saltala
-✅ Naturalezza > Densità keyword
+<h4>Seconda domanda pertinente?</h4>
+<p>Seconda risposta...</p>
 
-═══════════════════════════════════════
+REGOLE CRITICHE:
+- Ogni domanda DEVE terminare con "?"
+- Ogni domanda è in <h4> (non <h3>, non <strong>, solo <h4>)
+- Ogni risposta è in <p> subito dopo l'<h4>
+- 4-6 coppie domanda/risposta
+- Domande come utenti reali cercano su Google (es: "Quanto guadagna un affiliato casino?" non "Qual è il guadagno?")
+
+════════════════════════════════════════
 🔗 LINK BUILDING INTERNO (OBBLIGATORIO)
-═══════════════════════════════════════
+════════════════════════════════════════
 
-✅ INSERISCI ESATTAMENTE 3-5 LINK INTERNI ad articoli correlati
-✅ DISTRIBUZIONE OBBLIGATORIA:
-   - 1 link nell'introduzione (primo o secondo paragrafo)
-   - 1 link nella prima metà dell'articolo
-   - 1 link nella seconda metà
-   - 1 link nella conclusione o ultima sezione
-   - (Opzionale) 1-2 link aggiuntivi dove sensati
+✅ INSERISCI 3-5 link interni contestuali
+✅ DISTRIBUZIONE: intro + prima metà + seconda metà + conclusione
+✅ FORMATO: <a href="/blog/{slug}">anchor text naturale descrittivo</a>
+✅ USA slug_it o slug_en dall'elenco sotto
+✅ ANCHOR TEXT descrittivi (no "clicca qui", "leggi di più")
 
-✅ FORMATO: <a href="/blog/{slug}">anchor text naturale e descrittivo</a>
-✅ NON usare prefissi lingua (/it/, /en/) - SOLO /blog/{slug}
-✅ ANCHOR TEXT NATURALI: "strategie di affiliazione casino", "metodi di pagamento più sicuri", "tecniche SEO avanzate"
-✅ EVITA: "clicca qui", "leggi di più", "scopri qui", "questo articolo", "qui"
+${articlesForLinking.length > 0 ? `ARTICOLI DISPONIBILI:
+${articlesForLinking.map((a: any) => `- [${a.category}] "${a.title_it || a.title_en}" → slug_it: ${a.slug_it || a.slug_en || ''}`).join('\n')}` : 'Nessun articolo disponibile per linking.'}
 
-ESEMPIO LINK NATURALE:
-"Per ottimizzare davvero le conversioni, ti consiglio di approfondire le <a href="/blog/strategie-promuovere-casino-online">strategie di promozione per affiliati casino</a> che hanno dimostrato di funzionare meglio nel mercato italiano."
-
-${articlesForLinking.length > 0 ? `ARTICOLI DISPONIBILI PER LINKING:
-${articlesForLinking.map((a: any) => `- [${a.category}] "${a.title_it}" → /blog/${a.slug}`).join('\n')}
-
-IMPORTANTE: Scegli i 3-5 articoli PIÙ PERTINENTI al topic e inserisci i link in modo che sembri naturale nel flusso del discorso.` : 'ATTENZIONE: Nessun articolo disponibile. Procedi senza link interni.'}
-
-═══════════════════════════════════════
+════════════════════════════════════════
 🎨 FORMATTAZIONE HTML
-═══════════════════════════════════════
+════════════════════════════════════════
 
-SPAZIATURA (per leggibilità):
-- DUE righe vuote tra sezioni H2
-- UNA riga vuota tra paragrafi <p>
-- UNA riga vuota dopo H2/H3 prima del paragrafo
-- Usa <br> occasionalmente per separare liste da paragrafi
-
-ELEMENTI HTML:
-- <h2> per sezioni principali
-- <h3> per sottosezioni (quando serve)
+ELEMENTI OBBLIGATORI:
+- <h2> per sezioni principali (4-7 sezioni)
+- <h3> per sottosezioni quando appropriato
 - <p> per paragrafi
-- <strong> per evidenziare (non esagerare)
-- <em> per enfasi occasionale
-- <ul>/<ol> per liste (massimo 5-6 elementi)
-- NO wrapper <html>, <body>, <article> - inizia direttamente col contenuto
+- <strong> per concetti chiave (non esagerare)
+- <ul>/<ol> per liste (max 5-6 elementi)
+- <table> dove c'è un confronto da fare (struttura dati)
+- <blockquote> per citazioni o verdetti importanti
+- NO wrapper html/body/article
 
-ESEMPIO FORMATTAZIONE:
-<h2>Titolo Sezione</h2>
+TABELLA ESEMPIO (quando pertinente):
+<table>
+<thead><tr><th>Elemento</th><th>Dettaglio</th></tr></thead>
+<tbody>
+<tr><td>Valore 1</td><td>Descrizione 1</td></tr>
+</tbody>
+</table>
 
-<p>Primo paragrafo con contenuto. Qui aggiungo (un inciso naturale) per rendere più umano.</p>
+Spaziatura:
+- Riga vuota tra sezioni H2
+- Riga vuota tra paragrafi <p>`;
 
-<p>Secondo paragrafo. Ti faccio un esempio pratico...</p>
+    const userPrompt = `Scrivi un articolo SEO-ottimizzato su: "${topic}"
 
-<ul>
-<li>Punto 1 concreto</li>
-<li>Punto 2 con dettaglio</li>
-<li>Punto 3 rilevante</li>
-</ul>
+Scrivi come un ESPERTO REALE del settore iGaming con esperienza concreta, non come un AI.
 
+REQUISITI ESSENZIALI:
+1. ~${targetWords} parole di contenuto (rispetta il conteggio)
+2. Inizia con un "definition paragraph" di 40-60 parole (ottimizzato per featured snippet)
+3. Includi almeno una tabella HTML dove pertinente
+4. 3-5 link interni contestuali al flusso del discorso
+5. Sezione FAQ finale con 4-6 domande/risposte (per FAQ schema JSON-LD)
+6. Termina con una conclusione con CTA verso Revillion Partners
 
-<h2>Altra Sezione Importante</h2>
-
-<p>Nuovo paragrafo che sviluppa il discorso...</p>
-
-═══════════════════════════════════════
-📏 LUNGHEZZA E STRUTTURA
-═══════════════════════════════════════
-
-LUNGHEZZA TARGET: ${lengthGuide}
-CATEGORIA: ${category || 'gambling/casino online'}
-
-STRUTTURA GENERALE:
-1. Titolo accattivante (60-70 caratteri, keyword principale)
-2. Meta description con CTA (140-160 caratteri)
-3. Introduzione coinvolgente (100-200 parole) con hook forte
-4. 3-7 sezioni H2 (varia in base al topic, non sempre uguale)
-5. Sottosezioni H3 dove appropriato (non obbligatorie ovunque)
-6. Conclusione personale o con opinione forte (non generica)
-
-IMPORTANTE: Restituisci SOLO contenuto HTML ben formattato, senza wrapper esterni. Inizia direttamente col contenuto.`;
-
-    const userPrompt = `Scrivi un articolo sul tema: "${topic}"
-
-Immagina di essere un esperto del settore iGaming che sta scrivendo per il proprio blog personale o per una rivista specializzata. NON scrivere come un AI o come un assistente virtuale, ma come una PERSONA REALE con esperienza concreta.
-
-L'articolo deve:
-✅ Avere una voce personale e autorevole (usa "nella mia esperienza", "ho visto che", "ti consiglio" quando sensato)
-✅ Essere pratico e concreto: esempi numerici, scenari reali, confronti diretti
-✅ Variare nella struttura: non essere prevedibile o meccanico
-✅ Sembrare scritto da un umano: usa incisi, parentesi, domande retoriche, variazioni di tono
-✅ Includere 3-5 link interni contestuali ad articoli correlati (formato /blog/{slug})
-✅ Essere ottimizzato SEO ma in modo NATURALE (no keyword stuffing)
-
-IMPORTANTE: Non usare frasi da AI tipo "in questo articolo scoprirai", "nel mondo del gambling", "ecco i vantaggi". Scrivi in modo più diretto e personale.
-
-Genera in formato strutturato:
-1. Titolo accattivante (60-70 caratteri, include keyword principale)
-2. Meta description con CTA (140-160 caratteri)
-3. Contenuto HTML completo con:
-   - Introduzione coinvolgente (hook forte, non generica)
-   - 3-7 sezioni H2 (varia in base al topic)
-   - Esempi concreti e pratici
-   - Link interni ben integrati
-   - Conclusione con opinione personale
-4. Slug URL-friendly
-5. Keywords rilevanti (3-5 keywords)`;
-
-    console.log('Calling Lovable AI for content generation...');
+IMPORTANTE per la FAQ: Genera domande come le farebbe un utente reale su Google.
+Ogni risposta FAQ deve essere self-contained (40-80 parole), pronta per featured snippet.`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -313,7 +225,7 @@ Genera in formato strutturato:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-pro',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -323,33 +235,54 @@ Genera in formato strutturato:
             type: 'function',
             function: {
               name: 'create_blog_post',
-              description: 'Crea un articolo blog completo con tutti i metadati',
+              description: 'Crea articolo blog SEO-ottimizzato con FAQ schema',
               parameters: {
                 type: 'object',
                 properties: {
                   title_it: {
                     type: 'string',
-                    description: 'Titolo accattivante in italiano (60-70 caratteri, include keyword principale)'
+                    description: 'Titolo SEO ottimizzato (55-65 caratteri, keyword principale all\'inizio se possibile)'
                   },
                   content_it: {
                     type: 'string',
-                    description: 'Contenuto HTML completo dell\'articolo in italiano. Usa <h2>, <h3>, <p>, <strong>, <em>, <ul>, <ol>, <li>. NO wrapper <html> o <body>.'
+                    description: 'Contenuto HTML completo. Deve includere: definition paragraph, sezioni H2/H3, almeno una tabella HTML dove pertinente, link interni, sezione FAQ con domande/risposte in HTML. NO wrapper html/body.'
                   },
                   meta_description_it: {
                     type: 'string',
-                    description: 'Meta description ottimizzata SEO (140-160 caratteri, include CTA)'
+                    description: 'Meta description ottimizzata (145-158 caratteri) con keyword principale e CTA'
                   },
                   slug: {
                     type: 'string',
-                    description: 'Slug URL-friendly basato sul titolo (lowercase, trattini al posto degli spazi, senza caratteri speciali)'
+                    description: 'Slug URL-friendly (lowercase, trattini, no caratteri speciali, max 60 caratteri)'
                   },
                   keywords: {
                     type: 'array',
                     items: { type: 'string' },
-                    description: 'Array di 3-5 keywords rilevanti per SEO'
+                    description: '4-6 keywords: prima la principale, poi secondarie, poi LSI'
+                  },
+                  faq_items: {
+                    type: 'array',
+                    description: '4-6 FAQ per JSON-LD schema markup (People Also Ask)',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        question: { type: 'string', description: 'Domanda come la farebbe un utente reale su Google' },
+                        answer: { type: 'string', description: 'Risposta completa 40-80 parole, pronta per featured snippet' }
+                      },
+                      required: ['question', 'answer']
+                    }
+                  },
+                  schema_type: {
+                    type: 'string',
+                    enum: ['Article', 'HowTo', 'Review', 'FAQPage'],
+                    description: 'Schema.org type più appropriato per questo contenuto'
+                  },
+                  estimated_word_count: {
+                    type: 'number',
+                    description: 'Stima del conteggio parole del contenuto generato'
                   }
                 },
-                required: ['title_it', 'content_it', 'meta_description_it', 'slug', 'keywords'],
+                required: ['title_it', 'content_it', 'meta_description_it', 'slug', 'keywords', 'faq_items', 'schema_type'],
                 additionalProperties: false
               }
             }
@@ -361,29 +294,13 @@ Genera in formato strutturato:
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('Lovable AI error:', aiResponse.status, errorText);
-      
-      if (aiResponse.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit raggiunto. Riprova tra qualche minuto.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      if (aiResponse.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'Crediti AI esauriti. Contatta l\'amministratore.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
+      console.error('AI error:', aiResponse.status, errorText);
+      if (aiResponse.status === 429) return new Response(JSON.stringify({ error: 'Rate limit raggiunto. Riprova tra qualche minuto.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (aiResponse.status === 402) return new Response(JSON.stringify({ error: 'Crediti AI esauriti.' }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
     const aiData = await aiResponse.json();
-    console.log('AI Response received');
-
-    // Estrarre i dati dalla risposta con tool calling
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall || toolCall.function.name !== 'create_blog_post') {
       throw new Error('Formato risposta AI non valido');
@@ -391,20 +308,12 @@ Genera in formato strutturato:
 
     const generatedContent = JSON.parse(toolCall.function.arguments);
 
-    // ✅ VALIDAZIONE POST-GENERAZIONE: Conta i link interni
-    const internalLinkRegex = /<a\s+href=["']\/blog\/[^"']+["'][^>]*>/gi;
-    const linkMatches = generatedContent.content_it.match(internalLinkRegex) || [];
-    const linkCount = linkMatches.length;
-    
-    console.log(`✅ Internal links validation: Found ${linkCount} internal links`);
-    
-    if (linkCount < 3) {
-      console.warn(`⚠️ WARNING: Only ${linkCount} internal links generated (expected 3-5)`);
-      console.warn('Links found:', linkMatches);
-      // Il contenuto viene comunque restituito, ma l'utente può vedere il warning nei log
-    } else {
-      console.log(`✅ Internal linking requirement met: ${linkCount} links generated`);
-    }
+    // Validate internal links
+    const linkMatches = (generatedContent.content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []);
+    console.log(`✅ Internal links: ${linkMatches.length}`);
+    console.log(`✅ FAQ items: ${generatedContent.faq_items?.length || 0}`);
+    console.log(`✅ Schema type: ${generatedContent.schema_type}`);
+    console.log(`✅ Estimated words: ${generatedContent.estimated_word_count}`);
 
     return new Response(
       JSON.stringify({
@@ -414,22 +323,20 @@ Genera in formato strutturato:
           meta_description_it: generatedContent.meta_description_it,
           slug: generatedContent.slug,
           category: category || 'news',
-          keywords: generatedContent.keywords
+          keywords: generatedContent.keywords,
+          faq_items: generatedContent.faq_items || [],
+          schema_type: generatedContent.schema_type || 'Article',
+          estimated_word_count: generatedContent.estimated_word_count,
         }
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
     console.error('Error in generate-blog-content:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Errore durante la generazione del contenuto' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      JSON.stringify({ error: error.message || 'Errore durante la generazione' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

@@ -114,8 +114,8 @@ serve(async (req) => {
           throw new Error(`Analysis failed: ${analyzeResponse.error.message}`);
         }
 
-        const { category, keywords, tone, length } = analyzeResponse.data;
-        console.log('Analysis result:', { category, keywords, tone, length });
+        const { category, keywords, tone, length, search_intent, content_format } = analyzeResponse.data;
+        console.log('Analysis result:', { category, keywords, tone, length, search_intent, content_format });
 
         // Step 2: Generate content
         console.log('Step 2: Generating content...');
@@ -125,7 +125,9 @@ serve(async (req) => {
             keywords: keywords.join(', '),
             category,
             tone,
-            length
+            length,
+            search_intent: search_intent || 'informational',
+            content_format: content_format || 'guides'
           }
         });
 
@@ -256,7 +258,9 @@ serve(async (req) => {
             featured_image_alt: generatedContent.title_it,
             status: 'published',
             published_at: new Date().toISOString(),
-            author_id: item.created_by
+            author_id: item.created_by,
+            // Store FAQ items as JSON for schema markup (if column exists)
+            ...(generatedContent.faq_items?.length > 0 ? { faq_schema: JSON.stringify(generatedContent.faq_items) } : {})
           })
           .select()
           .single();
