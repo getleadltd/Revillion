@@ -13,13 +13,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { generateSlug, formatHTMLContent } from "@/lib/blog";
 import { generateTranslatedSlugs } from "@/lib/slugUtils";
-import { Loader2, Sparkles, Upload, ImagePlus } from "lucide-react";
+import { Loader2, Sparkles, Upload, ImagePlus, Eye } from "lucide-react";
 import { AIContentGeneratorDialog, type GeneratedContent } from "@/components/admin/AIContentGeneratorDialog";
 import { AIImageGeneratorDialog } from "@/components/admin/AIImageGeneratorDialog";
 import { AIContentImageProcessor } from "@/components/admin/AIContentImageProcessor";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 const schema = z.object({
   title_it: z.string().min(3, "Il titolo deve essere lungo almeno 3 caratteri"),
@@ -44,6 +46,7 @@ export default function BlogEditor() {
   const [regenerating, setRegenerating] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [showAIImageGenerator, setShowAIImageGenerator] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [originalData, setOriginalData] = useState<any>(null);
   const [shouldRetranslate, setShouldRetranslate] = useState(false);
   const [sourceLanguage, setSourceLanguage] = useState<string>('it');
@@ -624,13 +627,25 @@ export default function BlogEditor() {
                 name="content_it"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contenuto (IT)</FormLabel>
+                    <div className="flex items-center justify-between mb-1">
+                      <FormLabel className="mb-0">Contenuto (IT)</FormLabel>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5 h-7 text-xs"
+                        onClick={() => setShowPreview(true)}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        Anteprima
+                      </Button>
+                    </div>
                     <div className="space-y-3">
                       <FormControl>
-                        <Textarea 
-                          placeholder="Inserisci il contenuto dell'articolo (HTML o testo semplice). Usa [AI-IMAGE: descrizione] per inserire immagini AI." 
-                          className="min-h-[300px]"
-                          {...field} 
+                        <RichTextEditor
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Inserisci il contenuto dell'articolo. Usa [AI-IMAGE: descrizione] per inserire immagini AI."
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground p-2 bg-muted rounded">
@@ -686,6 +701,40 @@ export default function BlogEditor() {
             articleTitle={form.watch("title_it")}
             articleCategory={form.watch("category")}
           />
+
+          {/* Post Preview Sheet */}
+          <Sheet open={showPreview} onOpenChange={setShowPreview}>
+            <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+              <SheetHeader className="mb-6">
+                <SheetTitle>Anteprima Articolo</SheetTitle>
+              </SheetHeader>
+              <article className="space-y-4">
+                {form.watch("featured_image_url") && (
+                  <img
+                    src={form.watch("featured_image_url")}
+                    alt={form.watch("featured_image_alt") || ""}
+                    className="w-full h-56 object-cover rounded-xl"
+                  />
+                )}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium capitalize">
+                    {form.watch("category")}
+                  </span>
+                  <span className="capitalize">{form.watch("status")}</span>
+                </div>
+                <h1 className="text-2xl font-bold leading-tight">{form.watch("title_it") || "Nessun titolo"}</h1>
+                {form.watch("meta_description_it") && (
+                  <p className="text-muted-foreground border-l-4 border-primary/30 pl-4 italic text-sm">
+                    {form.watch("meta_description_it")}
+                  </p>
+                )}
+                <div
+                  className="prose prose-sm dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: form.watch("content_it") || "<em>Nessun contenuto</em>" }}
+                />
+              </article>
+            </SheetContent>
+          </Sheet>
         </div>
       </AdminLayout>
       </>

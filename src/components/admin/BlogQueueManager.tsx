@@ -7,11 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Clock, CheckCircle2, XCircle, Loader2, Play } from "lucide-react";
+import { Plus, Trash2, Clock, CheckCircle2, XCircle, Loader2, Play, CalendarDays, ChevronLeft, ChevronRight, List } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/blog";
+import {
+  format, startOfMonth, endOfMonth, eachDayOfInterval, getDay,
+  isSameDay, isSameMonth, addMonths, subMonths, isToday,
+} from "date-fns";
+import { it } from "date-fns/locale";
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: 'bg-yellow-500',
+  processing: 'bg-blue-500',
+  completed: 'bg-green-500',
+  failed: 'bg-red-500',
+};
 
 export const BlogQueueManager = () => {
   const [titles, setTitles] = useState("");
@@ -19,6 +32,7 @@ export const BlogQueueManager = () => {
   const [specificDate, setSpecificDate] = useState("");
   const [startDate, setStartDate] = useState("");
   const [interval, setInterval] = useState("2");
+  const [calendarDate, setCalendarDate] = useState(new Date());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -307,81 +321,173 @@ export const BlogQueueManager = () => {
         </div>
       </Card>
 
-      {/* Queue List */}
-      <Card className="p-6">
+      {/* Queue: List + Calendar */}
+      <Tabs defaultValue="list">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">📊 Articoli in Coda</h2>
-          <Button
-            onClick={() => processNowMutation.mutate()}
-            disabled={processNowMutation.isPending || stats.pending === 0}
-            size="sm"
-          >
-            <Play className="mr-2 h-4 w-4" />
-            Elabora Ora
-          </Button>
+          <div className="flex items-center gap-3">
+            <TabsList>
+              <TabsTrigger value="list" className="gap-1.5"><List className="h-4 w-4" />Lista</TabsTrigger>
+              <TabsTrigger value="calendar" className="gap-1.5"><CalendarDays className="h-4 w-4" />Calendario</TabsTrigger>
+            </TabsList>
+            <Button
+              onClick={() => processNowMutation.mutate()}
+              disabled={processNowMutation.isPending || stats.pending === 0}
+              size="sm"
+            >
+              <Play className="mr-2 h-4 w-4" />
+              Elabora Ora
+            </Button>
+          </div>
         </div>
 
-        {isLoading ? (
-          <div className="text-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-          </div>
-        ) : queueItems && queueItems.length > 0 ? (
-          <div className="space-y-3">
-            {queueItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex-1 min-w-0 mr-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="outline" className={getStatusColor(item.status)}>
-                      <span className="flex items-center gap-1">
-                        {getStatusIcon(item.status)}
-                        {item.status}
-                      </span>
-                    </Badge>
-                    {item.retry_count > 0 && (
-                      <Badge variant="outline">Tentativi: {item.retry_count}</Badge>
-                    )}
-                  </div>
-                  <p className="font-medium truncate">{item.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Programmato: {formatDate(item.scheduled_for)}
-                  </p>
-                  {item.error_message && (
-                    <p className="text-sm text-red-500 mt-1">Errore: {item.error_message}</p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {item.status === 'failed' && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => retryItemMutation.mutate(item.id)}
-                      disabled={retryItemMutation.isPending}
-                    >
-                      <Play className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => deleteItemMutation.mutate(item.id)}
-                    disabled={deleteItemMutation.isPending || item.status === 'processing'}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
+        {/* LIST VIEW */}
+        <TabsContent value="list">
+          <Card className="p-6">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>Nessun articolo in coda</p>
-          </div>
-        )}
-      </Card>
+            ) : queueItems && queueItems.length > 0 ? (
+              <div className="space-y-3">
+                {queueItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0 mr-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline" className={getStatusColor(item.status)}>
+                          <span className="flex items-center gap-1">
+                            {getStatusIcon(item.status)}
+                            {item.status}
+                          </span>
+                        </Badge>
+                        {item.retry_count > 0 && (
+                          <Badge variant="outline">Tentativi: {item.retry_count}</Badge>
+                        )}
+                      </div>
+                      <p className="font-medium truncate">{item.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Programmato: {formatDate(item.scheduled_for)}
+                      </p>
+                      {item.error_message && (
+                        <p className="text-sm text-red-500 mt-1">Errore: {item.error_message}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {item.status === 'failed' && (
+                        <Button size="sm" variant="outline"
+                          onClick={() => retryItemMutation.mutate(item.id)}
+                          disabled={retryItemMutation.isPending}>
+                          <Play className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button size="sm" variant="ghost"
+                        onClick={() => deleteItemMutation.mutate(item.id)}
+                        disabled={deleteItemMutation.isPending || item.status === 'processing'}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>Nessun articolo in coda</p>
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+
+        {/* CALENDAR VIEW */}
+        <TabsContent value="calendar">
+          <Card className="p-6">
+            {/* Month navigation */}
+            <div className="flex items-center justify-between mb-4">
+              <Button variant="ghost" size="sm" onClick={() => setCalendarDate(d => subMonths(d, 1))}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <h3 className="font-semibold capitalize">
+                {format(calendarDate, 'MMMM yyyy', { locale: it })}
+              </h3>
+              <Button variant="ghost" size="sm" onClick={() => setCalendarDate(d => addMonths(d, 1))}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Legend */}
+            <div className="flex flex-wrap gap-3 mb-4 text-xs">
+              {Object.entries(STATUS_COLORS).map(([s, color]) => (
+                <div key={s} className="flex items-center gap-1.5">
+                  <div className={`w-2 h-2 rounded-full ${color}`} />
+                  <span className="capitalize text-muted-foreground">{s}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Day headers */}
+            <div className="grid grid-cols-7 mb-2">
+              {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map(d => (
+                <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">{d}</div>
+              ))}
+            </div>
+
+            {/* Calendar grid */}
+            {(() => {
+              const monthStart = startOfMonth(calendarDate);
+              const monthEnd = endOfMonth(calendarDate);
+              const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+              // Pad start: Monday=0 … Sunday=6
+              const startPad = (getDay(monthStart) + 6) % 7;
+              const cells = [...Array(startPad).fill(null), ...days];
+
+              return (
+                <div className="grid grid-cols-7 gap-1">
+                  {cells.map((day, idx) => {
+                    if (!day) return <div key={`pad-${idx}`} />;
+                    const dayItems = queueItems?.filter(item =>
+                      isSameDay(new Date(item.scheduled_for), day)
+                    ) || [];
+                    return (
+                      <div
+                        key={day.toISOString()}
+                        className={`min-h-[80px] rounded-lg border p-1.5 text-xs transition-colors ${
+                          isToday(day) ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/30'
+                        } ${!isSameMonth(day, calendarDate) ? 'opacity-40' : ''}`}
+                      >
+                        <span className={`font-medium ${isToday(day) ? 'text-primary' : 'text-muted-foreground'}`}>
+                          {format(day, 'd')}
+                        </span>
+                        <div className="mt-1 space-y-1">
+                          {dayItems.slice(0, 3).map(item => (
+                            <div
+                              key={item.id}
+                              title={item.title}
+                              className={`flex items-center gap-1 rounded px-1 py-0.5 truncate ${
+                                item.status === 'pending' ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400' :
+                                item.status === 'processing' ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400' :
+                                item.status === 'completed' ? 'bg-green-500/10 text-green-700 dark:text-green-400' :
+                                'bg-red-500/10 text-red-700 dark:text-red-400'
+                              }`}
+                            >
+                              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_COLORS[item.status]}`} />
+                              <span className="truncate">{item.title}</span>
+                            </div>
+                          ))}
+                          {dayItems.length > 3 && (
+                            <div className="text-muted-foreground pl-1">+{dayItems.length - 3} altri</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Info Box */}
       <Card className="p-6 bg-blue-500/5 border-blue-500/20">
