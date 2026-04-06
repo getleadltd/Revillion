@@ -328,14 +328,14 @@ const Calculator = () => {
                 <div className="space-y-7">
                   {/* Monthly visitors */}
                   <div>
-                    <div className="flex justify-between items-baseline mb-3">
-                      <label className="text-sm font-semibold text-gray-700">Monthly Visitors</label>
-                      <div className="flex items-center gap-1">
+                    <div className="flex justify-between items-baseline mb-3 gap-2">
+                      <label className="text-sm font-semibold text-gray-700 min-w-0 truncate">Monthly Visitors</label>
+                      <div className="flex items-center gap-1 shrink-0">
                         <input
                           type="number"
                           value={traffic}
                           onChange={e => setTraffic(Math.max(1000, Math.min(1000000, Number(e.target.value))))}
-                          className="w-28 text-right text-lg font-black text-gray-900 bg-transparent border-none outline-none focus:text-orange-600 transition-colors"
+                          className="w-20 sm:w-28 text-right text-lg font-black text-gray-900 bg-transparent border-none outline-none focus:text-orange-600 transition-colors"
                         />
                       </div>
                     </div>
@@ -382,18 +382,15 @@ const Calculator = () => {
                 </div>
 
                 {/* Funnel visual */}
-                <div className="flex items-center gap-2 mb-7 overflow-x-auto pb-1">
+                <div className="grid grid-cols-3 gap-2 mb-7">
                   {[
                     { label: 'Clicks', value: fmtNum(stats.clicks), color: 'bg-orange-100 text-orange-700 border-orange-200' },
                     { label: 'Registrations', value: fmtNum(stats.regs), color: 'bg-blue-100 text-blue-700 border-blue-200' },
                     { label: 'Depositors', value: fmtNum(stats.depositors), color: 'bg-green-100 text-green-700 border-green-200' },
-                  ].map((s, i, arr) => (
-                    <div key={s.label} className="flex items-center gap-2 shrink-0">
-                      <div className={`border rounded-xl px-4 py-2.5 text-center ${s.color}`}>
-                        <div className="text-xl font-black">{s.value}</div>
-                        <div className="text-xs font-semibold mt-0.5">{s.label}</div>
-                      </div>
-                      {i < arr.length - 1 && <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />}
+                  ].map((s) => (
+                    <div key={s.label} className={`border rounded-xl px-2 py-2.5 text-center ${s.color}`}>
+                      <div className="text-lg sm:text-xl font-black">{s.value}</div>
+                      <div className="text-xs font-semibold mt-0.5 leading-tight">{s.label}</div>
                     </div>
                   ))}
                 </div>
@@ -448,12 +445,12 @@ const Calculator = () => {
                 </div>
 
                 {/* Model tabs */}
-                <div className="flex gap-2 mb-7 p-1 bg-gray-100 rounded-xl">
+                <div className="flex gap-1 mb-7 p-1 bg-gray-100 rounded-xl">
                   {(['CPA', 'RevShare', 'Hybrid'] as CommissionType[]).map((type) => (
                     <button
                       key={type}
                       onClick={() => setCommType(type)}
-                      className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 ${
+                      className={`flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 ${
                         commType === type
                           ? 'bg-white text-gray-900 shadow-sm'
                           : 'text-gray-500 hover:text-gray-700'

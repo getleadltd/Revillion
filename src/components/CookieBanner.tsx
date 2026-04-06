@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Cookie, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { getConsentStatus, updateConsent } from '@/lib/consentMode';
 
 export const CookieBanner = () => {
@@ -10,81 +8,65 @@ export const CookieBanner = () => {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    // Show banner only if user hasn't made a choice yet
     const consentStatus = getConsentStatus();
     if (consentStatus === null) {
-      // Small delay for better UX
-      setTimeout(() => setIsVisible(true), 1000);
+      setTimeout(() => setIsVisible(true), 1200);
     }
   }, []);
 
   const handleAccept = () => {
     updateConsent(true);
-    closeBanner();
+    dismiss();
   };
 
   const handleReject = () => {
     updateConsent(false);
-    closeBanner();
+    dismiss();
   };
 
-  const closeBanner = () => {
-    // Treat closing without explicit choice as rejection (GDPR compliant)
-    updateConsent(false);
+  const dismiss = () => {
     setIsClosing(true);
-    setTimeout(() => setIsVisible(false), 300);
+    setTimeout(() => setIsVisible(false), 350);
   };
 
   if (!isVisible) return null;
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 p-4 transition-all duration-300 ${
-        isClosing ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+      className={`fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 sm:px-6 sm:pb-6 transition-all duration-350 ease-in-out ${
+        isClosing ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
-      <div className="mx-auto max-w-6xl">
-        <div className="relative rounded-lg border border-border bg-card p-6 shadow-2xl backdrop-blur-sm">
-          <button
-            onClick={closeBanner}
-            className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      <div className="mx-auto max-w-4xl">
+        <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 bg-[#141414] border border-white/10 rounded-2xl px-5 py-4 sm:px-6 sm:py-4 shadow-[0_0_60px_rgba(0,0,0,0.6)]">
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-4 pr-8">
-              <div className="hidden sm:flex items-start">
-                <Cookie className="h-8 w-8 text-primary" />
-              </div>
-              
-              <div className="flex-1 space-y-1">
-                <h3 className="font-semibold text-lg text-foreground">
-                  {t('cookieBanner.title')}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t('cookieBanner.description')}
-                </p>
-              </div>
+          {/* Left: icon + text */}
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-orange-500/15 border border-orange-500/25 flex items-center justify-center shrink-0 mt-0.5">
+              <span className="text-sm">🍪</span>
             </div>
+            <div className="min-w-0">
+              <p className="text-white font-semibold text-sm">{t('cookieBanner.title')}</p>
+              <p className="text-gray-400 text-xs leading-relaxed mt-0.5 line-clamp-2">
+                {t('cookieBanner.description')}
+              </p>
+            </div>
+          </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2 shrink-0">
-              <Button
-                variant="ghost"
-                onClick={handleReject}
-                className="w-full sm:w-auto"
-              >
-                {t('cookieBanner.rejectAll')}
-              </Button>
-              
-              <Button
-                onClick={handleAccept}
-                className="w-full sm:w-auto"
-              >
-                {t('cookieBanner.acceptAll')}
-              </Button>
-            </div>
+          {/* Right: buttons */}
+          <div className="flex items-center gap-2 shrink-0 sm:ml-auto">
+            <button
+              onClick={handleReject}
+              className="px-4 py-2 rounded-full text-xs font-semibold text-gray-400 hover:text-white border border-white/10 hover:border-white/20 transition-all duration-200"
+            >
+              {t('cookieBanner.rejectAll')}
+            </button>
+            <button
+              onClick={handleAccept}
+              className="px-5 py-2 rounded-full text-xs font-bold bg-orange-500 hover:bg-orange-400 text-white transition-all duration-200 shadow-lg shadow-orange-500/20"
+            >
+              {t('cookieBanner.acceptAll')}
+            </button>
           </div>
         </div>
       </div>
