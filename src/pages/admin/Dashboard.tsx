@@ -14,26 +14,27 @@ import { Badge } from '@/components/ui/badge';
 export default function Dashboard() {
   const { lang = 'en' } = useParams();
 
-  const { data: allPosts } = useBlogPostsAdmin({
+  const { data: allData } = useBlogPostsAdmin({
     lang,
     statusFilter: 'all',
     page: 1,
     limit: 100,
   });
 
-  const { data: publishedPosts } = useBlogPostsAdmin({
+  const { data: publishedData } = useBlogPostsAdmin({
     lang,
     statusFilter: 'published',
     page: 1,
     limit: 5,
   });
 
-  const totalPosts = allPosts?.length || 0;
-  const publishedCount = allPosts?.filter((p) => p.status === 'published').length || 0;
-  const draftCount = allPosts?.filter((p) => p.status === 'draft').length || 0;
-  const totalViews = allPosts?.reduce((sum, p) => sum + (p.views || 0), 0) || 0;
+  const allPosts = allData?.posts ?? [];
+  const totalPosts = allData?.total || 0;
+  const publishedCount = allPosts.filter((p) => p.status === 'published').length;
+  const draftCount = allPosts.filter((p) => p.status === 'draft').length;
+  const totalViews = allPosts.reduce((sum, p) => sum + (p.views || 0), 0);
 
-  const latestPosts = publishedPosts?.slice(0, 5) || [];
+  const latestPosts = publishedData?.posts?.slice(0, 5) ?? [];
 
   return (
     <>
