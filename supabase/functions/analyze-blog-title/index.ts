@@ -80,8 +80,9 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `Sei un esperto SEO e content strategist specializzato in iGaming, gambling online e affiliate marketing.
-Analizza il titolo e determina i parametri ottimali per generare un articolo che conquisti la posizione #1 su Google.`;
+    const systemPrompt = `Sei un esperto SEO e content strategist specializzato in affiliate marketing iGaming.
+Il sito è Revillion Partners, una rete di affiliazione casino. Il pubblico del blog sono AFFILIATI (publisher, marketer, SEO specialist) — NON giocatori.
+Analizza il titolo e determina i parametri ottimali per generare contenuto che attiri potenziali affiliati e li convinca a iscriversi alla rete.`;
 
     const userPrompt = `Analizza questo titolo di articolo: "${title}"
 

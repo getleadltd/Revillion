@@ -191,6 +191,33 @@ const TOPIC_VISUALS: Array<{ pattern: RegExp; subjects: string[] }> = [
       'Italian stylish hands at casino table, luxury aesthetic, warm Mediterranean lighting',
     ]
   },
+  // How to become affiliate / getting started
+  {
+    pattern: /come diventare|getting started|iniziare|primo passo|beginner|principiante|guida per|how to become/i,
+    subjects: [
+      'young professional confidently sitting at modern desk with laptop showing affiliate dashboard, clean home office, warm light',
+      'hand placing first domino in successful chain, business concept, dark minimalist background',
+      'open road leading to glowing horizon, career journey concept, cinematic wide angle',
+    ]
+  },
+  // Earning / Income / Revenue
+  {
+    pattern: /guadagn|earn|income|revenue|stipendio|entrate|soldi|money|profit|ricavo/i,
+    subjects: [
+      'upward trending revenue chart on laptop screen with affiliate earnings data, dark analytics environment, selective focus',
+      'smartphone displaying large commission payment notification, dark background, orange light glow on screen',
+      'person reviewing positive earnings report on tablet, home office setting, celebration mood',
+    ]
+  },
+  // Traffic sources / marketing channels
+  {
+    pattern: /traffico|traffic source|telegram|social media|youtube|tiktok|instagram|SEO|PPC|email marketing/i,
+    subjects: [
+      'multiple social media platform icons converging into single money stream, abstract digital visualization',
+      'smartphone with various app icons lit up, representing multi-channel marketing, dark background',
+      'content creator with ring light recording video, professional home studio setup, authentic affiliate lifestyle',
+    ]
+  },
 ];
 
 // ═══════════════════════════════════════════════════════

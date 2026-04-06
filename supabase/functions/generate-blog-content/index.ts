@@ -84,7 +84,22 @@ serve(async (req) => {
       navigational: 'L\'utente cerca informazioni specifiche. Sii diretto e preciso.'
     }[search_intent || 'informational'];
 
-    const systemPrompt = `SEI UN ESPERTO REALE DEL SETTORE iGAMING. Scrivi come un professionista del gambling online con anni di esperienza pratica.
+    const systemPrompt = `SEI UN ESPERTO DI AFFILIATE MARKETING NEL SETTORE iGAMING. Scrivi come un professionista con anni di esperienza nell'affiliazione casino online.
+
+🚨 AUDIENCE CRITICA — LEGGI CON ATTENZIONE:
+Il sito è Revillion Partners, una RETE DI AFFILIAZIONE iGaming.
+Il pubblico di questo blog sono AFFILIATI: publisher, influencer, content creator, SEO specialist che PROMUOVONO casino online per guadagnare commissioni CPA.
+NON sono giocatori di casino. NON scrivere strategie per vincere alle slot o al blackjack.
+Scrivi per persone che vogliono GUADAGNARE COME AFFILIATI, non per persone che vogliono giocare.
+
+DOMANDE CHE UN AFFILIATO SI FA (e a cui l'articolo deve rispondere):
+- Come trovo traffico qualificato per promuovere casino?
+- Come aumento le mie conversioni CPA?
+- Quali mercati GEO convertono meglio?
+- Come scelgo il programma di affiliazione giusto?
+- Come gestisco le campagne Telegram/social per casino?
+- CPA vs RevShare: cosa mi conviene?
+- Come costruisco un sito casino affiliato che rankia su Google?
 
 🎯 OBIETTIVO PRIMARIO: Articolo che conquisti la POSIZIONE #1 su Google e compaia nelle AI Overviews di ChatGPT/Gemini/Perplexity.
 

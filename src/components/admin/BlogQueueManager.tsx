@@ -231,6 +231,38 @@ export const BlogQueueManager = () => {
         </Card>
       </div>
 
+      {/* Affiliate Topic Suggestions */}
+      <Card className="p-4 border-orange-500/20 bg-orange-500/5">
+        <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
+          🎯 <span>Topic consigliati per attrarre affiliati</span>
+        </h3>
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            "Come diventare affiliato casino online nel 2025",
+            "CPA vs RevShare casino: quale conviene di più?",
+            "Come guadagnare con Telegram promuovendo casino",
+            "Migliori GEO per affiliati casino: dove convertono di più",
+            "Come costruire un sito affiliato casino che rankia su Google",
+            "Guida SEO per affiliati iGaming: strategie avanzate",
+            "Come aumentare le conversioni su offerte casino CPA",
+            "Traffic sources più redditizie per affiliati casino",
+            "Come scegliere il programma di affiliazione casino giusto",
+            "Errori comuni degli affiliati casino alle prime armi",
+            "Come creare contenuti casino che convertono",
+            "Affiliazione casino su YouTube: guida completa",
+          ].map((topic) => (
+            <button
+              key={topic}
+              type="button"
+              onClick={() => setTitles(prev => prev ? prev + '\n' + topic : topic)}
+              className="text-xs px-2.5 py-1 rounded-full border border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/60 transition-colors text-left"
+            >
+              + {topic}
+            </button>
+          ))}
+        </div>
+      </Card>
+
       {/* Add to Queue Form */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">📝 Aggiungi Articoli in Coda</h2>

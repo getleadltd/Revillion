@@ -71,7 +71,7 @@ export function AIContentGeneratorDialog({
     defaultValues: {
       topic: "",
       keywords: "",
-      category: "news",
+      category: "affiliate-tips",
       tone: "professional",
       length: "medium",
     },
@@ -168,15 +168,35 @@ export function AIContentGeneratorDialog({
                   <FormLabel>Argomento dell'articolo *</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Es: 'Migliori strategie per vincere al blackjack online' o 'Bonus casino senza deposito 2025'"
+                      placeholder="Es: 'Come diventare affiliato casino online nel 2025' o 'CPA vs RevShare: quale conviene di più?'"
                       className="min-h-[80px]"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Descrivi l'argomento dell'articolo che vuoi generare
+                  <FormDescription className="text-xs">
+                    🎯 <strong>Scrivi per affiliati</strong>, non per giocatori. Il blog attrae chi vuole guadagnare promuovendo casino.
                   </FormDescription>
                   <FormMessage />
+                  {/* Quick topic suggestions */}
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {[
+                      "Come diventare affiliato casino online",
+                      "CPA vs RevShare casino",
+                      "Guadagnare con Telegram e casino",
+                      "Migliori GEO per affiliati iGaming",
+                      "SEO per siti affiliati casino",
+                      "Come aumentare conversioni CPA",
+                    ].map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => field.onChange(t)}
+                        className="text-xs px-2 py-0.5 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
                 </FormItem>
               )}
             />
@@ -215,10 +235,11 @@ export function AIContentGeneratorDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="affiliate-tips">🎯 Consigli Affiliati</SelectItem>
+                        <SelectItem value="guides">📖 Guide</SelectItem>
+                        <SelectItem value="industry-updates">📰 Aggiornamenti Settore</SelectItem>
+                        <SelectItem value="casino-reviews">⭐ Recensioni Casino</SelectItem>
                         <SelectItem value="news">News</SelectItem>
-                        <SelectItem value="guides">Guide</SelectItem>
-                        <SelectItem value="reviews">Recensioni</SelectItem>
-                        <SelectItem value="tips">Consigli</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

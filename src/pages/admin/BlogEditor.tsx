@@ -56,7 +56,7 @@ export default function BlogEditor() {
     defaultValues: {
       title_it: "",
       content_it: "",
-      category: "news",
+      category: "affiliate-tips",
       status: "draft",
       slug: "",
       featured_image_url: "",
@@ -502,10 +502,11 @@ export default function BlogEditor() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="affiliate-tips">🎯 Consigli Affiliati</SelectItem>
+                        <SelectItem value="guides">📖 Guide</SelectItem>
+                        <SelectItem value="industry-updates">📰 Aggiornamenti Settore</SelectItem>
+                        <SelectItem value="casino-reviews">⭐ Recensioni Casino</SelectItem>
                         <SelectItem value="news">News</SelectItem>
-                        <SelectItem value="guides">Guide</SelectItem>
-                        <SelectItem value="reviews">Recensioni</SelectItem>
-                        <SelectItem value="tips">Suggerimenti</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
