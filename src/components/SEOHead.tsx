@@ -1,6 +1,43 @@
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://revillion-partners.com/#organization",
+  "name": "Revillion Partners",
+  "url": "https://revillion-partners.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://revillion-partners.com/og-image.png",
+    "width": 1200,
+    "height": 630
+  },
+  "description": "Revillion Partners is an elite iGaming affiliate network offering CPA commissions up to $220 per FTD, access to 16+ licensed casino brands, and coverage in 40+ global markets.",
+  "email": "info@revillion.com",
+  "sameAs": [],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "info@revillion.com",
+    "contactType": "customer support",
+    "availableLanguage": ["English", "German", "Italian", "Spanish", "Portuguese"],
+    "hoursAvailable": "Mo-Su 00:00-24:00"
+  }
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://revillion-partners.com/#website",
+  "url": "https://revillion-partners.com",
+  "name": "Revillion Partners",
+  "description": "iGaming Affiliate Network - Earn up to $220 CPA",
+  "publisher": {
+    "@id": "https://revillion-partners.com/#organization"
+  },
+  "inLanguage": ["en", "de", "it", "pt", "es"]
+};
+
 export const SEOHead = () => {
   const { i18n } = useTranslation();
   
@@ -67,6 +104,10 @@ export const SEOHead = () => {
       <link rel="alternate" hrefLang="pt" href="https://revillion-partners.com/pt" />
       <link rel="alternate" hrefLang="es" href="https://revillion-partners.com/es" />
       <link rel="alternate" hrefLang="x-default" href="https://revillion-partners.com/en" />
+
+      {/* Organization + WebSite structured data — helps AI engines identify the brand entity */}
+      <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
+      <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
     </Helmet>
   );
 };
