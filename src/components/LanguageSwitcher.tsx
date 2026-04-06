@@ -75,9 +75,9 @@ export const LanguageSwitcher = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-1.5 px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none">
-        <Globe size={18} className="text-gray-600" />
-        <span className="font-medium text-gray-800 text-sm md:text-base">{currentLang.flag} {currentLang.code.toUpperCase()}</span>
+      <DropdownMenuTrigger className="flex items-center gap-1.5 px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-white/10 transition-colors focus:outline-none">
+        <Globe size={18} className="text-gray-400" />
+        <span className="font-medium text-gray-300 text-sm md:text-base">{currentLang.flag} {currentLang.code.toUpperCase()}</span>
       </DropdownMenuTrigger>
       
       <DropdownMenuContent align="end" className="w-48">
