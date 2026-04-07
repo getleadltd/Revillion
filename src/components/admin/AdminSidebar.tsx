@@ -74,6 +74,11 @@ export function AdminSidebar() {
       icon: Mail,
       path: `/${lang}/admin/contact-messages`,
     },
+    {
+      title: 'Impostazioni',
+      icon: Settings,
+      path: `/${lang}/admin/settings`,
+    },
   ];
 
   return (
