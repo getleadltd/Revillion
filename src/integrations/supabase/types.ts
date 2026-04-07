@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_tasks: {
+        Row: {
+          agents: Json | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          input: Json | null
+          score: number | null
+          status: string
+          summary: Json | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          agents?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          input?: Json | null
+          score?: number | null
+          status?: string
+          summary?: Json | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          agents?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          input?: Json | null
+          score?: number | null
+          status?: string
+          summary?: Json | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       blog_analytics: {
         Row: {
           created_at: string
@@ -309,6 +348,33 @@ export type Database = {
           scan_type?: string
           status?: string | null
           total_items_checked?: number | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          category: string
+          description: string
+          key: string
+          label: string
+          updated_at: string | null
+          value: string
+        }
+        Insert: {
+          category?: string
+          description?: string
+          key: string
+          label?: string
+          updated_at?: string | null
+          value?: string
+        }
+        Update: {
+          category?: string
+          description?: string
+          key?: string
+          label?: string
+          updated_at?: string | null
+          value?: string
         }
         Relationships: []
       }
