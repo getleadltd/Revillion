@@ -20,11 +20,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// ─── REPLACE THESE ────────────────────────────────────────────────────────────
-const META_PIXEL_ID = 'REPLACE_WITH_YOUR_PIXEL_ID';       // e.g. '1234567890123456'
-// Access token stored as Supabase secret (never hardcode here):
-// supabase secrets set META_CAPI_ACCESS_TOKEN=EAAxxxxxxxx...
-// ─────────────────────────────────────────────────────────────────────────────
+// Both secrets set via: supabase secrets set META_PIXEL_ID=xxx META_CAPI_ACCESS_TOKEN=EAAxxx
+const META_PIXEL_ID = Deno.env.get('META_PIXEL_ID') ?? '';
 
 /** SHA-256 hash a string (Meta requires hashed PII) */
 async function sha256(value: string): Promise<string> {

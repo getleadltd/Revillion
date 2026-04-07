@@ -92,7 +92,7 @@ export function AdminSidebar() {
           <div className="flex items-center gap-3">
             <img 
               src={logo} 
-              alt="Casino Blog" 
+              alt="Revillion Partners"
               className="h-10 w-auto object-contain"
             />
             <div>
