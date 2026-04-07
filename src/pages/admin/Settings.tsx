@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Save, BarChart3, Megaphone, Search, Eye, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Loader2, Save, BarChart3, Megaphone, Search, CheckCircle2, ExternalLink, Eye, EyeOff } from 'lucide-react';
 
 // ─── Field definitions (always shown, values loaded from DB) ─────────────────
 
@@ -19,6 +19,7 @@ interface FieldDef {
   description: string;
   placeholder: string;
   docUrl?: string;
+  secret?: boolean; // masked input (password type)
 }
 
 interface CategoryDef {
@@ -63,7 +64,7 @@ const CATEGORIES: CategoryDef[] = [
     key: 'meta_ads',
     label: 'Meta Ads',
     icon: <Megaphone className="w-4 h-4" />,
-    description: 'Facebook/Instagram Pixel per il conversion tracking',
+    description: 'Facebook/Instagram Pixel e Conversions API (CAPI) server-side',
     fields: [
       {
         key: 'meta_pixel_id',
@@ -71,6 +72,13 @@ const CATEGORIES: CategoryDef[] = [
         description: 'Pixel ID del tuo account Facebook Business. Solo numeri.',
         placeholder: '1234567890123456',
         docUrl: 'https://www.facebook.com/business/help/952192354843755',
+      },
+      {
+        key: 'meta_capi_access_token',
+        label: 'Meta CAPI Access Token',
+        description: 'Token di accesso per il Conversions API server-side. Generalo da Meta Business → Events Manager → il tuo Pixel → Impostazioni → Conversions API.',
+        placeholder: 'EAAxxxxxxxxxxxxxxxx...',
+        secret: true,
       },
     ],
   },
@@ -107,6 +115,7 @@ export default function Settings() {
   const [form, setForm] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
+  const [showSecret, setShowSecret] = useState<Record<string, boolean>>({});
 
   // Load values from DB (best-effort — show inputs even if table doesn't exist yet)
   useEffect(() => {
@@ -180,20 +189,6 @@ export default function Settings() {
             </Button>
           </div>
 
-          {/* CAPI notice */}
-          <div className="bg-orange-500/5 border border-orange-500/20 rounded-xl p-4 flex gap-3">
-            <Eye className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
-            <div className="text-sm">
-              <p className="font-semibold text-orange-400 mb-1">Meta CAPI Access Token</p>
-              <p className="text-muted-foreground">
-                Il token server-side CAPI è un segreto e non può essere salvato qui. Impostalo via Supabase CLI:{' '}
-                <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
-                  supabase secrets set META_CAPI_ACCESS_TOKEN=EAAxxxxx
-                </code>
-              </p>
-            </div>
-          </div>
-
           {/* Settings groups */}
           {CATEGORIES.map((cat) => (
             <Card key={cat.key}>
@@ -235,13 +230,25 @@ export default function Settings() {
                           </a>
                         )}
                       </div>
-                      <Input
-                        id={field.key}
-                        value={currentValue}
-                        onChange={(e) => handleChange(field.key, e.target.value)}
-                        placeholder={`es. ${field.placeholder}`}
-                        className="font-mono text-sm"
-                      />
+                      <div className="relative">
+                        <Input
+                          id={field.key}
+                          type={field.secret && !showSecret[field.key] ? 'password' : 'text'}
+                          value={currentValue}
+                          onChange={(e) => handleChange(field.key, e.target.value)}
+                          placeholder={`es. ${field.placeholder}`}
+                          className="font-mono text-sm pr-10"
+                        />
+                        {field.secret && (
+                          <button
+                            type="button"
+                            onClick={() => setShowSecret(prev => ({ ...prev, [field.key]: !prev[field.key] }))}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showSecret[field.key] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">{field.description}</p>
                     </div>
                   );
