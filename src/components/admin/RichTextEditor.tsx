@@ -76,7 +76,7 @@ export const RichTextEditor = ({ value, onChange, placeholder, className }: Rich
     if (!editor) return;
     const currentHTML = editor.getHTML();
     if (value !== currentHTML) {
-      editor.commands.setContent(value, false);
+      editor.commands.setContent(value, { emitUpdate: false });
     }
   }, [value, editor]);
 
