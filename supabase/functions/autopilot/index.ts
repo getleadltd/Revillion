@@ -152,6 +152,7 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
       meta_description_es: translations.es?.meta_description || null,
       slug_es: translations.es?.title ? slugify(translations.es.title) : null,
       category, status: 'draft', featured_image_url: featuredImageUrl,
+      featured_image_alt: gen.title_it || item.title,
       keywords: gen.keywords || [], faq_items: gen.faq_items || [],
       schema_type: gen.schema_type || 'Article', views: 0,
     };
