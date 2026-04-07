@@ -31,7 +31,7 @@ export function AdminSidebar() {
     page: 1,
     limit: 100,
   });
-  const draftCount = draftPosts?.length || 0;
+  const draftCount = draftPosts?.total || 0;
 
   // Fetch incoming articles count
   const { data: incomingCount } = useIncomingArticlesCount();
@@ -78,6 +78,7 @@ export function AdminSidebar() {
       title: 'Impostazioni',
       icon: Settings,
       path: `/${lang}/admin/settings`,
+      separator: true,
     },
   ];
 
@@ -156,31 +157,36 @@ export function AdminSidebar() {
                     </SidebarMenuItem>
                   </Collapsible>
                 ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink
-                        to={item.path}
-                        end
-                        className={({ isActive }) =>
-                          isActive
-                            ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary))]/90'
-                            : 'hover:bg-[hsl(var(--accent))]'
-                        }
-                      >
-                        <item.icon className="h-4 w-4" />
-                        {!isCollapsed && (
-                          <>
-                            <span>{item.title}</span>
-                            {item.badge !== undefined && item.badge > 0 && (
-                              <Badge variant="secondary" className="ml-auto">
-                                {item.badge}
-                              </Badge>
-                            )}
-                          </>
-                        )}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <div key={item.title}>
+                    {item.separator && (
+                      <div className="my-2 border-t border-[hsl(var(--border))]" />
+                    )}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to={item.path}
+                          end
+                          className={({ isActive }) =>
+                            isActive
+                              ? 'bg-orange-500 text-white hover:bg-orange-600'
+                              : 'hover:bg-[hsl(var(--accent))]'
+                          }
+                        >
+                          <item.icon className="h-4 w-4" />
+                          {!isCollapsed && (
+                            <>
+                              <span>{item.title}</span>
+                              {item.badge !== undefined && item.badge > 0 && (
+                                <Badge variant="secondary" className="ml-auto">
+                                  {item.badge}
+                                </Badge>
+                              )}
+                            </>
+                          )}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </div>
                 )
               )}
             </SidebarMenu>
@@ -191,7 +197,7 @@ export function AdminSidebar() {
       <SidebarFooter className="border-t border-[hsl(var(--border))] p-4">
         {!isCollapsed ? (
           <div className="text-xs text-[hsl(var(--muted-foreground))]">
-            <p>© 2024 Casino Blog</p>
+            <p>© 2026 Revillion Partners</p>
           </div>
         ) : null}
       </SidebarFooter>

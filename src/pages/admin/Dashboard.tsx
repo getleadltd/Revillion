@@ -2,11 +2,10 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
-import { SlugMigrationTool } from '@/components/admin/SlugMigrationTool';
 import { SEOStatusWidget } from '@/components/admin/SEOStatusWidget';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, CheckCircle, FileEdit, Eye, Plus, List } from 'lucide-react';
+import { FileText, CheckCircle, FileEdit, Eye, Plus, List, Inbox, BarChart3 } from 'lucide-react';
 import { useBlogPostsAdmin } from '@/hooks/useBlogPostsAdmin';
 import { formatDate } from '@/lib/blog';
 import { Badge } from '@/components/ui/badge';
@@ -79,31 +78,47 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Azioni Rapide</CardTitle>
-          </CardHeader>
-          <CardContent className="flex gap-4">
-            <Button asChild>
-              <Link to={`/${lang}/admin/blog/new`}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nuovo Articolo
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to={`/${lang}/admin/blog`}>
-                <List className="h-4 w-4 mr-2" />
-                Gestisci Articoli
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Button asChild className="bg-orange-500 hover:bg-orange-600 text-white justify-start h-auto py-3">
+            <Link to={`/${lang}/admin/blog/new`}>
+              <Plus className="h-4 w-4 mr-2 shrink-0" />
+              <div className="text-left">
+                <div className="font-semibold text-sm">Nuovo Articolo</div>
+                <div className="text-xs opacity-80">Crea manualmente</div>
+              </div>
+            </Link>
+          </Button>
+          <Button variant="outline" asChild className="justify-start h-auto py-3">
+            <Link to={`/${lang}/admin/blog`}>
+              <List className="h-4 w-4 mr-2 shrink-0" />
+              <div className="text-left">
+                <div className="font-semibold text-sm">Gestisci Articoli</div>
+                <div className="text-xs text-muted-foreground">Tutti i contenuti</div>
+              </div>
+            </Link>
+          </Button>
+          <Button variant="outline" asChild className="justify-start h-auto py-3">
+            <Link to={`/${lang}/admin/incoming`}>
+              <Inbox className="h-4 w-4 mr-2 shrink-0" />
+              <div className="text-left">
+                <div className="font-semibold text-sm">Articoli in Arrivo</div>
+                <div className="text-xs text-muted-foreground">Rivedi e approva</div>
+              </div>
+            </Link>
+          </Button>
+          <Button variant="outline" asChild className="justify-start h-auto py-3">
+            <Link to={`/${lang}/admin/analytics`}>
+              <BarChart3 className="h-4 w-4 mr-2 shrink-0" />
+              <div className="text-left">
+                <div className="font-semibold text-sm">Analytics</div>
+                <div className="text-xs text-muted-foreground">Performance articoli</div>
+              </div>
+            </Link>
+          </Button>
+        </div>
 
         {/* SEO Status Widget */}
         <SEOStatusWidget posts={allPosts || []} lang={lang} />
-
-        {/* Slug Migration Tool */}
-        <SlugMigrationTool />
 
         {/* Latest Published Posts */}
         <Card>
