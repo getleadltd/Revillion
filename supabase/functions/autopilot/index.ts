@@ -59,8 +59,24 @@ serve(async (req) => {
 
     const minScore = parseInt(await getSetting(sb, 'autopilot_min_score', '70'));
     const dailyLimit = parseInt(await getSetting(sb, 'autopilot_daily_limit', '2'));
+    const scheduleHours = await getSetting(sb, 'autopilot_schedule_hours', '9,15');
 
-    // ── 0b. Check daily limit ───────────────────────────────────────────────
+    // ── 0b. Check schedule hours (skip if cron fires outside allowed hours) ──
+    // Only enforce schedule when called without explicit "force" flag
+    const body = await req.json().catch(() => ({}));
+    const force = body?.force === true;
+    if (!force && scheduleHours) {
+      const allowedHours = scheduleHours.split(',').map((h: string) => parseInt(h.trim())).filter((h: number) => !isNaN(h));
+      const currentHour = new Date().getUTCHours();
+      if (allowedHours.length > 0 && !allowedHours.includes(currentHour)) {
+        log(null, `Outside schedule hours (${currentHour}h UTC, allowed: ${scheduleHours})`);
+        return new Response(JSON.stringify({ skipped: true, reason: 'outside_schedule', current_hour: currentHour, allowed: allowedHours }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // ── 0c. Check daily limit ───────────────────────────────────────────────
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
     const { count: todayCount } = await sb

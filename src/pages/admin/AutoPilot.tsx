@@ -72,19 +72,24 @@ export default function AutoPilot() {
   const [enabled, setEnabled] = useState(false);
   const [minScore, setMinScore] = useState(70);
   const [dailyLimit, setDailyLimit] = useState(2);
+  const [scheduleHours, setScheduleHours] = useState<number[]>([9, 15]);
   const [isRunning, setIsRunning] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   // ── Load settings ───────────────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('site_settings').select('key, value').in('key', ['autopilot_enabled', 'autopilot_min_score', 'autopilot_daily_limit']);
+      const { data } = await supabase.from('site_settings').select('key, value')
+        .in('key', ['autopilot_enabled', 'autopilot_min_score', 'autopilot_daily_limit', 'autopilot_schedule_hours']);
       if (data) {
         const map: Record<string, string> = {};
         data.forEach(r => { map[r.key] = r.value; });
         setEnabled(map.autopilot_enabled === 'true');
         if (map.autopilot_min_score) setMinScore(parseInt(map.autopilot_min_score));
         if (map.autopilot_daily_limit) setDailyLimit(parseInt(map.autopilot_daily_limit));
+        if (map.autopilot_schedule_hours) {
+          setScheduleHours(map.autopilot_schedule_hours.split(',').map(h => parseInt(h.trim())).filter(h => !isNaN(h)));
+        }
       }
       setSettingsLoaded(true);
     }
@@ -119,6 +124,15 @@ export default function AutoPilot() {
   const saveDailyLimit = async (val: number) => {
     setDailyLimit(val);
     await saveSetting('autopilot_daily_limit', String(val));
+  };
+
+  // ── Toggle schedule hour ────────────────────────────────────────────────────
+  const toggleHour = async (hour: number) => {
+    const next = scheduleHours.includes(hour)
+      ? scheduleHours.filter(h => h !== hour)
+      : [...scheduleHours, hour].sort((a, b) => a - b);
+    setScheduleHours(next);
+    await saveSetting('autopilot_schedule_hours', next.join(','));
   };
 
   // ── Live tasks feed ─────────────────────────────────────────────────────────
@@ -179,7 +193,7 @@ export default function AutoPilot() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ force: true }),
       });
 
       if (!res.ok) {
@@ -346,6 +360,37 @@ export default function AutoPilot() {
                   <span>10 / giorno</span>
                 </div>
               </div>
+            </div>
+
+            {/* Schedule hours */}
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium">Orari di pubblicazione (UTC)</label>
+                  <p className="text-xs text-muted-foreground">
+                    Seleziona le ore in cui gli agenti possono pubblicare · {scheduleHours.length === 0 ? 'Nessun orario — usa "Esegui ora"' : `Attivi: ${scheduleHours.map(h => `${h}:00`).join(', ')}`}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-12 gap-1">
+                {Array.from({ length: 24 }, (_, h) => (
+                  <button
+                    key={h}
+                    onClick={() => toggleHour(h)}
+                    className={`flex flex-col items-center py-2 px-1 rounded-lg text-xs font-medium transition-all duration-150 border ${
+                      scheduleHours.includes(h)
+                        ? 'bg-orange-500 border-orange-500 text-white shadow-[0_0_8px_rgba(249,115,22,0.4)]'
+                        : 'border-border text-muted-foreground hover:border-orange-500/50 hover:text-foreground'
+                    }`}
+                  >
+                    <span>{h}</span>
+                    <span className="text-[9px] opacity-60">h</span>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground/60">
+                Il cron gira ogni ora — pubblica solo nelle ore selezionate. "Esegui ora" ignora l'orario.
+              </p>
             </div>
           </div>
 
