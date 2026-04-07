@@ -62,12 +62,14 @@ const BlogAdmin = () => {
   const handleDeletePost = async (postId: string, postTitle: string) => {
     setDeletingPostId(postId);
     try {
+      // Clear FK reference in blog_queue before deleting
+      await supabase.from('blog_queue').update({ generated_post_id: null }).eq('generated_post_id', postId);
       const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['blog-posts-admin'] });
       toast({ title: 'Post eliminato', description: `"${postTitle}" eliminato.` });
-    } catch (error) {
-      toast({ title: 'Errore', description: 'Impossibile eliminare il post.', variant: 'destructive' });
+    } catch (error: any) {
+      toast({ title: 'Errore eliminazione', description: error?.message || 'Impossibile eliminare il post.', variant: 'destructive' });
     } finally {
       setDeletingPostId(null);
     }
