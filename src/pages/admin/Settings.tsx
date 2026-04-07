@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { AdminLayout } from '@/components/admin/AdminLayout';
-import { useSiteSettings, useUpdateSettings } from '@/hooks/useSiteSettings';
+import { useUpdateSettings } from '@/hooks/useSiteSettings';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,59 +11,124 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Save, BarChart3, Megaphone, Search, Eye, CheckCircle2, ExternalLink } from 'lucide-react';
 
-// ─── Category config ──────────────────────────────────────────────────────────
+// ─── Field definitions (always shown, values loaded from DB) ─────────────────
 
-const CATEGORIES: { key: string; label: string; icon: React.ReactNode; description: string }[] = [
+interface FieldDef {
+  key: string;
+  label: string;
+  description: string;
+  placeholder: string;
+  docUrl?: string;
+}
+
+interface CategoryDef {
+  key: string;
+  label: string;
+  icon: React.ReactNode;
+  description: string;
+  fields: FieldDef[];
+}
+
+const CATEGORIES: CategoryDef[] = [
   {
     key: 'analytics',
     label: 'Analytics',
     icon: <BarChart3 className="w-4 h-4" />,
     description: 'Google Analytics 4, Google Tag Manager, Hotjar',
+    fields: [
+      {
+        key: 'ga4_measurement_id',
+        label: 'GA4 Measurement ID',
+        description: 'Google Analytics 4 tracking ID. Se GTM è impostato, GA4 diretto viene ignorato.',
+        placeholder: 'G-FKENPNYCSP',
+        docUrl: 'https://support.google.com/analytics/answer/9539598',
+      },
+      {
+        key: 'gtm_container_id',
+        label: 'GTM Container ID',
+        description: 'Google Tag Manager. Se impostato, ha priorità su GA4 diretto.',
+        placeholder: 'GTM-XXXXXXX',
+        docUrl: 'https://support.google.com/tagmanager/answer/6103696',
+      },
+      {
+        key: 'hotjar_site_id',
+        label: 'Hotjar Site ID',
+        description: 'Heatmaps e session recordings. Solo numeri.',
+        placeholder: '3456789',
+        docUrl: 'https://help.hotjar.com/hc/en-us/articles/115009340207',
+      },
+    ],
   },
   {
     key: 'meta_ads',
     label: 'Meta Ads',
     icon: <Megaphone className="w-4 h-4" />,
-    description: 'Facebook/Instagram Pixel for conversion tracking',
+    description: 'Facebook/Instagram Pixel per il conversion tracking',
+    fields: [
+      {
+        key: 'meta_pixel_id',
+        label: 'Meta Pixel ID',
+        description: 'Pixel ID del tuo account Facebook Business. Solo numeri.',
+        placeholder: '1234567890123456',
+        docUrl: 'https://www.facebook.com/business/help/952192354843755',
+      },
+    ],
   },
   {
     key: 'seo',
     label: 'SEO Verification',
     icon: <Search className="w-4 h-4" />,
     description: 'Google Search Console, Bing Webmaster Tools',
+    fields: [
+      {
+        key: 'google_site_verification',
+        label: 'Google Search Console',
+        description: 'Codice di verifica del sito su Google Search Console.',
+        placeholder: 'abc123xyz...',
+        docUrl: 'https://search.google.com/search-console',
+      },
+      {
+        key: 'bing_site_verification',
+        label: 'Bing Webmaster Tools',
+        description: 'Codice di verifica del sito su Bing Webmaster Tools.',
+        placeholder: 'ABC123...',
+        docUrl: 'https://www.bing.com/webmasters',
+      },
+    ],
   },
 ];
-
-const CATEGORY_DOCS: Record<string, string> = {
-  ga4_measurement_id:       'https://support.google.com/analytics/answer/9539598',
-  gtm_container_id:         'https://support.google.com/tagmanager/answer/6103696',
-  meta_pixel_id:            'https://www.facebook.com/business/help/952192354843755',
-  hotjar_site_id:           'https://help.hotjar.com/hc/en-us/articles/115009340207',
-  google_site_verification: 'https://search.google.com/search-console',
-  bing_site_verification:   'https://www.bing.com/webmasters',
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Settings() {
-  const { data: settings, isLoading } = useSiteSettings();
   const updateSettings = useUpdateSettings();
   const { toast } = useToast();
 
-  // Local form state: key → value
   const [form, setForm] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
 
-  // Populate form when settings load
+  // Load values from DB (best-effort — show inputs even if table doesn't exist yet)
   useEffect(() => {
-    if (!settings) return;
-    const initial = Object.fromEntries(settings.map(s => [s.key, s.value]));
-    setForm(initial);
-    setDirty(false);
-  }, [settings]);
+    const load = async () => {
+      try {
+        const { data } = await supabase.from('site_settings').select('key, value');
+        if (data) {
+          const map: Record<string, string> = {};
+          data.forEach((row) => { map[row.key] = row.value; });
+          setForm(map);
+        }
+      } catch {
+        // Table may not exist yet — show empty inputs
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const handleChange = (key: string, value: string) => {
-    setForm(prev => ({ ...prev, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
     setDirty(true);
   };
 
@@ -70,17 +136,11 @@ export default function Settings() {
     try {
       await updateSettings.mutateAsync(form);
       setDirty(false);
-      toast({ title: '✅ Settings saved', description: 'Changes will take effect on next page load.' });
+      toast({ title: '✅ Impostazioni salvate', description: 'Le modifiche saranno attive al prossimo caricamento.' });
     } catch {
-      toast({ title: 'Error', description: 'Failed to save settings.', variant: 'destructive' });
+      toast({ title: 'Errore', description: 'Salvataggio fallito. Assicurati che la tabella site_settings esista in Supabase.', variant: 'destructive' });
     }
   };
-
-  // Group settings by category
-  const grouped = CATEGORIES.map(cat => ({
-    ...cat,
-    settings: (settings ?? []).filter(s => s.category === cat.key),
-  }));
 
   if (isLoading) {
     return (
@@ -101,9 +161,9 @@ export default function Settings() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Site Settings</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Impostazioni Sito</h1>
               <p className="text-muted-foreground mt-1">
-                Manage tracking codes and integrations — no code changes needed.
+                Gestisci tracking e integrazioni — nessuna modifica al codice necessaria.
               </p>
             </div>
             <Button
@@ -116,7 +176,7 @@ export default function Settings() {
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              {dirty ? 'Save changes' : 'Saved'}
+              {dirty ? 'Salva modifiche' : 'Salvato'}
             </Button>
           </div>
 
@@ -126,8 +186,7 @@ export default function Settings() {
             <div className="text-sm">
               <p className="font-semibold text-orange-400 mb-1">Meta CAPI Access Token</p>
               <p className="text-muted-foreground">
-                The CAPI server-side token is a secret and cannot be stored here for security reasons.
-                Set it via Supabase CLI:{' '}
+                Il token server-side CAPI è un segreto e non può essere salvato qui. Impostalo via Supabase CLI:{' '}
                 <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
                   supabase secrets set META_CAPI_ACCESS_TOKEN=EAAxxxxx
                 </code>
@@ -136,7 +195,7 @@ export default function Settings() {
           </div>
 
           {/* Settings groups */}
-          {grouped.map(cat => (
+          {CATEGORIES.map((cat) => (
             <Card key={cat.key}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -146,48 +205,44 @@ export default function Settings() {
                 <CardDescription>{cat.description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
-                {cat.settings.length === 0 && (
-                  <p className="text-sm text-muted-foreground">No settings in this category.</p>
-                )}
-                {cat.settings.map(setting => {
-                  const currentValue = form[setting.key] ?? '';
+                {cat.fields.map((field) => {
+                  const currentValue = form[field.key] ?? '';
                   const isFilled = currentValue.trim().length > 0;
-                  const docUrl = CATEGORY_DOCS[setting.key];
 
                   return (
-                    <div key={setting.key} className="space-y-2">
+                    <div key={field.key} className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label htmlFor={setting.key} className="font-semibold">
-                          {setting.label}
+                        <Label htmlFor={field.key} className="font-semibold">
+                          {field.label}
                         </Label>
                         {isFilled ? (
                           <Badge variant="outline" className="text-xs text-green-500 border-green-500/30 gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> Active
+                            <CheckCircle2 className="w-3 h-3" /> Attivo
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="text-xs text-gray-500">
-                            Not configured
+                            Non configurato
                           </Badge>
                         )}
-                        {docUrl && (
+                        {field.docUrl && (
                           <a
-                            href={docUrl}
+                            href={field.docUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="ml-auto text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                           >
-                            Where to find this <ExternalLink className="w-3 h-3" />
+                            Dove trovarlo <ExternalLink className="w-3 h-3" />
                           </a>
                         )}
                       </div>
                       <Input
-                        id={setting.key}
+                        id={field.key}
                         value={currentValue}
-                        onChange={e => handleChange(setting.key, e.target.value)}
-                        placeholder={`e.g. ${getPlaceholder(setting.key)}`}
+                        onChange={(e) => handleChange(field.key, e.target.value)}
+                        placeholder={`es. ${field.placeholder}`}
                         className="font-mono text-sm"
                       />
-                      <p className="text-xs text-muted-foreground">{setting.description}</p>
+                      <p className="text-xs text-muted-foreground">{field.description}</p>
                     </div>
                   );
                 })}
@@ -199,7 +254,7 @@ export default function Settings() {
           {dirty && (
             <div className="sticky bottom-4">
               <div className="bg-background border border-orange-500/30 rounded-xl p-4 flex items-center justify-between shadow-lg">
-                <p className="text-sm text-muted-foreground">You have unsaved changes.</p>
+                <p className="text-sm text-muted-foreground">Hai modifiche non salvate.</p>
                 <Button
                   onClick={handleSave}
                   disabled={updateSettings.isPending}
@@ -210,7 +265,7 @@ export default function Settings() {
                   ) : (
                     <Save className="w-4 h-4" />
                   )}
-                  Save changes
+                  Salva modifiche
                 </Button>
               </div>
             </div>
@@ -219,16 +274,4 @@ export default function Settings() {
       </AdminLayout>
     </>
   );
-}
-
-function getPlaceholder(key: string): string {
-  const map: Record<string, string> = {
-    ga4_measurement_id:       'G-FKENPNYCSP',
-    gtm_container_id:         'GTM-XXXXXXX',
-    meta_pixel_id:            '1234567890123456',
-    hotjar_site_id:           '3456789',
-    google_site_verification: 'abc123xyz...',
-    bing_site_verification:   'ABC123...',
-  };
-  return map[key] || '...';
 }
