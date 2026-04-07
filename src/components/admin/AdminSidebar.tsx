@@ -1,3 +1,4 @@
+import React from 'react';
 import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield, Mail, Inbox } from 'lucide-react';
 import { NavLink, useParams } from 'react-router-dom';
 import {
@@ -157,9 +158,9 @@ export function AdminSidebar() {
                     </SidebarMenuItem>
                   </Collapsible>
                 ) : (
-                  <div key={item.title}>
+                  <React.Fragment key={item.title}>
                     {item.separator && (
-                      <div className="my-2 border-t border-[hsl(var(--border))]" />
+                      <div className="my-2 mx-2 border-t border-[hsl(var(--border))]" />
                     )}
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
@@ -186,7 +187,7 @@ export function AdminSidebar() {
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                  </div>
+                  </React.Fragment>
                 )
               )}
             </SidebarMenu>
