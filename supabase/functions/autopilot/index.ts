@@ -5,6 +5,9 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// EdgeRuntime is a Supabase-specific global — declare for TypeScript
+declare const EdgeRuntime: { waitUntil: (promise: Promise<unknown>) => void } | undefined;
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -242,7 +245,13 @@ serve(async (req) => {
     await sb.from('blog_queue').update({ status: 'processing' }).eq('id', item.id);
 
     // ── Return immediately, process in background ─────────────────────────────
-    EdgeRuntime.waitUntil(runPipeline(sb, item, taskId, minScore));
+    const pipeline = runPipeline(sb, item, taskId, minScore);
+    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime?.waitUntil) {
+      EdgeRuntime.waitUntil(pipeline);
+    } else {
+      // Fallback: run synchronously (blocks response but still works)
+      await pipeline;
+    }
 
     return new Response(JSON.stringify({ started: true, task_id: taskId, title: item.title }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

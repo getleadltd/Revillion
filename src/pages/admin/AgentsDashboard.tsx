@@ -375,6 +375,21 @@ export default function AgentsDashboard() {
                             )}
                           </div>
                         )}
+                        {/* Error log for failed tasks */}
+                        {task.status === 'failed' && Array.isArray(task.agents) && (
+                          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 space-y-1">
+                            <p className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-2">Log errore</p>
+                            {task.agents.filter((e: any) => e.step).map((entry: any, i: number) => (
+                              <div key={i} className="flex items-start gap-2 text-xs">
+                                <span className="text-muted-foreground/50 shrink-0 font-mono">
+                                  {new Date(entry.ts).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                </span>
+                                <span className={entry.step === 'error' ? 'text-red-400 font-medium' : 'text-muted-foreground'}>{entry.msg}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                         {task.agents && Array.isArray(task.agents) && task.agents[0]?.id && (
                           <div>
                             <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Risultati per agente</p>
