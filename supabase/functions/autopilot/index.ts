@@ -49,9 +49,13 @@ serve(async (req) => {
   const sb = supabaseAdmin();
 
   try {
-    // ── 0. Check autopilot enabled ──────────────────────────────────────────
+    // Read body first so force flag can bypass guards
+    const body = await req.json().catch(() => ({}));
+    const force = body?.force === true;
+
+    // ── 0. Check autopilot enabled (bypassed by force) ──────────────────────
     const enabled = await getSetting(sb, 'autopilot_enabled', 'false');
-    if (enabled !== 'true') {
+    if (!force && enabled !== 'true') {
       return new Response(JSON.stringify({ skipped: true, reason: 'autopilot_disabled' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -61,10 +65,7 @@ serve(async (req) => {
     const dailyLimit = parseInt(await getSetting(sb, 'autopilot_daily_limit', '2'));
     const scheduleHours = await getSetting(sb, 'autopilot_schedule_hours', '9,15');
 
-    // ── 0b. Check schedule hours (skip if cron fires outside allowed hours) ──
-    // Only enforce schedule when called without explicit "force" flag
-    const body = await req.json().catch(() => ({}));
-    const force = body?.force === true;
+    // ── 0b. Check schedule hours (bypassed by force) ────────────────────────
     if (!force && scheduleHours) {
       const allowedHours = scheduleHours.split(',').map((h: string) => parseInt(h.trim())).filter((h: number) => !isNaN(h));
       const currentHour = new Date().getUTCHours();
