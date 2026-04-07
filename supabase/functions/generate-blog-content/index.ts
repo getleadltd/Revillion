@@ -7,6 +7,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Extract content between XML-like delimiters — robust to HTML content
+function extract(text: string, tag: string): string {
+  const m = text.match(new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, 'i'));
+  return m ? m[1].trim() : '';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
@@ -59,11 +65,11 @@ serve(async (req) => {
     }[tone || 'professional'];
 
     const formatGuide = {
-      listicle: 'Lista numerata: ogni punto è un H2 con sottoparagrafi concreti.',
-      howto: 'Step-by-step con <ol> per i passi. Ogni step spiegato con dettagli pratici.',
-      review: 'Recensione strutturata: panoramica → funzionalità → pro/contro → verdetto in <blockquote>',
+      listicle: 'Lista numerata: ogni punto è un H2 con sottoparagrafi.',
+      howto: 'Step-by-step con <ol> per i passi. Ogni step con dettagli pratici.',
+      review: 'Recensione: panoramica → funzionalità → pro/contro → verdetto in <blockquote>',
       comparison: 'Confronto con tabella HTML nella prima metà.',
-      news: 'Notizia con lead paragraph → dettagli → implicazioni per affiliati'
+      news: 'Lead paragraph → dettagli → implicazioni per affiliati'
     }[content_format || 'howto'] || 'Struttura con H2 logici';
 
     const intentGuide = {
@@ -73,58 +79,49 @@ serve(async (req) => {
       navigational: 'Sii diretto, nessuna intro prolissa.'
     }[search_intent || 'informational'];
 
-    const systemPrompt = `SEI UN ESPERTO DI AFFILIATE MARKETING iGAMING con 8+ anni di esperienza.
-Scrivi per Revillion Partners (revillion-partners.com) — rete di affiliazione casino elite.
-
-AUDIENCE: AFFILIATI (publisher, SEO, influencer) che vogliono guadagnare CPA promuovendo casino. NON giocatori.
-
-COMPETITOR BAN: NON menzionare MAI Income Access, Bet365 Partners, GVC Affiliates, Kindred Affiliates, LeoVegas Partners, 888 Partners, Betsson Affiliates, William Hill Partners, Catena Media, Better Collective.
+    const prompt = `Sei un esperto di affiliate marketing iGaming. Scrivi un articolo SEO completo per affiliati su: "${topic}"
 
 PARAMETRI:
-- LUNGHEZZA: ~${targetWords} parole COMPLETE (non troncare mai)
-- TONO: ${toneGuide}
-- FORMATO: ${formatGuide}
-- INTENTO: ${intentGuide}
-- CATEGORIA: ${currentCategory}
-${keywords ? `- KEYWORDS: ${keywords}` : ''}
+- Lunghezza: ~${targetWords} parole COMPLETE (non troncare mai)
+- Tono: ${toneGuide}
+- Formato: ${formatGuide}
+- Intento: ${intentGuide}
+- Categoria: ${currentCategory}
+${keywords ? `- Keywords: ${keywords}` : ''}
 
-STILE UMANO:
-✅ Prima persona: "nella mia esperienza", "ho testato"
-✅ Dati concreti: cifre realistiche (es: "CPA medio £80-140 UK")
-✅ Opinioni schiette: "diciamoci la verità"
-❌ EVITA: "In questo articolo scoprirai...", "Nel mondo dell'affiliate marketing..."
+AUDIENCE: Affiliati (publisher, SEO, media buyer) che vogliono guadagnare CPA promuovendo casino online. NON giocatori.
+DIVIETO ASSOLUTO: non menzionare mai Income Access, Bet365 Partners, GVC Affiliates, Kindred Affiliates, LeoVegas Partners, 888 Partners, Betsson Affiliates, William Hill Partners, Catena Media, Better Collective.
 
-SEO:
-✅ Keyword principale: titolo + primo paragrafo + 1 H2
-✅ Primo paragrafo = definizione/risposta diretta (40-60 parole) per featured snippet
-✅ FAQ section: 4-6 coppie <h4>domanda?</h4><p>risposta 40-80 parole</p>
+STILE: Prima persona ("nella mia esperienza"), dati concreti (es. "CPA medio £80-140 UK"), opinioni schiette. EVITA frasi AI generiche.
 
-SILO LINKS (OBBLIGATORI):
-${pillarArticle ? `PILLAR: "${pillarArticle.title_it || pillarArticle.title_en}" → /blog/${pillarArticle.slug_it || pillarArticle.slug_en} (linka SEMPRE nella prima metà)` : 'Nessun pillar ancora (questo sarà il primo).'}
-CLUSTER (2-3 link):
-${clusterLinks.length > 0 ? clusterLinks.map((a: any) => `"${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : 'Nessuno disponibile.'}
-CROSS-CLUSTER (1-2 link):
-${crossCluster.length > 0 ? crossCluster.slice(0, 4).map((a: any) => `[${a.category}] "${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : 'Nessuno disponibile.'}
+SEO: Primo paragrafo = definizione/risposta diretta 40-60 parole (featured snippet). Keyword nel titolo + primo paragrafo + un H2.
+
+SILO LINKS (inserisci nell'articolo):
+${pillarArticle ? `PILLAR: "${pillarArticle.title_it || pillarArticle.title_en}" → <a href="/blog/${pillarArticle.slug_it || pillarArticle.slug_en}">anchor text</a> (metti nella prima metà)` : 'Nessun pillar ancora.'}
+${clusterLinks.length > 0 ? 'CLUSTER (2-3):\n' + clusterLinks.map((a: any) => `"${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : ''}
+${crossCluster.length > 0 ? 'CROSS-CLUSTER (1-2):\n' + crossCluster.slice(0, 3).map((a: any) => `[${a.category}] "${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : ''}
 
 CTA: Nella conclusione includi SEMPRE: <a href="https://dashboard.revillion.com/en/registration">iscriviti a Revillion Partners</a>
 
-HTML: usa <h2>, <h3>, <p>, <ul>/<ol>, <table>, <strong>. NO wrapper html/body/article.`;
+FAQ: Includi sezione "Domande Frequenti" con 4-6 coppie: <h4>domanda?</h4><p>risposta 40-80 parole</p>
 
-    const userPrompt = `Scrivi un articolo SEO completo per affiliati iGaming su: "${topic}"
+HTML: usa <h2>, <h3>, <p>, <ul>/<ol>, <table>, <strong>. NO html/body/article wrapper.
 
-CHECKLIST:
-□ ~${targetWords} parole — COMPLETO, non troncare mai
-□ Primo paragrafo = definizione 40-60 parole (featured snippet)
-□ Almeno una tabella HTML
-□ Link pillar + 2-3 cluster + 1-2 cross-cluster (se disponibili)
-□ CTA a Revillion Partners nella conclusione
-□ Sezione FAQ (4-6 coppie <h4>domanda?</h4><p>risposta</p>)
-□ Zero competitor menzionati
+---
 
-Titolo: keyword principale nelle prime 4 parole, max 62 caratteri.
+FORMATO RISPOSTA OBBLIGATORIO — usa esattamente questi delimitatori:
 
-IMPORTANTE: Rispondi SOLO con JSON valido, senza markdown, senza \`\`\`, senza spiegazioni. Solo il JSON puro:
-{"title_it":"...","content_it":"...","meta_description_it":"...","slug":"...","keywords":["..."],"faq_items":[{"question":"...?","answer":"..."}],"schema_type":"Article","estimated_word_count":0}`;
+[TITLE]titolo SEO max 62 caratteri[/TITLE]
+[SLUG]slug-url-max-55-caratteri[/SLUG]
+[META]meta description 148-158 caratteri con keyword + benefit + CTA[/META]
+[KEYWORDS]keyword1,keyword2,keyword3,keyword4,keyword5[/KEYWORDS]
+[SCHEMA]Article[/SCHEMA]
+[CONTENT]
+<contenuto HTML completo dell'articolo qui, ~${targetWords} parole>
+[/CONTENT]
+[FAQ_JSON][{"question":"domanda?","answer":"risposta"},{"question":"domanda2?","answer":"risposta2"}][/FAQ_JSON]
+
+Rispondi SOLO con i delimitatori sopra, nient'altro.`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -134,10 +131,7 @@ IMPORTANTE: Rispondi SOLO con JSON valido, senza markdown, senza \`\`\`, senza s
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-pro',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
+        messages: [{ role: 'user', content: prompt }],
         max_tokens: 8192,
       }),
     });
@@ -160,41 +154,45 @@ IMPORTANTE: Rispondi SOLO con JSON valido, senza markdown, senza \`\`\`, senza s
       throw new Error('Risposta AI vuota');
     }
 
-    // Strip markdown code fences, then extract JSON object
-    const clean = rawContent
-      .replace(/^```(?:json)?\s*/im, '')
-      .replace(/\s*```\s*$/im, '')
-      .trim();
+    // Extract fields using delimiters
+    const title_it   = extract(rawContent, 'TITLE');
+    const slug       = extract(rawContent, 'SLUG');
+    const meta       = extract(rawContent, 'META');
+    const kwRaw      = extract(rawContent, 'KEYWORDS');
+    const schema     = extract(rawContent, 'SCHEMA') || 'Article';
+    const content_it = extract(rawContent, 'CONTENT');
+    const faqRaw     = extract(rawContent, 'FAQ_JSON');
 
-    const jsonMatch = clean.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error('No JSON in response. Content (first 800):', rawContent.slice(0, 800));
-      throw new Error('Formato risposta AI non valido — JSON non trovato');
+    if (!title_it || !content_it) {
+      console.error('Missing fields. Raw (first 1000):', rawContent.slice(0, 1000));
+      throw new Error('Risposta AI non contiene [TITLE] o [CONTENT]');
     }
 
-    const gen = JSON.parse(jsonMatch[0]);
-    if (!gen.title_it || !gen.content_it) {
-      throw new Error('Risposta AI incompleta — title_it o content_it mancanti');
+    const kw = kwRaw ? kwRaw.split(',').map(k => k.trim()).filter(Boolean) : [];
+    let faq_items: any[] = [];
+    if (faqRaw) {
+      try { faq_items = JSON.parse(faqRaw); } catch { faq_items = []; }
     }
 
-    const internalLinks = (gen.content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []).length;
-    const externalRevillion = (gen.content_it.match(/revillion/gi) || []).length;
-    console.log(`✅ Silo links: ${internalLinks} internal, Revillion mentions: ${externalRevillion}`);
-    console.log(`✅ FAQ: ${gen.faq_items?.length || 0}, Schema: ${gen.schema_type}, Words: ${gen.estimated_word_count}`);
+    const wordCount = content_it.split(/\s+/).filter(Boolean).length;
+    const internalLinks = (content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []).length;
+    console.log(`✅ Words: ${wordCount}, Silo links: ${internalLinks}, FAQ: ${faq_items.length}, Schema: ${schema}`);
+
+    const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 55);
 
     return new Response(
       JSON.stringify({
         generated: {
-          title_it: gen.title_it,
-          content_it: gen.content_it,
-          meta_description_it: gen.meta_description_it,
-          slug: gen.slug,
+          title_it,
+          content_it,
+          meta_description_it: meta,
+          slug: slug || slugify(title_it),
           category: currentCategory,
-          keywords: gen.keywords,
-          faq_items: gen.faq_items || [],
-          schema_type: gen.schema_type || 'Article',
-          estimated_word_count: gen.estimated_word_count,
-          silo_links_used: gen.silo_links_used || null,
+          keywords: kw,
+          faq_items,
+          schema_type: schema,
+          estimated_word_count: wordCount,
+          silo_links_used: null,
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
