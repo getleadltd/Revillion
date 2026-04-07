@@ -187,6 +187,17 @@ export default function AgentsDashboard() {
   const scored = tasks?.filter(t => t.score != null) ?? [];
   const avgScore = scored.length ? Math.round(scored.reduce((sum, t) => sum + (t.score ?? 0), 0) / scored.length) : 0;
 
+  const handleResetFailed = async () => {
+    const { error } = await supabase
+      .from('blog_queue')
+      .update({ status: 'pending' })
+      .eq('status', 'failed');
+    if (!error) {
+      toast({ title: '♻️ Articoli ripristinati', description: 'Gli articoli falliti sono stati rimessi in coda.' });
+      queryClient.invalidateQueries({ queryKey: ['blog-queue-dashboard'] });
+    }
+  };
+
   const handleRunItem = async (itemId: string, title: string) => {
     setRunningItemId(itemId);
     try {
@@ -240,10 +251,16 @@ export default function AgentsDashboard() {
               </h1>
               <p className="text-muted-foreground mt-1">Monitora e controlla tutti i task degli agenti AI</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching} className="gap-2">
-              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
-              Aggiorna
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handleResetFailed} className="gap-2 text-orange-500 border-orange-500/30 hover:bg-orange-500/10">
+                <RefreshCw className="w-4 h-4" />
+                Riprova falliti
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching} className="gap-2">
+                <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+                Aggiorna
+              </Button>
+            </div>
           </div>
 
           {/* ── Live agent animation (shown when tasks are running) ─────────── */}

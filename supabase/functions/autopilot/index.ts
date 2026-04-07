@@ -41,51 +41,76 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
   try {
     // ── 3. Analyze title ──────────────────────────────────────────────────────
     await appendLog(sb, taskId, { step: 'analyze', msg: 'Analisi parametri articolo...' });
-    const analyzeRes = await sb.functions.invoke('analyze-blog-title', { body: { title: item.title } });
-    if (analyzeRes.error) {
-      const detail = JSON.stringify({ msg: analyzeRes.error.message, data: analyzeRes.data });
-      throw new Error(`Analyze failed: ${detail}`);
+    const analyzeHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/analyze-blog-title`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+      body: JSON.stringify({ title: item.title }),
+    });
+    if (!analyzeHttpRes.ok) {
+      const errText = await analyzeHttpRes.text();
+      throw new Error(`Analyze failed: HTTP ${analyzeHttpRes.status} — ${errText.slice(0, 300)}`);
     }
-    const { category, keywords, tone, length, search_intent, content_format } = analyzeRes.data;
+    const analyzeData = await analyzeHttpRes.json();
+    const { category, keywords, tone, length, search_intent, content_format } = analyzeData;
     await appendLog(sb, taskId, { step: 'analyze_done', category, keywords, msg: `Categoria: ${category}` });
 
     // ── 4. Generate IT content + image IN PARALLEL ────────────────────────────
     await appendLog(sb, taskId, { step: 'generate_start', msg: 'Generazione parallela: contenuto IT + immagine...' });
 
     const [contentRes, imageRes] = await Promise.allSettled([
-      sb.functions.invoke('generate-blog-content', {
-        body: { topic: item.title, keywords: keywords.join(', '), category, tone, length, search_intent, content_format },
+      fetch(`${SUPABASE_URL}/functions/v1/generate-blog-content`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+        body: JSON.stringify({ topic: item.title, keywords: keywords.join(', '), category, tone, length, search_intent, content_format }),
       }),
-      sb.functions.invoke('generate-blog-image', {
-        body: { autoPrompt: { title: item.title, category } },
+      fetch(`${SUPABASE_URL}/functions/v1/generate-blog-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+        body: JSON.stringify({ autoPrompt: { title: item.title, category } }),
       }),
     ]);
 
     if (contentRes.status === 'rejected') {
       throw new Error(`Content generation failed: ${(contentRes as PromiseRejectedResult).reason}`);
     }
-    if (contentRes.status === 'fulfilled' && contentRes.value?.error) {
-      throw new Error(`Content generation failed: ${contentRes.value.error.message}`);
+    const contentHttpRes = (contentRes as PromiseFulfilledResult<Response>).value;
+    if (!contentHttpRes.ok) {
+      const errText = await contentHttpRes.text();
+      throw new Error(`Content generation failed: HTTP ${contentHttpRes.status} — ${errText.slice(0, 300)}`);
     }
-    const gen = (contentRes as PromiseFulfilledResult<any>).value.data?.generated;
+    const genData = await contentHttpRes.json();
+    const gen = genData?.generated;
     if (!gen) throw new Error('No content generated');
 
     await appendLog(sb, taskId, { step: 'content_done', title: gen.title_it, words: gen.estimated_word_count, msg: `IT generato: "${gen.title_it}" (${gen.estimated_word_count} parole)` });
 
     // ── 5. Translate EN/DE/PT/ES ──────────────────────────────────────────────
     await appendLog(sb, taskId, { step: 'translate_start', msg: 'Traduzione in EN/DE/PT/ES...' });
-    const translateRes = await sb.functions.invoke('translate-blog-post', {
-      body: { title_it: gen.title_it, content_it: gen.content_it, meta_description_it: gen.meta_description_it },
+    const translateHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/translate-blog-post`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+      body: JSON.stringify({ title_it: gen.title_it, content_it: gen.content_it, meta_description_it: gen.meta_description_it }),
     });
-    if (translateRes.error) throw new Error(`Translation failed: ${translateRes.error.message}`);
-    const translations = translateRes.data?.translations ?? {};
+    if (!translateHttpRes.ok) {
+      const errText = await translateHttpRes.text();
+      throw new Error(`Translation failed: HTTP ${translateHttpRes.status} — ${errText.slice(0, 300)}`);
+    }
+    const transData = await translateHttpRes.json();
+    const translations = transData?.translations ?? {};
     await appendLog(sb, taskId, { step: 'translate_done', langs: Object.keys(translations), msg: `Tradotto in: ${Object.keys(translations).join(', ')}` });
 
     // ── Handle image ──────────────────────────────────────────────────────────
     let featuredImageUrl: string | null = null;
-    if (imageRes.status === 'fulfilled' && imageRes.value?.data?.imageBase64) {
+    let imageBase64: string | null = null;
+    if (imageRes.status === 'fulfilled' && (imageRes as PromiseFulfilledResult<Response>).value.ok) {
       try {
-        const dataUrl: string = imageRes.value.data.imageBase64;
+        const imgData = await (imageRes as PromiseFulfilledResult<Response>).value.json();
+        imageBase64 = imgData?.imageBase64 ?? null;
+      } catch { /* non-blocking */ }
+    }
+    if (imageBase64) {
+      try {
+        const dataUrl: string = imageBase64;
         const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
         if (match) {
           const mimeType = match[1];
@@ -141,8 +166,13 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
 
     // ── 7. Review swarm ───────────────────────────────────────────────────────
     await appendLog(sb, taskId, { step: 'review_start', msg: 'Avvio review swarm (7 agenti in parallelo)...' });
-    const reviewRes = await sb.functions.invoke('article-review-swarm', { body: { post_id: savedPost.id, lang: 'en' } });
-    const reviewScore = reviewRes.data?.score ?? 0;
+    const reviewHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/article-review-swarm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+      body: JSON.stringify({ post_id: savedPost.id, lang: 'en' }),
+    });
+    const reviewData = reviewHttpRes.ok ? await reviewHttpRes.json() : { score: 0 };
+    const reviewScore = reviewData?.score ?? 0;
     await appendLog(sb, taskId, { step: 'review_done', score: reviewScore, msg: `Review completata: score ${reviewScore}/100` });
 
     // ── 8. Auto publish ───────────────────────────────────────────────────────
