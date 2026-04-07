@@ -361,9 +361,26 @@ TITOLO: usa una delle formule provate, keyword principale nelle prime 4 parole.`
 
     const aiData = await aiResponse.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall || toolCall.function.name !== 'create_blog_post') throw new Error('Formato risposta AI non valido');
+    const rawContent = aiData.choices?.[0]?.message?.content ?? '';
 
-    const gen = JSON.parse(toolCall.function.arguments);
+    let gen: any;
+
+    if (toolCall && toolCall.function?.name === 'create_blog_post') {
+      // Happy path: model used function calling
+      gen = JSON.parse(toolCall.function.arguments);
+    } else {
+      // Fallback: model returned plain text/JSON — try to extract JSON
+      console.warn('No tool call returned. finish_reason:', aiData.choices?.[0]?.finish_reason, 'content length:', rawContent.length);
+      const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error('Raw AI response (first 500 chars):', rawContent.slice(0, 500));
+        throw new Error('Formato risposta AI non valido — nessun tool call né JSON trovato');
+      }
+      gen = JSON.parse(jsonMatch[0]);
+      if (!gen.title_it || !gen.content_it) {
+        throw new Error('Formato risposta AI non valido — campi obbligatori mancanti');
+      }
+    }
 
     // Validate
     const internalLinks = (gen.content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []).length;
