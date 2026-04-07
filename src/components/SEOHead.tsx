@@ -89,10 +89,16 @@ export const SEOHead = () => {
       <meta property="og:locale" content={localeMap[i18n.language as keyof typeof localeMap] || 'en_US'} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={`https://revillion-partners.com/${i18n.language}`} />
-      
-      {/* Twitter Dynamic Tags */}
+      <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:site_name" content="Revillion Partners" />
+
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={currentMeta.title} />
       <meta name="twitter:description" content={currentMeta.description} />
+      <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
       
       {/* Canonical */}
       <link rel="canonical" href={`https://revillion-partners.com/${i18n.language}`} />

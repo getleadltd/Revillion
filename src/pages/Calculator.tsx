@@ -49,10 +49,57 @@ const fmtNum = (n: number): string =>
     ? `${(n / 1_000).toFixed(1)}K`
     : `${Math.round(n)}`;
 
+// ─── SEO meta per lingua ─────────────────────────────────────────────────────
+
+const CALC_META: Record<string, { title: string; description: string }> = {
+  en: {
+    title: 'iGaming Affiliate Earnings Calculator | Revillion Partners',
+    description: 'Calculate your potential earnings as an iGaming affiliate. Estimate CPA, RevShare and Hybrid commissions based on your traffic source, CTR and conversion rates.',
+  },
+  it: {
+    title: 'Calcolatore Guadagni Affiliazione iGaming | Revillion Partners',
+    description: 'Calcola i tuoi guadagni potenziali come affiliato iGaming. Stima commissioni CPA, RevShare e Hybrid in base al tuo traffico, CTR e tassi di conversione.',
+  },
+  de: {
+    title: 'iGaming Affiliate Einnahmen Rechner | Revillion Partners',
+    description: 'Berechne deine potenziellen Einnahmen als iGaming-Affiliate. Schätze CPA-, RevShare- und Hybrid-Provisionen basierend auf Traffic, CTR und Konversionsraten.',
+  },
+  pt: {
+    title: 'Calculadora de Ganhos para Afiliados iGaming | Revillion Partners',
+    description: 'Calcule seus ganhos potenciais como afiliado iGaming. Estime comissões CPA, RevShare e Híbridas com base no seu tráfego e taxas de conversão.',
+  },
+  es: {
+    title: 'Calculadora de Ganancias para Afiliados iGaming | Revillion Partners',
+    description: 'Calcula tus ganancias potenciales como afiliado iGaming. Estima comisiones CPA, RevShare e Híbridas según tu tráfico, CTR y tasas de conversión.',
+  },
+};
+
+const calculatorSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'iGaming Affiliate Earnings Calculator',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  url: 'https://revillion-partners.com/en/calculator',
+  description: 'Free calculator to estimate affiliate commissions (CPA, RevShare, Hybrid) for iGaming traffic monetization.',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Revillion Partners',
+    url: 'https://revillion-partners.com',
+  },
+};
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const Calculator = () => {
   const { lang = 'en' } = useParams();
+  const m = CALC_META[lang] ?? CALC_META.en;
+  const canonicalUrl = `https://revillion-partners.com/${lang}/calculator`;
 
   // Traffic inputs
   const [traffic, setTraffic]     = useState(20000);
@@ -150,9 +197,9 @@ const Calculator = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Affiliate Commission Calculator | Revillion Partners</title>
-        <meta name="description" content="Calculate your potential iGaming affiliate earnings with Revillion Partners. Estimate CPA, RevShare, and Hybrid commissions across 16+ casino brands." />
-        <link rel="canonical" href={`https://revillion-partners.com/${lang}/calculator`} />
+        <title>{m.title}</title>
+        <meta name="description" content={m.description} />
+        <link rel="canonical" href={canonicalUrl} />
         <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en/calculator" />
         <link rel="alternate" hrefLang="de" href="https://revillion-partners.com/de/calculator" />
         <link rel="alternate" hrefLang="it" href="https://revillion-partners.com/it/calculator" />
@@ -162,18 +209,22 @@ const Calculator = () => {
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Affiliate Commission Calculator | Revillion Partners" />
-        <meta property="og:description" content="Calculate your potential iGaming affiliate earnings with Revillion Partners. Estimate CPA, RevShare, and Hybrid commissions across 16+ casino brands." />
-        <meta property="og:url" content={`https://revillion-partners.com/${lang}/calculator`} />
+        <meta property="og:title" content={m.title} />
+        <meta property="og:description" content={m.description} />
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
-        <meta property="og:site_name" content="Revillion" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Revillion Partners" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@revillion" />
-        <meta name="twitter:title" content="Affiliate Commission Calculator | Revillion Partners" />
-        <meta name="twitter:description" content="Calculate your potential iGaming affiliate earnings with Revillion Partners. Estimate CPA, RevShare, and Hybrid commissions." />
+        <meta name="twitter:title" content={m.title} />
+        <meta name="twitter:description" content={m.description} />
         <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
+
+        {/* SoftwareApplication schema */}
+        <script type="application/ld+json">{JSON.stringify(calculatorSchema)}</script>
       </Helmet>
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
