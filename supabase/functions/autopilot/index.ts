@@ -58,6 +58,24 @@ serve(async (req) => {
     }
 
     const minScore = parseInt(await getSetting(sb, 'autopilot_min_score', '70'));
+    const dailyLimit = parseInt(await getSetting(sb, 'autopilot_daily_limit', '2'));
+
+    // ── 0b. Check daily limit ───────────────────────────────────────────────
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const { count: todayCount } = await sb
+      .from('agent_tasks')
+      .select('*', { count: 'exact', head: true })
+      .eq('type', 'content_generation')
+      .eq('status', 'completed')
+      .gte('completed_at', startOfDay.toISOString());
+
+    if ((todayCount ?? 0) >= dailyLimit) {
+      log(null, `Daily limit reached: ${todayCount}/${dailyLimit}`);
+      return new Response(JSON.stringify({ skipped: true, reason: 'daily_limit_reached', today: todayCount, limit: dailyLimit }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // ── 1. Pick next queue item ─────────────────────────────────────────────
     const { data: items } = await sb

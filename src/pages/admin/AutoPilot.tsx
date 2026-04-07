@@ -71,18 +71,20 @@ export default function AutoPilot() {
 
   const [enabled, setEnabled] = useState(false);
   const [minScore, setMinScore] = useState(70);
+  const [dailyLimit, setDailyLimit] = useState(2);
   const [isRunning, setIsRunning] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   // ── Load settings ───────────────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('site_settings').select('key, value').in('key', ['autopilot_enabled', 'autopilot_min_score']);
+      const { data } = await supabase.from('site_settings').select('key, value').in('key', ['autopilot_enabled', 'autopilot_min_score', 'autopilot_daily_limit']);
       if (data) {
         const map: Record<string, string> = {};
         data.forEach(r => { map[r.key] = r.value; });
         setEnabled(map.autopilot_enabled === 'true');
         if (map.autopilot_min_score) setMinScore(parseInt(map.autopilot_min_score));
+        if (map.autopilot_daily_limit) setDailyLimit(parseInt(map.autopilot_daily_limit));
       }
       setSettingsLoaded(true);
     }
@@ -111,6 +113,12 @@ export default function AutoPilot() {
   const saveScore = async (val: number) => {
     setMinScore(val);
     await saveSetting('autopilot_min_score', String(val));
+  };
+
+  // ── Save daily limit ────────────────────────────────────────────────────────
+  const saveDailyLimit = async (val: number) => {
+    setDailyLimit(val);
+    await saveSetting('autopilot_daily_limit', String(val));
   };
 
   // ── Live tasks feed ─────────────────────────────────────────────────────────
@@ -288,32 +296,55 @@ export default function AutoPilot() {
               </button>
             </div>
 
-            {/* Score threshold */}
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium">
-                  Score minimo per pubblicazione
-                </label>
-                <span className={`text-lg font-bold ${
-                  minScore >= 80 ? 'text-green-400' :
-                  minScore >= 65 ? 'text-yellow-400' :
-                  minScore >= 50 ? 'text-orange-400' : 'text-red-400'
-                }`}>
-                  {minScore}/100
-                </span>
+            {/* Settings grid */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Score threshold */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">Score minimo pubblicazione</label>
+                  <span className={`text-lg font-bold ${
+                    minScore >= 80 ? 'text-green-400' :
+                    minScore >= 65 ? 'text-yellow-400' :
+                    minScore >= 50 ? 'text-orange-400' : 'text-red-400'
+                  }`}>{minScore}/100</span>
+                </div>
+                <Slider
+                  value={[minScore]}
+                  min={0}
+                  max={100}
+                  step={5}
+                  onValueChange={([v]) => setMinScore(v)}
+                  onValueCommit={([v]) => saveScore(v)}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Permissivo</span>
+                  <span>Solo ottimi articoli</span>
+                </div>
               </div>
-              <Slider
-                value={[minScore]}
-                min={0}
-                max={100}
-                step={5}
-                onValueChange={([v]) => setMinScore(v)}
-                onValueCommit={([v]) => saveScore(v)}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Permissivo</span>
-                <span>Solo ottimi articoli</span>
+
+              {/* Daily limit */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Articoli al giorno</label>
+                    <p className="text-xs text-muted-foreground">Best practice Google: max 2-3</p>
+                  </div>
+                  <span className="text-lg font-bold text-orange-400">{dailyLimit}</span>
+                </div>
+                <Slider
+                  value={[dailyLimit]}
+                  min={1}
+                  max={10}
+                  step={1}
+                  onValueChange={([v]) => setDailyLimit(v)}
+                  onValueCommit={([v]) => saveDailyLimit(v)}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>1 / giorno</span>
+                  <span>10 / giorno</span>
+                </div>
               </div>
             </div>
           </div>
@@ -322,7 +353,7 @@ export default function AutoPilot() {
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: 'In coda', value: queueData ?? '—', icon: <Clock className="w-5 h-5 text-blue-400" />, color: 'blue' },
-              { label: 'Pubblicati oggi', value: completedToday, icon: <FileText className="w-5 h-5 text-green-400" />, color: 'green' },
+              { label: 'Pubblicati oggi', value: `${completedToday}/${dailyLimit}`, icon: <FileText className="w-5 h-5 text-green-400" />, color: 'green' },
               { label: 'Score medio', value: avgScore ?? '—', icon: <TrendingUp className="w-5 h-5 text-orange-400" />, color: 'orange' },
             ].map(stat => (
               <Card key={stat.label} className="relative overflow-hidden">
