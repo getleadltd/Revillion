@@ -206,7 +206,13 @@ export default function AgentsDashboard() {
       if (json.error) {
         toast({ title: 'Errore', description: json.error, variant: 'destructive' });
       } else if (json.skipped) {
-        toast({ title: 'Saltato', description: json.reason });
+        if (json.reason === 'autopilot_disabled') {
+          toast({ title: 'Funzione da aggiornare', description: 'Rideploya "autopilot" su Lovable per abilitare il pulsante Esegui.', variant: 'destructive' });
+        } else if (json.reason === 'queue_empty') {
+          toast({ title: 'Coda vuota', description: 'Nessun articolo pending trovato.' });
+        } else {
+          toast({ title: 'Saltato', description: json.reason });
+        }
       } else {
         toast({ title: '🤖 Agenti avviati!', description: `Generazione di "${title}" in corso — segui qui sotto.` });
         queryClient.invalidateQueries({ queryKey: ['agent-tasks'] });
