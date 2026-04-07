@@ -58,8 +58,11 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
       }),
     ]);
 
-    if (contentRes.status === 'rejected' || contentRes.value?.error) {
-      throw new Error(`Content generation failed: ${contentRes.value?.error?.message ?? contentRes.reason}`);
+    if (contentRes.status === 'rejected') {
+      throw new Error(`Content generation failed: ${(contentRes as PromiseRejectedResult).reason}`);
+    }
+    if (contentRes.status === 'fulfilled' && contentRes.value?.error) {
+      throw new Error(`Content generation failed: ${contentRes.value.error.message}`);
     }
     const gen = contentRes.value.data?.generated;
     if (!gen) throw new Error('No content generated');
@@ -246,12 +249,8 @@ serve(async (req) => {
 
     // ── Return immediately, process in background ─────────────────────────────
     const pipeline = runPipeline(sb, item, taskId, minScore);
-    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime?.waitUntil) {
-      EdgeRuntime.waitUntil(pipeline);
-    } else {
-      // Fallback: run synchronously (blocks response but still works)
-      await pipeline;
-    }
+    const didSchedule = (globalThis as any).EdgeRuntime?.waitUntil?.(pipeline);
+    if (!didSchedule) await pipeline;
 
     return new Response(JSON.stringify({ started: true, task_id: taskId, title: item.title }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
