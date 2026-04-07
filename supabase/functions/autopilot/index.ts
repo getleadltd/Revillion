@@ -177,15 +177,32 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     const reviewScore = reviewData?.score ?? 0;
     const reviewIssues: string[] = reviewData?.summary?.top_issues ?? [];
     const reviewSuggestions: string[] = reviewData?.summary?.top_suggestions ?? [];
+    const reviewAgents: any[] = reviewData?.agents ?? [];
     await appendLog(sb, taskId, { step: 'review_done', score: reviewScore, msg: `Review completata: score ${reviewScore}/100 — ${reviewIssues.length} problemi da correggere` });
 
     // ── 8. Auto-fix based on review feedback ──────────────────────────────────
-    if (reviewIssues.length > 0 || reviewSuggestions.length > 0) {
-      await appendLog(sb, taskId, { step: 'fix_start', msg: `Auto-fix: applico ${reviewIssues.length} correzioni + ${reviewSuggestions.length} suggerimenti...` });
+    if (reviewIssues.length > 0 || reviewSuggestions.length > 0 || reviewAgents.length > 0) {
+      const totalFixes = reviewIssues.length + reviewSuggestions.length;
+      await appendLog(sb, taskId, { step: 'fix_start', msg: `Auto-fix: applico ${totalFixes} correzioni da ${reviewAgents.length} agenti...` });
       try {
         const { data: currentPost } = await sb.from('blog_posts').select('content_it, meta_description_it, title_it').eq('id', savedPost.id).single();
         if (currentPost) {
-          const fixPrompt = `Sei un esperto editor di contenuti SEO per affiliati iGaming. Correggi questo articolo basandoti sui problemi identificati.
+          // Build per-agent feedback section
+          const agentFeedbackSection = reviewAgents.length > 0
+            ? `\n\nANALISI DETTAGLIATA PER AGENTE:\n${reviewAgents.map((a: any) => {
+                const lines: string[] = [`### ${a.name} (Score: ${a.score}/100)`];
+                if (a.issues?.length) lines.push(`Problemi: ${a.issues.join(' | ')}`);
+                if (a.suggestions?.length) lines.push(`Suggerimenti: ${a.suggestions.join(' | ')}`);
+                // Include extra fields (e.g. reading_level, word_count, cta_count, etc.)
+                if (a.extra && Object.keys(a.extra).length > 0) {
+                  const extras = Object.entries(a.extra).map(([k, v]) => `${k}: ${v}`).join(', ');
+                  lines.push(`Dati extra: ${extras}`);
+                }
+                return lines.join('\n');
+              }).join('\n\n')}`
+            : '';
+
+          const fixPrompt = `Sei un esperto editor di contenuti SEO per affiliati iGaming. Correggi questo articolo basandoti sui problemi identificati da 7 agenti specializzati.
 
 ARTICOLO DA CORREGGERE:
 Titolo: ${currentPost.title_it}
@@ -193,20 +210,23 @@ Meta description: ${currentPost.meta_description_it}
 Contenuto (HTML):
 ${currentPost.content_it}
 
-PROBLEMI DA CORREGGERE (OBBLIGATORI):
+PROBLEMI PRIORITARI DA CORREGGERE (OBBLIGATORI):
 ${reviewIssues.map((i: string, n: number) => `${n + 1}. ${i}`).join('\n')}
 
 SUGGERIMENTI DA APPLICARE:
-${reviewSuggestions.map((s: string, n: number) => `${n + 1}. ${s}`).join('\n')}
+${reviewSuggestions.map((s: string, n: number) => `${n + 1}. ${s}`).join('\n')}${agentFeedbackSection}
 
 REGOLE GENERALI:
 - Mantieni la stessa struttura HTML e i link interni esistenti
 - Mantieni il link CTA a Revillion Partners: <a href="https://dashboard.revillion.com/en/registration">
 - NON menzionare competitor (Income Access, Bet365, ecc.)
 - Aggiungi definizione di iGaming al primo utilizzo se mancante
-- Spezza frasi lunghe in frasi più corte
-- Assicurati che l'articolo sia COMPLETO (conclusione + FAQ presenti)
+- Spezza frasi lunghe in frasi più corte (max 20 parole)
+- Assicurati che l'articolo sia COMPLETO (introduzione + corpo + conclusione + FAQ presenti)
 - Meta description: 148-158 caratteri, include keyword + benefit + CTA
+- Se il word count è basso, espandi le sezioni principali con dettagli pratici
+- Se mancano CTA, aggiungi almeno 2-3 call to action a Revillion Partners
+- Se la leggibilità è scarsa, usa più punti elenco e sottotitoli H3
 
 Rispondi SOLO con JSON valido (no markdown):
 {"content_it": "<contenuto HTML corretto e completo>", "meta_description_it": "<meta description corretta>"}`;
