@@ -38,6 +38,7 @@ const SEOMonitoring = lazy(() => import("./pages/admin/SEOMonitoring"));
 const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
 const IncomingArticles = lazy(() => import("./pages/admin/IncomingArticles"));
 const AdminSettings = lazy(() => import("./pages/admin/Settings"));
+const AgentsDashboard = lazy(() => import("./pages/admin/AgentsDashboard"));
 const Login = lazy(() => import("./pages/auth/Login"));
 
 // Minimal loading fallback
@@ -90,6 +91,7 @@ const AnimatedRoutes = () => {
             <Route path="/:lang/admin/contact-messages" element={<ProtectedRoute><ContactMessages /></ProtectedRoute>} />
             <Route path="/:lang/admin/incoming" element={<ProtectedRoute><IncomingArticles /></ProtectedRoute>} />
             <Route path="/:lang/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+            <Route path="/:lang/admin/agents" element={<ProtectedRoute><AgentsDashboard /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

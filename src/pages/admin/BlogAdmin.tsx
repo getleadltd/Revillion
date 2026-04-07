@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Loader2, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, Search, ChevronLeft, ChevronRight, Bot } from 'lucide-react';
 import { formatDate } from '@/lib/blog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -169,6 +169,27 @@ const BlogAdmin = () => {
                             <TableCell>{formatDate(post.published_at || post.created_at)}</TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  title="Review AI (7 agenti in parallelo)"
+                                  onClick={async () => {
+                                    const { toast } = await import('@/hooks/use-toast').then(m => m);
+                                    toast({ title: '🤖 Avvio review agenti...', description: 'I 7 agenti analizzeranno l\'articolo in parallelo.' });
+                                    try {
+                                      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/article-review-swarm`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+                                        body: JSON.stringify({ post_id: post.id, lang }),
+                                      });
+                                      toast({ title: '✅ Review avviata', description: 'Controlla la Dashboard Agenti per i risultati.' });
+                                    } catch {
+                                      toast({ title: 'Errore', description: 'Impossibile avviare la review.', variant: 'destructive' });
+                                    }
+                                  }}
+                                >
+                                  <Bot className="h-4 w-4 text-orange-500" />
+                                </Button>
                                 <Button variant="ghost" size="sm" asChild>
                                   <Link to={`/${lang}/admin/blog/edit/${post.id}`}>
                                     <Edit className="h-4 w-4" />
