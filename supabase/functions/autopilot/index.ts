@@ -85,21 +85,6 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
 
     await appendLog(sb, taskId, { step: 'content_done', title: gen.title_it, words: gen.estimated_word_count, msg: `IT generato: "${gen.title_it}" (${gen.estimated_word_count} parole)` });
 
-    // ── 5. Translate EN/DE/PT/ES ──────────────────────────────────────────────
-    await appendLog(sb, taskId, { step: 'translate_start', msg: 'Traduzione in EN/DE/PT/ES...' });
-    const translateHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/translate-blog-post`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
-      body: JSON.stringify({ title_it: gen.title_it, content_it: gen.content_it, meta_description_it: gen.meta_description_it }),
-    });
-    if (!translateHttpRes.ok) {
-      const errText = await translateHttpRes.text();
-      throw new Error(`Translation failed: HTTP ${translateHttpRes.status} — ${errText.slice(0, 300)}`);
-    }
-    const transData = await translateHttpRes.json();
-    const translations = transData?.translations ?? {};
-    await appendLog(sb, taskId, { step: 'translate_done', langs: Object.keys(translations), msg: `Tradotto in: ${Object.keys(translations).join(', ')}` });
-
     // ── Handle image ──────────────────────────────────────────────────────────
     let featuredImageUrl: string | null = null;
     let imageBase64: string | null = null;
@@ -131,27 +116,18 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     }
     await appendLog(sb, taskId, { step: 'image_done', url: featuredImageUrl, msg: featuredImageUrl ? 'Immagine caricata' : 'Immagine non disponibile' });
 
-    // ── 6. Save blog post ─────────────────────────────────────────────────────
-    await appendLog(sb, taskId, { step: 'save', msg: 'Salvataggio articolo nel database...' });
+    // ── 6. Save blog post (IT only — translations happen in background) ────────
+    await appendLog(sb, taskId, { step: 'save', msg: 'Salvataggio articolo nel database (IT)...' });
     const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const baseSlug = gen.slug || slugify(gen.title_it);
 
     const postData = {
       title_it: gen.title_it, content_it: gen.content_it, meta_description_it: gen.meta_description_it,
       slug: baseSlug, slug_it: baseSlug,
-      title_en: translations.en?.title || gen.title_it,
-      content_en: translations.en?.content || gen.content_it,
-      meta_description_en: translations.en?.meta_description || gen.meta_description_it,
-      slug_en: slugify(translations.en?.title || gen.title_it),
-      title_de: translations.de?.title || null, content_de: translations.de?.content || null,
-      meta_description_de: translations.de?.meta_description || null,
-      slug_de: translations.de?.title ? slugify(translations.de.title) : null,
-      title_pt: translations.pt?.title || null, content_pt: translations.pt?.content || null,
-      meta_description_pt: translations.pt?.meta_description || null,
-      slug_pt: translations.pt?.title ? slugify(translations.pt.title) : null,
-      title_es: translations.es?.title || null, content_es: translations.es?.content || null,
-      meta_description_es: translations.es?.meta_description || null,
-      slug_es: translations.es?.title ? slugify(translations.es.title) : null,
+      // EN fallback from IT (will be overwritten by async translation)
+      title_en: gen.title_it, content_en: gen.content_it,
+      meta_description_en: gen.meta_description_it,
+      slug_en: baseSlug,
       category, status: 'draft', featured_image_url: featuredImageUrl,
       featured_image_alt: gen.title_it || item.title,
       keywords: gen.keywords || [], faq_items: gen.faq_items || [],
@@ -160,18 +136,46 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
 
     const { data: savedPost, error: saveError } = await sb.from('blog_posts').insert(postData).select().single();
     if (saveError) throw new Error(`Save failed: ${saveError.message}`);
-    await appendLog(sb, taskId, { step: 'saved', post_id: savedPost.id, msg: `Articolo salvato (ID: ${savedPost.id})` });
+    await appendLog(sb, taskId, { step: 'saved', post_id: savedPost.id, msg: `Articolo salvato IT (ID: ${savedPost.id}) — traduzione avviata in background` });
 
     await sb.from('blog_queue').update({
       status: 'completed', generated_post_id: savedPost.id, processed_at: new Date().toISOString(),
     }).eq('id', item.id);
+
+    // ── 5b. Translate EN/DE/PT/ES in background (non-blocking) ────────────────
+    fetch(`${SUPABASE_URL}/functions/v1/translate-blog-post`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+      body: JSON.stringify({
+        post_id: savedPost.id,
+        title_it: gen.title_it, content_it: gen.content_it, meta_description_it: gen.meta_description_it,
+      }),
+    }).then(async (r) => {
+      if (r.ok) {
+        const transData = await r.json();
+        const translations = transData?.translations ?? {};
+        if (Object.keys(translations).length > 0) {
+          const update: Record<string, any> = {};
+          if (translations.en) { update.title_en = translations.en.title; update.content_en = translations.en.content; update.meta_description_en = translations.en.meta_description; update.slug_en = slugify(translations.en.title || gen.title_it); }
+          if (translations.de) { update.title_de = translations.de.title; update.content_de = translations.de.content; update.meta_description_de = translations.de.meta_description; update.slug_de = slugify(translations.de.title); }
+          if (translations.pt) { update.title_pt = translations.pt.title; update.content_pt = translations.pt.content; update.meta_description_pt = translations.pt.meta_description; update.slug_pt = slugify(translations.pt.title); }
+          if (translations.es) { update.title_es = translations.es.title; update.content_es = translations.es.content; update.meta_description_es = translations.es.meta_description; update.slug_es = slugify(translations.es.title); }
+          if (Object.keys(update).length > 0) {
+            await sb.from('blog_posts').update(update).eq('id', savedPost.id);
+            console.log(`[autopilot] Translations saved for post ${savedPost.id}: ${Object.keys(translations).join(', ')}`);
+          }
+        }
+      } else {
+        console.error(`[autopilot] Background translation failed: ${r.status}`);
+      }
+    }).catch((e) => console.error('[autopilot] Background translation error:', e));
 
     // ── 7. Review swarm ───────────────────────────────────────────────────────
     await appendLog(sb, taskId, { step: 'review_start', msg: 'Avvio review swarm (7 agenti in parallelo)...' });
     const reviewHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/article-review-swarm`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
-      body: JSON.stringify({ post_id: savedPost.id, lang: 'en' }),
+      body: JSON.stringify({ post_id: savedPost.id, lang: 'it' }),
     });
     const reviewData = reviewHttpRes.ok ? await reviewHttpRes.json() : { score: 0 };
     const reviewScore = reviewData?.score ?? 0;
@@ -185,7 +189,7 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
       const totalFixes = reviewIssues.length + reviewSuggestions.length;
       await appendLog(sb, taskId, { step: 'fix_start', msg: `Auto-fix: applico ${totalFixes} correzioni da ${reviewAgents.length} agenti...` });
       try {
-        const { data: currentPost } = await sb.from('blog_posts').select('content_it, meta_description_it, title_it').eq('id', savedPost.id).single();
+        const { data: currentPost } = await sb.from('blog_posts').select('content_it, content_en, meta_description_it, meta_description_en, title_it').eq('id', savedPost.id).single();
         if (currentPost) {
           // Build per-agent feedback section
           const agentFeedbackSection = reviewAgents.length > 0
@@ -280,7 +284,7 @@ Rispondi SOLO con JSON valido (no markdown):
 
     await sb.from('agent_tasks').update({
       status: 'completed',
-      summary: { post_id: savedPost.id, title: gen.title_it, score: reviewScore, published, languages: ['it', ...Object.keys(translations)], category, word_count: gen.estimated_word_count },
+      summary: { post_id: savedPost.id, title: gen.title_it, score: reviewScore, published, languages: ['it', 'en', 'de', 'pt', 'es'], category, word_count: gen.estimated_word_count },
       score: reviewScore,
       completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
