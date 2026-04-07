@@ -250,7 +250,7 @@ serve(async (req) => {
     // ── Return immediately, process in background ─────────────────────────────
     const pipeline = runPipeline(sb, item, taskId, minScore);
     const didSchedule = (globalThis as any).EdgeRuntime?.waitUntil?.(pipeline);
-    if (!didSchedule) await pipeline;
+    if (!didSchedule) await pipeline; // fallback: run sync if EdgeRuntime not available
 
     return new Response(JSON.stringify({ started: true, task_id: taskId, title: item.title }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
