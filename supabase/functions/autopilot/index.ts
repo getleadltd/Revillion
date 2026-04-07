@@ -42,7 +42,10 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     // ── 3. Analyze title ──────────────────────────────────────────────────────
     await appendLog(sb, taskId, { step: 'analyze', msg: 'Analisi parametri articolo...' });
     const analyzeRes = await sb.functions.invoke('analyze-blog-title', { body: { title: item.title } });
-    if (analyzeRes.error) throw new Error(`Analyze failed: ${analyzeRes.error.message}`);
+    if (analyzeRes.error) {
+      const detail = JSON.stringify({ msg: analyzeRes.error.message, data: analyzeRes.data });
+      throw new Error(`Analyze failed: ${detail}`);
+    }
     const { category, keywords, tone, length, search_intent, content_format } = analyzeRes.data;
     await appendLog(sb, taskId, { step: 'analyze_done', category, keywords, msg: `Categoria: ${category}` });
 
