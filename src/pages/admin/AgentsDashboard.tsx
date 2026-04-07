@@ -137,12 +137,14 @@ function LiveAgentPanel({ task }: { task: any }) {
 
       {/* Last log message */}
       {lastLog && (
-        <div className="flex items-center gap-2 bg-black/20 rounded-lg px-3 py-2">
-          <Zap className="w-3.5 h-3.5 text-orange-400 shrink-0 animate-pulse" />
-          <p className="text-xs text-orange-300 font-mono truncate">{lastLog.msg}</p>
-          <span className="text-[10px] text-muted-foreground/50 shrink-0 ml-auto">
-            {new Date(lastLog.ts).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-          </span>
+        <div className="flex items-start gap-2 bg-orange-500/10 border border-orange-500/20 rounded-lg px-3 py-2.5">
+          <Zap className="w-4 h-4 text-orange-400 shrink-0 animate-pulse mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-orange-300 font-medium leading-snug">{lastLog.msg}</p>
+            <span className="text-[10px] text-muted-foreground/60 mt-0.5 block">
+              {new Date(lastLog.ts).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
+          </div>
         </div>
       )}
     </div>
