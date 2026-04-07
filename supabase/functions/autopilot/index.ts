@@ -64,7 +64,7 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     if (contentRes.status === 'fulfilled' && contentRes.value?.error) {
       throw new Error(`Content generation failed: ${contentRes.value.error.message}`);
     }
-    const gen = contentRes.value.data?.generated;
+    const gen = (contentRes as PromiseFulfilledResult<any>).value.data?.generated;
     if (!gen) throw new Error('No content generated');
 
     await appendLog(sb, taskId, { step: 'content_done', title: gen.title_it, words: gen.estimated_word_count, msg: `IT generato: "${gen.title_it}" (${gen.estimated_word_count} parole)` });
