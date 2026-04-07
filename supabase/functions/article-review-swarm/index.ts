@@ -23,8 +23,7 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') ?? '';
-const GEMINI_MODEL = 'gemini-2.5-pro-preview-03-25';
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') ?? '';
 
 // ─── Agent definitions ────────────────────────────────────────────────────────
 
@@ -242,22 +241,28 @@ Respond ONLY with valid JSON:
   },
 ];
 
-// ─── Gemini call ──────────────────────────────────────────────────────────────
+// ─── AI call via Lovable gateway ─────────────────────────────────────────────
 
-async function callGemini(prompt: string): Promise<any> {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 1024 },
-      }),
-    }
-  );
+async function callAI(prompt: string): Promise<any> {
+  const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.5-flash',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.1,
+      max_tokens: 1024,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`AI call failed: ${res.status} — ${err.slice(0, 200)}`);
+  }
   const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
+  const text = data.choices?.[0]?.message?.content ?? '{}';
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   return jsonMatch ? JSON.parse(jsonMatch[0]) : {};
 }
@@ -299,7 +304,7 @@ serve(async (req) => {
       AGENTS.map(async (agent) => {
         const start = Date.now();
         try {
-          const result = await callGemini(agent.prompt(post, lang));
+          const result = await callAI(agent.prompt(post, lang));
           return { id: agent.id, name: agent.name, score: result.score ?? 0, result, duration_ms: Date.now() - start };
         } catch (e) {
           return { id: agent.id, name: agent.name, score: 0, error: String(e), duration_ms: Date.now() - start };
