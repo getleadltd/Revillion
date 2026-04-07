@@ -7,10 +7,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Extract content between XML-like delimiters — robust to HTML content
-function extract(text: string, tag: string): string {
-  const m = text.match(new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, 'i'));
-  return m ? m[1].trim() : '';
+const GATEWAY = 'https://ai.gateway.lovable.dev/v1/chat/completions';
+// Use flash for reliability — already works for review agents, faster, better instruction-following
+const MODEL = 'google/gemini-2.5-flash';
+
+async function callAI(apiKey: string, messages: any[], maxTokens = 4096): Promise<string> {
+  const res = await fetch(GATEWAY, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, messages, max_tokens: maxTokens }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`AI error ${res.status}: ${err.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content ?? '';
 }
 
 serve(async (req) => {
@@ -26,171 +38,112 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY non configurato');
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
+    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const currentCategory = category || 'affiliate-tips';
 
     const { data: clusterArticles } = await supabase
-      .from('blog_posts')
-      .select('slug_it, slug_en, title_it, title_en, category, views')
-      .eq('status', 'published')
-      .eq('category', currentCategory)
-      .order('views', { ascending: false })
-      .limit(15);
+      .from('blog_posts').select('slug_it, slug_en, title_it, title_en, category, views')
+      .eq('status', 'published').eq('category', currentCategory)
+      .order('views', { ascending: false }).limit(15);
 
     const { data: crossClusterArticles } = await supabase
-      .from('blog_posts')
-      .select('slug_it, slug_en, title_it, title_en, category, views')
-      .eq('status', 'published')
-      .neq('category', currentCategory)
-      .order('views', { ascending: false })
-      .limit(10);
+      .from('blog_posts').select('slug_it, slug_en, title_it, title_en, category, views')
+      .eq('status', 'published').neq('category', currentCategory)
+      .order('views', { ascending: false }).limit(10);
 
     const cluster = clusterArticles || [];
     const crossCluster = crossClusterArticles || [];
     const pillarArticle = cluster[0] || null;
     const clusterLinks = cluster.slice(1, 8);
 
-    console.log(`Silo: category=${currentCategory}, cluster=${cluster.length}, cross=${crossCluster.length}, pillar="${pillarArticle?.title_it || 'none'}"`);
-
     const wordCounts = { short: 650, medium: 1200, long: 2200 };
     const targetWords = wordCounts[length as keyof typeof wordCounts] || 1200;
+    const toneGuide = ({ professional: 'professionale e autorevole', casual: 'diretto e amichevole', technical: 'tecnico e preciso' } as any)[tone || 'professional'];
+    const formatGuide = ({ listicle: 'Lista numerata con H2 per ogni punto', howto: 'Step-by-step con <ol>', review: 'Recensione con <blockquote> per il verdetto', comparison: 'Confronto con tabella HTML', news: 'Lead paragraph + dettagli' } as any)[content_format || 'howto'] || 'Struttura con H2 logici';
+    const intentGuide = ({ informational: 'Definizione chiara + esempi pratici', transactional: 'Benefici concreti + passi immediati', commercial: 'Tabella comparativa + raccomandazione', navigational: 'Diretto, senza intro prolissa' } as any)[search_intent || 'informational'];
 
-    const toneGuide = {
-      professional: 'professionale e autorevole, usa terminologia tecnica del settore affiliate',
-      casual: 'diretto e amichevole come un collega esperto che condivide insider tips',
-      technical: 'tecnico e preciso, approfondisci numeri, percentuali, configurazioni specifiche'
-    }[tone || 'professional'];
+    const siloContext = [
+      pillarArticle ? `PILLAR: "${pillarArticle.title_it || pillarArticle.title_en}" → /blog/${pillarArticle.slug_it || pillarArticle.slug_en}` : '',
+      clusterLinks.length > 0 ? 'CLUSTER:\n' + clusterLinks.slice(0, 5).map((a: any) => `- "${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : '',
+      crossCluster.length > 0 ? 'CROSS-CLUSTER:\n' + crossCluster.slice(0, 3).map((a: any) => `- [${a.category}] "${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : '',
+    ].filter(Boolean).join('\n');
 
-    const formatGuide = {
-      listicle: 'Lista numerata: ogni punto è un H2 con sottoparagrafi.',
-      howto: 'Step-by-step con <ol> per i passi. Ogni step con dettagli pratici.',
-      review: 'Recensione: panoramica → funzionalità → pro/contro → verdetto in <blockquote>',
-      comparison: 'Confronto con tabella HTML nella prima metà.',
-      news: 'Lead paragraph → dettagli → implicazioni per affiliati'
-    }[content_format || 'howto'] || 'Struttura con H2 logici';
-
-    const intentGuide = {
-      informational: 'Inizia con definizione chiara, poi esempi pratici.',
-      transactional: 'Enfatizza benefici concreti, cifre reali, passi immediati.',
-      commercial: 'Includi tabella comparativa, pro/contro, raccomandazione chiara.',
-      navigational: 'Sii diretto, nessuna intro prolissa.'
-    }[search_intent || 'informational'];
-
-    const prompt = `Sei un esperto di affiliate marketing iGaming. Scrivi un articolo SEO completo per affiliati su: "${topic}"
+    // ── CALL 1: Generate article content (plain HTML, no format constraints) ──
+    console.log('Call 1: generating content...');
+    const contentPrompt = `Sei un esperto di affiliate marketing iGaming. Scrivi un articolo SEO per affiliati casino su: "${topic}"
 
 PARAMETRI:
-- Lunghezza: ~${targetWords} parole COMPLETE (non troncare mai)
+- ~${targetWords} parole COMPLETE (non troncare)
 - Tono: ${toneGuide}
 - Formato: ${formatGuide}
 - Intento: ${intentGuide}
 - Categoria: ${currentCategory}
-${keywords ? `- Keywords: ${keywords}` : ''}
+${keywords ? `- Keywords target: ${keywords}` : ''}
 
-AUDIENCE: Affiliati (publisher, SEO, media buyer) che vogliono guadagnare CPA promuovendo casino online. NON giocatori.
-DIVIETO ASSOLUTO: non menzionare mai Income Access, Bet365 Partners, GVC Affiliates, Kindred Affiliates, LeoVegas Partners, 888 Partners, Betsson Affiliates, William Hill Partners, Catena Media, Better Collective.
+AUDIENCE: Affiliati (publisher, SEO, media buyer) che promuovono casino per commissioni CPA. NON giocatori.
+VIETATO menzionare: Income Access, Bet365 Partners, GVC Affiliates, Kindred Affiliates, LeoVegas Partners, 888 Partners, Betsson Affiliates, William Hill Partners, Catena Media, Better Collective.
 
-STILE: Prima persona ("nella mia esperienza"), dati concreti (es. "CPA medio £80-140 UK"), opinioni schiette. EVITA frasi AI generiche.
+STILE: Prima persona ("nella mia esperienza"), dati concreti, opinioni schiette. No frasi AI generiche.
 
-SEO: Primo paragrafo = definizione/risposta diretta 40-60 parole (featured snippet). Keyword nel titolo + primo paragrafo + un H2.
+LINKS INTERNI DA INSERIRE:
+${siloContext || 'Nessun articolo pubblicato ancora — scrivi senza link interni.'}
+- Formato: <a href="/blog/slug">anchor text descrittivo</a>
+- Includi link al PILLAR nella prima metà (se disponibile)
+- 2-3 link cluster + 1-2 cross-cluster
 
-SILO LINKS (inserisci nell'articolo):
-${pillarArticle ? `PILLAR: "${pillarArticle.title_it || pillarArticle.title_en}" → <a href="/blog/${pillarArticle.slug_it || pillarArticle.slug_en}">anchor text</a> (metti nella prima metà)` : 'Nessun pillar ancora.'}
-${clusterLinks.length > 0 ? 'CLUSTER (2-3):\n' + clusterLinks.map((a: any) => `"${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : ''}
-${crossCluster.length > 0 ? 'CROSS-CLUSTER (1-2):\n' + crossCluster.slice(0, 3).map((a: any) => `[${a.category}] "${a.title_it || a.title_en}" → /blog/${a.slug_it || a.slug_en}`).join('\n') : ''}
+CTA: Nella conclusione SEMPRE: <a href="https://dashboard.revillion.com/en/registration">iscriviti a Revillion Partners</a>
 
-CTA: Nella conclusione includi SEMPRE: <a href="https://dashboard.revillion.com/en/registration">iscriviti a Revillion Partners</a>
+FAQ: Sezione "Domande Frequenti" con 4-6 coppie: <h4>Domanda?</h4><p>Risposta 40-80 parole</p>
 
-FAQ: Includi sezione "Domande Frequenti" con 4-6 coppie: <h4>domanda?</h4><p>risposta 40-80 parole</p>
+SEO: Primo paragrafo = definizione 40-60 parole (featured snippet).
 
-HTML: usa <h2>, <h3>, <p>, <ul>/<ol>, <table>, <strong>. NO html/body/article wrapper.
+HTML puro: <h2>, <h3>, <p>, <ul>/<ol>, <table>, <strong>. NO html/body/article wrapper. Inizia direttamente con il contenuto.`;
 
----
+    const contentRaw = await callAI(LOVABLE_API_KEY, [{ role: 'user', content: contentPrompt }], 8192);
+    console.log(`Content generated: ${contentRaw.length} chars`);
 
-FORMATO RISPOSTA OBBLIGATORIO — usa esattamente questi delimitatori:
-
-[TITLE]titolo SEO max 62 caratteri[/TITLE]
-[SLUG]slug-url-max-55-caratteri[/SLUG]
-[META]meta description 148-158 caratteri con keyword + benefit + CTA[/META]
-[KEYWORDS]keyword1,keyword2,keyword3,keyword4,keyword5[/KEYWORDS]
-[SCHEMA]Article[/SCHEMA]
-[CONTENT]
-<contenuto HTML completo dell'articolo qui, ~${targetWords} parole>
-[/CONTENT]
-[FAQ_JSON][{"question":"domanda?","answer":"risposta"},{"question":"domanda2?","answer":"risposta2"}][/FAQ_JSON]
-
-Rispondi SOLO con i delimitatori sopra, nient'altro.`;
-
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-pro',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 8192,
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      console.error('AI error:', aiResponse.status, errorText);
-      if (aiResponse.status === 429) return new Response(JSON.stringify({ error: 'Rate limit. Riprova tra qualche minuto.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      if (aiResponse.status === 402) return new Response(JSON.stringify({ error: 'Crediti AI esauriti.' }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      throw new Error(`AI API error: ${aiResponse.status}`);
+    if (!contentRaw || contentRaw.length < 500) {
+      throw new Error(`Contenuto generato troppo corto: ${contentRaw.length} caratteri`);
     }
 
-    const aiData = await aiResponse.json();
-    const rawContent = aiData.choices?.[0]?.message?.content ?? '';
-    const finishReason = aiData.choices?.[0]?.finish_reason ?? 'unknown';
-    console.log(`finish_reason: ${finishReason}, content_length: ${rawContent.length}`);
+    // Strip markdown code fences if model added them
+    const content_it = contentRaw.replace(/^```(?:html)?\s*/im, '').replace(/\s*```\s*$/im, '').trim();
 
-    if (!rawContent) {
-      console.error('Empty response. Full aiData:', JSON.stringify(aiData).slice(0, 800));
-      throw new Error('Risposta AI vuota');
-    }
+    // ── CALL 2: Generate metadata only (small JSON, no HTML) ──
+    console.log('Call 2: generating metadata...');
+    const metaPrompt = `Dato questo articolo su "${topic}" per affiliati iGaming, genera i metadati SEO.
 
-    // Extract fields using delimiters
-    const title_it   = extract(rawContent, 'TITLE');
-    const slug       = extract(rawContent, 'SLUG');
-    const meta       = extract(rawContent, 'META');
-    const kwRaw      = extract(rawContent, 'KEYWORDS');
-    const schema     = extract(rawContent, 'SCHEMA') || 'Article';
-    const content_it = extract(rawContent, 'CONTENT');
-    const faqRaw     = extract(rawContent, 'FAQ_JSON');
+Rispondi SOLO con questo JSON (niente altro, niente markdown):
+{"title":"TITOLO SEO max 62 caratteri con keyword principale","slug":"slug-url-max-50-caratteri","meta":"meta description 148-158 caratteri con keyword + benefit + CTA","keywords":["kw1","kw2","kw3","kw4","kw5"],"schema":"Article","faq":[{"q":"Domanda?","a":"Risposta 40-80 parole"},{"q":"Domanda2?","a":"Risposta2"}]}
 
-    if (!title_it || !content_it) {
-      console.error('Missing fields. Raw (first 1000):', rawContent.slice(0, 1000));
-      throw new Error('Risposta AI non contiene [TITLE] o [CONTENT]');
-    }
+Usa 4-6 FAQ rilevanti per il topic. Schema può essere: Article, HowTo, Review, FAQPage.`;
 
-    const kw = kwRaw ? kwRaw.split(',').map(k => k.trim()).filter(Boolean) : [];
-    let faq_items: any[] = [];
-    if (faqRaw) {
-      try { faq_items = JSON.parse(faqRaw); } catch { faq_items = []; }
-    }
+    const metaRaw = await callAI(LOVABLE_API_KEY, [{ role: 'user', content: metaPrompt }], 1024);
+    console.log(`Metadata generated: ${metaRaw.length} chars`);
 
-    const wordCount = content_it.split(/\s+/).filter(Boolean).length;
-    const internalLinks = (content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []).length;
-    console.log(`✅ Words: ${wordCount}, Silo links: ${internalLinks}, FAQ: ${faq_items.length}, Schema: ${schema}`);
+    // Parse metadata JSON
+    const metaClean = metaRaw.replace(/^```(?:json)?\s*/im, '').replace(/\s*```\s*$/im, '').trim();
+    const metaJsonMatch = metaClean.match(/\{[\s\S]*\}/);
+    if (!metaJsonMatch) throw new Error('Metadata JSON non trovato');
+    const meta = JSON.parse(metaJsonMatch[0]);
 
     const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 55);
+    const faq_items = (meta.faq || []).map((f: any) => ({ question: f.q || f.question, answer: f.a || f.answer }));
+    const wordCount = content_it.split(/\s+/).filter(Boolean).length;
+    const internalLinks = (content_it.match(/<a\s+href=["']\/blog\/[^"']+["']/gi) || []).length;
+    console.log(`✅ Words: ${wordCount}, Silo links: ${internalLinks}, FAQ: ${faq_items.length}`);
 
     return new Response(
       JSON.stringify({
         generated: {
-          title_it,
+          title_it: meta.title || topic,
           content_it,
-          meta_description_it: meta,
-          slug: slug || slugify(title_it),
+          meta_description_it: meta.meta || '',
+          slug: meta.slug || slugify(meta.title || topic),
           category: currentCategory,
-          keywords: kw,
+          keywords: meta.keywords || [],
           faq_items,
-          schema_type: schema,
+          schema_type: meta.schema || 'Article',
           estimated_word_count: wordCount,
           silo_links_used: null,
         }
