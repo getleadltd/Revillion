@@ -158,7 +158,7 @@ export default function AutoPilot() {
   })();
 
   const runningTask = tasks?.find(t => t.status === 'running');
-  const runningLogs: LogEntry[] = Array.isArray(runningTask?.agents) ? runningTask.agents : [];
+  const runningLogs: LogEntry[] = Array.isArray(runningTask?.agents) ? (runningTask.agents as unknown as LogEntry[]) : [];
 
   // ── Manual run ──────────────────────────────────────────────────────────────
   const handleRunNow = async () => {
@@ -379,7 +379,7 @@ export default function AutoPilot() {
               {runningTask ? (
                 <p className="text-xs text-orange-400 mt-3 flex items-center gap-1.5">
                   <Loader2 className="w-3 h-3 animate-spin" />
-                  In elaborazione: "{runningTask.input?.title}"
+                  In elaborazione: "{(runningTask.input as Record<string, unknown>)?.title as string}"
                 </p>
               ) : (
                 <p className="text-xs text-muted-foreground mt-3">
