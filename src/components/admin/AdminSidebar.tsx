@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield, Mail, Inbox, Bot } from 'lucide-react';
+import { LayoutDashboard, FileText, Image, Settings, ChevronDown, BarChart3, ListOrdered, Shield, Mail, Inbox, Bot, Cpu } from 'lucide-react';
 import { NavLink, useParams } from 'react-router-dom';
 import {
   Sidebar,
@@ -79,6 +79,11 @@ export function AdminSidebar() {
       title: 'Agenti AI',
       icon: Bot,
       path: `/${lang}/admin/agents`,
+    },
+    {
+      title: 'Autopilot',
+      icon: Cpu,
+      path: `/${lang}/admin/autopilot`,
     },
     {
       title: 'Impostazioni',
