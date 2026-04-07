@@ -52,6 +52,7 @@ serve(async (req) => {
     // Read body first so force flag can bypass guards
     const body = await req.json().catch(() => ({}));
     const force = body?.force === true;
+    const queueItemId: string | null = body?.queue_item_id ?? null;
 
     // ── 0. Check autopilot enabled (bypassed by force) ──────────────────────
     const enabled = await getSetting(sb, 'autopilot_enabled', 'false');
@@ -94,15 +95,16 @@ serve(async (req) => {
       });
     }
 
-    // ── 1. Pick next queue item ─────────────────────────────────────────────
-    const { data: items } = await sb
-      .from('blog_queue')
-      .select('*')
-      .eq('status', 'pending')
-      .lte('scheduled_for', new Date().toISOString())
-      .order('priority', { ascending: false })
-      .order('scheduled_for', { ascending: true })
-      .limit(1);
+    // ── 1. Pick queue item (specific or next pending) ──────────────────────
+    let query = sb.from('blog_queue').select('*').eq('status', 'pending');
+    if (queueItemId) {
+      query = query.eq('id', queueItemId);
+    } else {
+      query = query.lte('scheduled_for', new Date().toISOString())
+        .order('priority', { ascending: false })
+        .order('scheduled_for', { ascending: true });
+    }
+    const { data: items } = await query.limit(1);
 
     if (!items?.length) {
       return new Response(JSON.stringify({ skipped: true, reason: 'queue_empty' }), {
