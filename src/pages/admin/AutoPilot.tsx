@@ -164,7 +164,8 @@ export default function AutoPilot() {
   const handleRunNow = async () => {
     setIsRunning(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/autopilot`, {
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/autopilot`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,17 +173,32 @@ export default function AutoPilot() {
         },
         body: JSON.stringify({}),
       });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => `HTTP ${res.status}`);
+        toast({ title: `Errore ${res.status}`, description: text.slice(0, 200), variant: 'destructive' });
+        return;
+      }
+
       const json = await res.json();
       if (json.skipped) {
-        toast({ title: 'Saltato', description: json.reason === 'queue_empty' ? 'Nessun articolo in coda.' : 'Autopilot disabilitato.', variant: 'destructive' });
+        const reason = json.reason === 'queue_empty'
+          ? 'Nessun articolo in coda — aggiungine dalla Coda Automatica.'
+          : 'Autopilot disabilitato — attiva il toggle sopra.';
+        toast({ title: 'Saltato', description: reason });
       } else if (json.error) {
-        toast({ title: 'Errore', description: json.error, variant: 'destructive' });
+        toast({ title: 'Errore funzione', description: json.error, variant: 'destructive' });
       } else {
         toast({ title: '✅ Ciclo avviato', description: `Articolo in generazione (Task: ${json.task_id?.slice(0, 8)})` });
         queryClient.invalidateQueries({ queryKey: ['agent-tasks-autopilot'] });
       }
-    } catch {
-      toast({ title: 'Errore di rete', description: 'Impossibile contattare la funzione.', variant: 'destructive' });
+    } catch (err: any) {
+      const msg = err?.message ?? 'Errore sconosciuto';
+      toast({
+        title: 'Funzione non raggiungibile',
+        description: `Verifica che "autopilot" sia deployata su Supabase. (${msg})`,
+        variant: 'destructive',
+      });
     } finally {
       setIsRunning(false);
     }
