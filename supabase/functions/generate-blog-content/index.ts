@@ -10,6 +10,11 @@ const corsHeaders = {
 async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: string }> {
   const authHeader = req.headers.get('authorization');
   if (!authHeader) return { error: new Response(JSON.stringify({ error: 'Missing authorization header' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }) };
+  // Allow internal service role calls (e.g., from autopilot)
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (serviceKey && authHeader === `Bearer ${serviceKey}`) {
+    return { userId: 'service-role' };
+  }
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseAnonKey, { global: { headers: { Authorization: authHeader } } });

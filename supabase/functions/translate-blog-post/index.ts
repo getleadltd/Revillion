@@ -34,6 +34,12 @@ async function verifyAdmin(req: Request): Promise<{ error?: Response; userId?: s
     };
   }
 
+  // Allow internal service role calls (e.g., from autopilot)
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (serviceKey && authHeader === `Bearer ${serviceKey}`) {
+    return { userId: 'service-role' };
+  }
+
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
