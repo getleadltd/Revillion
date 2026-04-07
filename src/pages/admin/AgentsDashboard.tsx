@@ -11,20 +11,46 @@ import { useToast } from '@/hooks/use-toast';
 import {
   Loader2, Bot, CheckCircle2, XCircle, Clock, ChevronDown, RefreshCw,
   Zap, BarChart3, Globe, Image, FileText, Target, Star, Play, ListOrdered,
+  Cpu, Database, Sparkles,
 } from 'lucide-react';
 import { formatDate } from '@/lib/blog';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface LogEntry { ts: string; step: string; msg: string; [key: string]: any; }
 
 // ─── Agent icon map ───────────────────────────────────────────────────────────
 
 const AGENT_ICONS: Record<string, React.ReactNode> = {
-  seo:          <BarChart3 className="w-4 h-4" />,
-  readability:  <FileText className="w-4 h-4" />,
-  structure:    <FileText className="w-4 h-4" />,
-  cta:          <Target className="w-4 h-4" />,
-  multilingual: <Globe className="w-4 h-4" />,
-  eeat:         <Star className="w-4 h-4" />,
-  image:        <Image className="w-4 h-4" />,
+  seo: <BarChart3 className="w-4 h-4" />, readability: <FileText className="w-4 h-4" />,
+  structure: <FileText className="w-4 h-4" />, cta: <Target className="w-4 h-4" />,
+  multilingual: <Globe className="w-4 h-4" />, eeat: <Star className="w-4 h-4" />,
+  image: <Image className="w-4 h-4" />,
 };
+
+// ─── Pipeline steps for live animation ───────────────────────────────────────
+
+const PIPELINE = [
+  { id: 'analyze',   icon: BarChart3,  label: 'Analisi',     done: ['analyze_done'] },
+  { id: 'generate',  icon: Sparkles,   label: 'Scrittura',   done: ['content_done'] },
+  { id: 'image',     icon: Image,      label: 'Immagine',    done: ['image_done'] },
+  { id: 'translate', icon: Globe,      label: 'Traduzione',  done: ['translate_done'] },
+  { id: 'save',      icon: Database,   label: 'Salvataggio', done: ['saved'] },
+  { id: 'review',    icon: Bot,        label: '7 Agenti',    done: ['review_done'] },
+  { id: 'publish',   icon: CheckCircle2, label: 'Pubblica',  done: ['published', 'not_published'] },
+];
+
+const STEP_ACTIVE: Record<string, string[]> = {
+  analyze: ['analyze'], generate: ['generate_start'], image: ['generate_start'],
+  translate: ['translate_start'], save: ['save'], review: ['review_start'], publish: ['review_done'],
+};
+
+function getPipelineStatus(logs: LogEntry[], stepId: string): 'done' | 'active' | 'idle' {
+  const s = PIPELINE.find(p => p.id === stepId)!;
+  if (logs.some(l => s.done.includes(l.step))) return 'done';
+  if (logs.some(l => STEP_ACTIVE[stepId]?.includes(l.step))) return 'active';
+  return 'idle';
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -34,11 +60,7 @@ function ScoreBadge({ score }: { score: number }) {
     : score >= 50 ? 'text-orange-500 border-orange-500/30 bg-orange-500/10'
     : 'text-red-500 border-red-500/30 bg-red-500/10';
   const grade = score >= 80 ? 'A' : score >= 65 ? 'B' : score >= 50 ? 'C' : 'D';
-  return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-bold ${color}`}>
-      {grade} · {score}
-    </span>
-  );
+  return <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-bold ${color}`}>{grade} · {score}</span>;
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -49,24 +71,85 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function TaskTypeLabel({ type }: { type: string }) {
-  const map: Record<string, string> = {
-    article_review: 'Review Articolo',
-    content_generation: 'Generazione Contenuto',
-    production_check: 'Verifica Produzione',
-  };
+  const map: Record<string, string> = { article_review: 'Review', content_generation: 'Generazione', production_check: 'Verifica' };
   return <span className="text-xs text-muted-foreground">{map[type] ?? type}</span>;
 }
-
-// ─── Queue item status badge ──────────────────────────────────────────────────
 
 function QueueStatusBadge({ status }: { status: string }) {
   if (status === 'processing') return <Badge variant="outline" className="text-orange-500 border-orange-500/30 gap-1 text-xs"><Loader2 className="w-3 h-3 animate-spin" /> In corso</Badge>;
   if (status === 'completed')  return <Badge variant="outline" className="text-green-500 border-green-500/30 gap-1 text-xs"><CheckCircle2 className="w-3 h-3" /> Fatto</Badge>;
-  if (status === 'failed')     return <Badge variant="outline" className="text-red-500 border-red-500/30 gap-1 text-xs"><XCircle className="w-3 h-3" /> Errore</Badge>;
   return <Badge variant="outline" className="gap-1 text-xs"><Clock className="w-3 h-3" /> In coda</Badge>;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Live Agent Animation ─────────────────────────────────────────────────────
+
+function LiveAgentPanel({ task }: { task: any }) {
+  const logs: LogEntry[] = Array.isArray(task?.agents) ? task.agents : [];
+  const lastLog = logs[logs.length - 1];
+
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-orange-500/30 bg-gradient-to-br from-orange-500/5 to-transparent p-6 mb-6">
+      {/* Animated glow */}
+      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-orange-500/10 blur-3xl animate-pulse pointer-events-none" />
+      <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-orange-500/5 blur-2xl animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
+
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="relative">
+          <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
+            <Cpu className="w-5 h-5 text-orange-500" />
+          </div>
+          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-orange-500 animate-ping" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-orange-500" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-orange-400">Agenti in esecuzione</p>
+          <p className="text-xs text-muted-foreground truncate max-w-xs">{task.input?.title ?? 'Generazione articolo...'}</p>
+        </div>
+      </div>
+
+      {/* Pipeline steps */}
+      <div className="grid grid-cols-7 gap-2 mb-5">
+        {PIPELINE.map((step) => {
+          const status = getPipelineStatus(logs, step.id);
+          const Icon = step.icon;
+          return (
+            <div key={step.id} className="flex flex-col items-center gap-1.5">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${
+                status === 'done'   ? 'bg-green-500/20 text-green-400 shadow-[0_0_12px_rgba(34,197,94,0.3)]' :
+                status === 'active' ? 'bg-orange-500/20 text-orange-400 shadow-[0_0_16px_rgba(249,115,22,0.5)] scale-110' :
+                'bg-muted/40 text-muted-foreground/40'
+              }`}>
+                {status === 'active'
+                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : status === 'done'
+                  ? <CheckCircle2 className="w-4 h-4" />
+                  : <Icon className="w-4 h-4" />}
+              </div>
+              <span className={`text-[10px] font-medium text-center leading-tight ${
+                status === 'done' ? 'text-green-400' :
+                status === 'active' ? 'text-orange-400' : 'text-muted-foreground/40'
+              }`}>{step.label}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Last log message */}
+      {lastLog && (
+        <div className="flex items-center gap-2 bg-black/20 rounded-lg px-3 py-2">
+          <Zap className="w-3.5 h-3.5 text-orange-400 shrink-0 animate-pulse" />
+          <p className="text-xs text-orange-300 font-mono truncate">{lastLog.msg}</p>
+          <span className="text-[10px] text-muted-foreground/50 shrink-0 ml-auto">
+            {new Date(lastLog.ts).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AgentsDashboard() {
   const [openTask, setOpenTask] = useState<string | null>(null);
@@ -74,29 +157,21 @@ export default function AgentsDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // ── Agent tasks ─────────────────────────────────────────────────────────────
   const { data: tasks, isLoading, refetch, isFetching, error } = useQuery({
     queryKey: ['agent-tasks'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('agent_tasks')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+      const { data, error } = await supabase.from('agent_tasks').select('*').order('created_at', { ascending: false }).limit(50);
       if (error) throw error;
       return data ?? [];
     },
-    refetchInterval: 5000,
+    refetchInterval: 3000,
     retry: 1,
   });
 
-  // ── Blog queue (pending + processing only) ──────────────────────────────────
   const { data: queueItems } = useQuery({
     queryKey: ['blog-queue-dashboard'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('blog_queue')
-        .select('*')
+      const { data, error } = await supabase.from('blog_queue').select('*')
         .in('status', ['pending', 'processing'])
         .order('priority', { ascending: false })
         .order('scheduled_for', { ascending: true })
@@ -104,25 +179,20 @@ export default function AgentsDashboard() {
       if (error) throw error;
       return data ?? [];
     },
-    refetchInterval: 5000,
+    refetchInterval: 3000,
   });
 
-  const runningCount  = tasks?.filter(t => t.status === 'running').length ?? 0;
+  const runningTasks   = tasks?.filter(t => t.status === 'running') ?? [];
   const completedCount = tasks?.filter(t => t.status === 'completed').length ?? 0;
   const scored = tasks?.filter(t => t.score != null) ?? [];
   const avgScore = scored.length ? Math.round(scored.reduce((sum, t) => sum + (t.score ?? 0), 0) / scored.length) : 0;
 
-  // ── Run autopilot for a specific queue item ─────────────────────────────────
   const handleRunItem = async (itemId: string, title: string) => {
     setRunningItemId(itemId);
     try {
       const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/autopilot`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        // force:true bypasses toggle/schedule; queue_item_id picks this specific article
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
         body: JSON.stringify({ force: true, queue_item_id: itemId }),
       });
 
@@ -135,8 +205,10 @@ export default function AgentsDashboard() {
       const json = await res.json();
       if (json.error) {
         toast({ title: 'Errore', description: json.error, variant: 'destructive' });
+      } else if (json.skipped) {
+        toast({ title: 'Saltato', description: json.reason });
       } else {
-        toast({ title: '✅ Generazione avviata', description: `"${title}" — controlla l'activity feed sotto.` });
+        toast({ title: '🤖 Agenti avviati!', description: `Generazione di "${title}" in corso — segui qui sotto.` });
         queryClient.invalidateQueries({ queryKey: ['agent-tasks'] });
         queryClient.invalidateQueries({ queryKey: ['blog-queue-dashboard'] });
       }
@@ -160,9 +232,7 @@ export default function AgentsDashboard() {
                 <Bot className="w-8 h-8 text-orange-500" />
                 Agent Dashboard
               </h1>
-              <p className="text-muted-foreground mt-1">
-                Monitora e controlla tutti i task degli agenti AI
-              </p>
+              <p className="text-muted-foreground mt-1">Monitora e controlla tutti i task degli agenti AI</p>
             </div>
             <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching} className="gap-2">
               <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
@@ -170,42 +240,27 @@ export default function AgentsDashboard() {
             </Button>
           </div>
 
+          {/* ── Live agent animation (shown when tasks are running) ─────────── */}
+          {runningTasks.map(task => <LiveAgentPanel key={task.id} task={task} />)}
+
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
-            <Card className="relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500/5 rounded-full -translate-y-4 translate-x-4" />
-              <CardContent className="pt-6">
-                <div className="text-2xl font-bold">{tasks?.length ?? 0}</div>
-                <p className="text-xs text-muted-foreground mt-1">Task totali</p>
-              </CardContent>
-            </Card>
-            <Card className="relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/5 rounded-full -translate-y-4 translate-x-4" />
-              <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-green-500">{completedCount}</div>
-                <p className="text-xs text-muted-foreground mt-1">Completati</p>
-              </CardContent>
-            </Card>
-            <Card className="relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500/5 rounded-full -translate-y-4 translate-x-4" />
-              <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-orange-500">{avgScore > 0 ? avgScore : '—'}</div>
-                <p className="text-xs text-muted-foreground mt-1">Score medio</p>
-              </CardContent>
-            </Card>
+            {[
+              { label: 'Task totali',  value: tasks?.length ?? 0,                  color: 'orange' },
+              { label: 'Completati',   value: completedCount,                       color: 'green'  },
+              { label: 'Score medio',  value: avgScore > 0 ? avgScore : '—',        color: 'orange' },
+            ].map(s => (
+              <Card key={s.label} className="relative overflow-hidden">
+                <div className={`absolute top-0 right-0 w-16 h-16 bg-${s.color}-500/5 rounded-full -translate-y-4 translate-x-4`} />
+                <CardContent className="pt-6">
+                  <div className={`text-2xl font-bold ${s.color === 'green' ? 'text-green-500' : s.label === 'Score medio' ? 'text-orange-500' : ''}`}>{s.value}</div>
+                  <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
-          {/* Running alert */}
-          {runningCount > 0 && (
-            <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 flex items-center gap-3">
-              <Loader2 className="w-5 h-5 text-orange-500 animate-spin shrink-0" />
-              <p className="text-sm text-orange-400 font-medium">
-                {runningCount} agent{runningCount > 1 ? 'i' : 'e'} in esecuzione — aggiornamento automatico ogni 5s
-              </p>
-            </div>
-          )}
-
-          {/* Error state */}
+          {/* Error */}
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-sm text-red-400">
               <p className="font-semibold mb-1">Errore caricamento task</p>
@@ -214,57 +269,34 @@ export default function AgentsDashboard() {
             </div>
           )}
 
-          {/* ── Articoli in coda ─────────────────────────────────────────────── */}
+          {/* ── Articoli in coda ──────────────────────────────────────────────── */}
           {(queueItems?.length ?? 0) > 0 && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
                   <ListOrdered className="w-4 h-4 text-orange-500" />
-                  Articoli in coda — clicca Esegui per generare
+                  Articoli in coda — clicca Esegui per generare subito
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {queueItems!.map((item: any) => {
-                  const isPending    = item.status === 'pending';
+                  const isPending = item.status === 'pending';
                   const isProcessing = item.status === 'processing';
                   const isRunningThis = runningItemId === item.id;
                   return (
-                    <div
-                      key={item.id}
-                      className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                        isProcessing
-                          ? 'bg-orange-500/5 border-orange-500/20'
-                          : 'border-border hover:bg-muted/30'
-                      }`}
-                    >
-                      {/* Priority dot */}
-                      <div className={`w-2 h-2 rounded-full shrink-0 ${
-                        item.priority >= 8 ? 'bg-red-400' :
-                        item.priority >= 5 ? 'bg-orange-400' : 'bg-muted-foreground/40'
-                      }`} />
-
-                      {/* Title */}
+                    <div key={item.id} className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${isProcessing ? 'bg-orange-500/5 border-orange-500/20' : 'border-border hover:bg-muted/30'}`}>
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${item.priority >= 8 ? 'bg-red-400' : item.priority >= 5 ? 'bg-orange-400' : 'bg-muted-foreground/40'}`} />
                       <p className="flex-1 text-sm font-medium truncate">{item.title}</p>
-
-                      {/* Category */}
-                      {item.category && (
-                        <Badge variant="secondary" className="text-xs shrink-0 hidden sm:flex">{item.category}</Badge>
-                      )}
-
-                      {/* Status */}
+                      {item.category && <Badge variant="secondary" className="text-xs shrink-0 hidden sm:flex">{item.category}</Badge>}
                       <QueueStatusBadge status={item.status} />
-
-                      {/* Run button */}
                       <Button
                         size="sm"
-                        variant={isPending ? 'default' : 'outline'}
                         disabled={!isPending || isRunningThis}
                         onClick={() => handleRunItem(item.id, item.title)}
-                        className={`gap-1.5 shrink-0 ${isPending ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
+                        className={`gap-1.5 shrink-0 ${isPending ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'opacity-50'}`}
+                        variant={isPending ? 'default' : 'outline'}
                       >
-                        {isRunningThis
-                          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          : <Play className="w-3.5 h-3.5" />}
+                        {isRunningThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
                         {isRunningThis ? 'Avvio...' : isProcessing ? 'In corso' : 'Esegui'}
                       </Button>
                     </div>
@@ -274,31 +306,23 @@ export default function AgentsDashboard() {
             </Card>
           )}
 
-          {/* ── Task list ────────────────────────────────────────────────────── */}
+          {/* ── Task history ──────────────────────────────────────────────────── */}
           {isLoading ? (
-            <div className="flex items-center justify-center h-32">
-              <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
-            </div>
+            <div className="flex items-center justify-center h-32"><Loader2 className="w-6 h-6 animate-spin text-orange-500" /></div>
           ) : tasks?.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center h-40 text-center gap-3">
                 <Bot className="w-10 h-10 text-muted-foreground/30" />
                 <div>
                   <p className="font-medium">Nessun task ancora</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Esegui un articolo dalla coda qui sopra, oppure avvia una review dalla pagina Articoli.
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">Esegui un articolo dalla coda qui sopra.</p>
                 </div>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-3">
               {tasks?.map((task: any) => (
-                <Collapsible
-                  key={task.id}
-                  open={openTask === task.id}
-                  onOpenChange={(open) => setOpenTask(open ? task.id : null)}
-                >
+                <Collapsible key={task.id} open={openTask === task.id} onOpenChange={(open) => setOpenTask(open ? task.id : null)}>
                   <Card className={task.status === 'running' ? 'border-orange-500/30' : ''}>
                     <CollapsibleTrigger asChild>
                       <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors rounded-t-lg">
@@ -306,9 +330,7 @@ export default function AgentsDashboard() {
                           <div className="flex items-center gap-3 min-w-0">
                             <StatusBadge status={task.status} />
                             <div className="min-w-0">
-                              <p className="font-medium text-sm truncate">
-                                {task.summary?.post_title || task.input?.title || 'Task ' + task.id.slice(0, 8)}
-                              </p>
+                              <p className="font-medium text-sm truncate">{task.summary?.post_title || task.input?.title || 'Task ' + task.id.slice(0, 8)}</p>
                               <div className="flex items-center gap-2 mt-0.5">
                                 <TaskTypeLabel type={task.type} />
                                 <span className="text-xs text-muted-foreground">·</span>
@@ -323,7 +345,6 @@ export default function AgentsDashboard() {
                         </div>
                       </CardHeader>
                     </CollapsibleTrigger>
-
                     <CollapsibleContent>
                       <CardContent className="pt-0 space-y-6">
                         {task.summary && (
@@ -331,42 +352,23 @@ export default function AgentsDashboard() {
                             {task.summary.top_issues?.length > 0 && (
                               <div>
                                 <p className="text-xs font-semibold text-red-400 mb-2 uppercase tracking-wide">Problemi</p>
-                                <ul className="space-y-1">
-                                  {task.summary.top_issues.map((issue: string, i: number) => (
-                                    <li key={i} className="text-xs text-muted-foreground flex gap-1.5">
-                                      <XCircle className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />{issue}
-                                    </li>
-                                  ))}
-                                </ul>
+                                <ul className="space-y-1">{task.summary.top_issues.map((i: string, idx: number) => <li key={idx} className="text-xs text-muted-foreground flex gap-1.5"><XCircle className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />{i}</li>)}</ul>
                               </div>
                             )}
                             {task.summary.top_suggestions?.length > 0 && (
                               <div>
                                 <p className="text-xs font-semibold text-orange-400 mb-2 uppercase tracking-wide">Suggerimenti</p>
-                                <ul className="space-y-1">
-                                  {task.summary.top_suggestions.map((s: string, i: number) => (
-                                    <li key={i} className="text-xs text-muted-foreground flex gap-1.5">
-                                      <Zap className="w-3.5 h-3.5 text-orange-400 shrink-0 mt-0.5" />{s}
-                                    </li>
-                                  ))}
-                                </ul>
+                                <ul className="space-y-1">{task.summary.top_suggestions.map((s: string, idx: number) => <li key={idx} className="text-xs text-muted-foreground flex gap-1.5"><Zap className="w-3.5 h-3.5 text-orange-400 shrink-0 mt-0.5" />{s}</li>)}</ul>
                               </div>
                             )}
                             {task.summary.passed?.length > 0 && (
                               <div>
                                 <p className="text-xs font-semibold text-green-400 mb-2 uppercase tracking-wide">Punti di forza</p>
-                                <ul className="space-y-1">
-                                  {task.summary.passed.map((p: string, i: number) => (
-                                    <li key={i} className="text-xs text-muted-foreground flex gap-1.5">
-                                      <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0 mt-0.5" />{p}
-                                    </li>
-                                  ))}
-                                </ul>
+                                <ul className="space-y-1">{task.summary.passed.map((p: string, idx: number) => <li key={idx} className="text-xs text-muted-foreground flex gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0 mt-0.5" />{p}</li>)}</ul>
                               </div>
                             )}
                           </div>
                         )}
-
                         {task.agents && Array.isArray(task.agents) && task.agents[0]?.id && (
                           <div>
                             <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Risultati per agente</p>
@@ -375,15 +377,12 @@ export default function AgentsDashboard() {
                                 <div key={agent.id} className="bg-muted/30 rounded-lg p-3 border border-border/50">
                                   <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-1.5 text-xs font-semibold">
-                                      <span className="text-orange-500">{AGENT_ICONS[agent.id] ?? <Bot className="w-4 h-4" />}</span>
-                                      {agent.name}
+                                      <span className="text-orange-500">{AGENT_ICONS[agent.id] ?? <Bot className="w-4 h-4" />}</span>{agent.name}
                                     </div>
                                     {agent.score != null && <ScoreBadge score={agent.score} />}
                                   </div>
                                   {agent.result?.issues?.slice(0, 2).map((issue: string, i: number) => (
-                                    <p key={i} className="text-xs text-muted-foreground mt-1 flex gap-1">
-                                      <XCircle className="w-3 h-3 text-red-400 shrink-0 mt-0.5" />{issue}
-                                    </p>
+                                    <p key={i} className="text-xs text-muted-foreground mt-1 flex gap-1"><XCircle className="w-3 h-3 text-red-400 shrink-0 mt-0.5" />{issue}</p>
                                   ))}
                                   {agent.error && <p className="text-xs text-red-400 mt-1">Errore: {agent.error}</p>}
                                   {agent.duration_ms && <p className="text-xs text-muted-foreground/50 mt-2">{(agent.duration_ms / 1000).toFixed(1)}s</p>}
