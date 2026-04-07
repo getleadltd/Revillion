@@ -13,8 +13,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-const SERVICE_KEY  = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const SUPABASE_URL   = Deno.env.get('SUPABASE_URL') ?? '';
+const SERVICE_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') ?? '';
 
 function supabaseAdmin() {
   return createClient(SUPABASE_URL, SERVICE_KEY);
@@ -174,9 +175,80 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     });
     const reviewData = reviewHttpRes.ok ? await reviewHttpRes.json() : { score: 0 };
     const reviewScore = reviewData?.score ?? 0;
-    await appendLog(sb, taskId, { step: 'review_done', score: reviewScore, msg: `Review completata: score ${reviewScore}/100` });
+    const reviewIssues: string[] = reviewData?.summary?.top_issues ?? [];
+    const reviewSuggestions: string[] = reviewData?.summary?.top_suggestions ?? [];
+    await appendLog(sb, taskId, { step: 'review_done', score: reviewScore, msg: `Review completata: score ${reviewScore}/100 — ${reviewIssues.length} problemi da correggere` });
 
-    // ── 8. Auto publish ───────────────────────────────────────────────────────
+    // ── 8. Auto-fix based on review feedback ──────────────────────────────────
+    if (reviewIssues.length > 0 || reviewSuggestions.length > 0) {
+      await appendLog(sb, taskId, { step: 'fix_start', msg: `Auto-fix: applico ${reviewIssues.length} correzioni + ${reviewSuggestions.length} suggerimenti...` });
+      try {
+        const { data: currentPost } = await sb.from('blog_posts').select('content_it, meta_description_it, title_it').eq('id', savedPost.id).single();
+        if (currentPost) {
+          const fixPrompt = `Sei un esperto editor di contenuti SEO per affiliati iGaming. Correggi questo articolo basandoti sui problemi identificati.
+
+ARTICOLO DA CORREGGERE:
+Titolo: ${currentPost.title_it}
+Meta description: ${currentPost.meta_description_it}
+Contenuto (HTML):
+${currentPost.content_it}
+
+PROBLEMI DA CORREGGERE (OBBLIGATORI):
+${reviewIssues.map((i: string, n: number) => `${n + 1}. ${i}`).join('\n')}
+
+SUGGERIMENTI DA APPLICARE:
+${reviewSuggestions.map((s: string, n: number) => `${n + 1}. ${s}`).join('\n')}
+
+REGOLE GENERALI:
+- Mantieni la stessa struttura HTML e i link interni esistenti
+- Mantieni il link CTA a Revillion Partners: <a href="https://dashboard.revillion.com/en/registration">
+- NON menzionare competitor (Income Access, Bet365, ecc.)
+- Aggiungi definizione di iGaming al primo utilizzo se mancante
+- Spezza frasi lunghe in frasi più corte
+- Assicurati che l'articolo sia COMPLETO (conclusione + FAQ presenti)
+- Meta description: 148-158 caratteri, include keyword + benefit + CTA
+
+Rispondi SOLO con JSON valido (no markdown):
+{"content_it": "<contenuto HTML corretto e completo>", "meta_description_it": "<meta description corretta>"}`;
+
+          const fixRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}` },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [{ role: 'user', content: fixPrompt }],
+              max_tokens: 8192,
+            }),
+          });
+
+          if (fixRes.ok) {
+            const fixData = await fixRes.json();
+            const fixText = fixData.choices?.[0]?.message?.content ?? '';
+            const jsonMatch = fixText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              try {
+                const fixed = JSON.parse(jsonMatch[0]);
+                if (fixed.content_it && fixed.content_it.length > 500) {
+                  await sb.from('blog_posts').update({
+                    content_it: fixed.content_it,
+                    ...(fixed.meta_description_it ? { meta_description_it: fixed.meta_description_it } : {}),
+                  }).eq('id', savedPost.id);
+                  await appendLog(sb, taskId, { step: 'fix_done', msg: `✅ Auto-fix applicato: contenuto migliorato` });
+                } else {
+                  await appendLog(sb, taskId, { step: 'fix_skipped', msg: 'Fix ignorato: risposta AI non valida' });
+                }
+              } catch { await appendLog(sb, taskId, { step: 'fix_skipped', msg: 'Fix ignorato: JSON non parsabile' }); }
+            }
+          } else {
+            await appendLog(sb, taskId, { step: 'fix_skipped', msg: `Fix non applicato: ${fixRes.status}` });
+          }
+        }
+      } catch (fixErr: any) {
+        await appendLog(sb, taskId, { step: 'fix_skipped', msg: `Fix non applicato (non bloccante): ${fixErr.message}` });
+      }
+    }
+
+    // ── 9. Auto publish ───────────────────────────────────────────────────────
     let published = false;
     if (reviewScore >= minScore) {
       await sb.from('blog_posts').update({ status: 'published', published_at: new Date().toISOString() }).eq('id', savedPost.id);
