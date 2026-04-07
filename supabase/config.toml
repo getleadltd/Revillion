@@ -1,5 +1,8 @@
 project_id = "pvxndzwaposcttrwkwgd"
 
+[functions.meta-capi]
+verify_jwt = false
+
 [functions.translate-blog-post]
 verify_jwt = true
 

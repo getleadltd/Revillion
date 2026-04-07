@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { HelmetProvider } from 'react-helmet-async';
 import { AnimatePresence, motion } from "framer-motion";
 import { pageVariants } from "./lib/motion";
@@ -12,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRedirect } from "./components/AdminRedirect";
 import { useGA4PageViews } from "./hooks/useGA4PageViews";
+import { initMetaPixel, trackMetaPageView } from "./lib/metaPixel";
 import { CookieBanner } from "./components/CookieBanner";
 import { RedirectHandler } from "./components/RedirectHandler";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -25,6 +27,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ResponsibleGaming = lazy(() => import("./pages/ResponsibleGaming"));
 const Calculator = lazy(() => import("./pages/Calculator"));
+const AdsLanding = lazy(() => import("./pages/AdsLanding"));
 
 // Lazy-loaded admin pages (heavy: recharts, editors, etc.)
 const BlogAdmin = lazy(() => import("./pages/admin/BlogAdmin"));
@@ -44,9 +47,14 @@ const PageLoader = () => (
   </div>
 );
 
-// Component to listen to route changes and send GA4 page views
+// Component to listen to route changes and send GA4 + Meta Pixel page views
 const GAListener = () => {
   useGA4PageViews();
+  const location = useLocation();
+  useEffect(() => {
+    initMetaPixel();
+    trackMetaPageView();
+  }, [location.pathname]);
   return null;
 };
 
@@ -73,6 +81,7 @@ const AnimatedRoutes = () => {
             <Route path="/:lang/terms-of-service" element={<TermsOfService />} />
             <Route path="/:lang/responsible-gaming" element={<ResponsibleGaming />} />
             <Route path="/:lang/calculator" element={<Calculator />} />
+            <Route path="/:lang/earn" element={<AdsLanding />} />
             <Route path="/:lang/blog" element={<Blog />} />
             <Route path="/:lang/blog/:slug" element={<BlogPost />} />
             <Route path="/:lang/auth/login" element={<Login />} />

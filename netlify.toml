@@ -12,6 +12,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/meta-capi"
+  to = "https://pvxndzwaposcttrwkwgd.supabase.co/functions/v1/meta-capi"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
