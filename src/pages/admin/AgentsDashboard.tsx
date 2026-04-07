@@ -58,7 +58,7 @@ function TaskTypeLabel({ type }: { type: string }) {
 export default function AgentsDashboard() {
   const [openTask, setOpenTask] = useState<string | null>(null);
 
-  const { data: tasks, isLoading, refetch, isFetching } = useQuery({
+  const { data: tasks, isLoading, refetch, isFetching, error } = useQuery({
     queryKey: ['agent-tasks'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -69,12 +69,14 @@ export default function AgentsDashboard() {
       if (error) throw error;
       return data ?? [];
     },
-    refetchInterval: 5000, // auto-refresh every 5s while tasks running
+    refetchInterval: 5000,
+    retry: 1,
   });
 
   const runningCount = tasks?.filter(t => t.status === 'running').length ?? 0;
   const completedCount = tasks?.filter(t => t.status === 'completed').length ?? 0;
-  const avgScore = tasks?.filter(t => t.score).reduce((sum, t, _, arr) => sum + t.score / arr.length, 0) ?? 0;
+  const scored = tasks?.filter(t => t.score != null) ?? [];
+  const avgScore = scored.length ? Math.round(scored.reduce((sum, t) => sum + (t.score ?? 0), 0) / scored.length) : 0;
 
   return (
     <>
@@ -131,6 +133,15 @@ export default function AgentsDashboard() {
               <p className="text-sm text-orange-400 font-medium">
                 {runningCount} agente{runningCount > 1 ? 'i' : ''} in esecuzione — la pagina si aggiorna automaticamente ogni 5 secondi
               </p>
+            </div>
+          )}
+
+          {/* Error state */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-sm text-red-400">
+              <p className="font-semibold mb-1">Errore caricamento task</p>
+              <p className="text-xs opacity-80">{(error as Error).message}</p>
+              <p className="text-xs mt-2 opacity-60">Verifica che la tabella <code>agent_tasks</code> esista nel tuo Supabase.</p>
             </div>
           )}
 
