@@ -9,9 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useToast } from '@/hooks/use-toast';
 import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
   Loader2, Bot, CheckCircle2, XCircle, Clock, ChevronDown, RefreshCw,
   Zap, BarChart3, Globe, Image, FileText, Target, Star, Play, ListOrdered,
-  Cpu, Database, Sparkles,
+  Cpu, Database, Sparkles, Trash2,
 } from 'lucide-react';
 import { formatDate } from '@/lib/blog';
 
@@ -200,6 +204,22 @@ export default function AgentsDashboard() {
     }
   };
 
+  const handleResetAll = async () => {
+    try {
+      // 1. Delete all agent_tasks
+      await supabase.from('agent_tasks').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      // 2. Reset all blog_queue entries to pending and clear generated_post_id
+      await supabase.from('blog_queue')
+        .update({ status: 'pending', generated_post_id: null, processed_at: null })
+        .in('status', ['completed', 'failed', 'processing']);
+      queryClient.invalidateQueries({ queryKey: ['agent-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['blog-queue-dashboard'] });
+      toast({ title: '🔄 Reset completato', description: 'Tutti i task eliminati e gli articoli rimessi in coda.' });
+    } catch (err: any) {
+      toast({ title: 'Errore reset', description: err?.message, variant: 'destructive' });
+    }
+  };
+
   const handleRunItem = async (itemId: string, title: string) => {
     setRunningItemId(itemId);
     try {
@@ -258,6 +278,28 @@ export default function AgentsDashboard() {
                 <RefreshCw className="w-4 h-4" />
                 Riprova falliti
               </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2 text-destructive border-destructive/30 hover:bg-destructive/10">
+                    <Trash2 className="w-4 h-4" />
+                    Resetta tutto
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Resetta tutto?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Questa azione eliminerà tutti i task dalla dashboard e rimetterà in coda tutti gli articoli (completati, falliti, in corso). I post già generati nel blog NON verranno eliminati.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annulla</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResetAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Resetta tutto
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching} className="gap-2">
                 <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
                 Aggiorna
