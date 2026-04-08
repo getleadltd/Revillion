@@ -151,10 +151,11 @@ Usa 4-6 FAQ rilevanti per il topic. Schema può essere: Article, HowTo, Review, 
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     console.error('Error in generate-blog-content:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Errore durante la generazione' }),
+      JSON.stringify({ error: msg || 'Errore durante la generazione' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

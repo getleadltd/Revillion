@@ -219,9 +219,10 @@ ${urls.join('\n')}
         ...corsHeaders,
       },
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Sitemap generation error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const msg = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });

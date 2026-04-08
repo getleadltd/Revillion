@@ -291,7 +291,8 @@ serve(async (req) => {
 
         console.log(`✅ Successfully processed item ${item.id}`);
 
-      } catch (error) {
+      } catch (error: unknown) {
+        const errMsg = error instanceof Error ? error.message : String(error);
         console.error(`❌ Error processing item ${item.id}:`, error);
 
         // Update queue item as failed
@@ -300,7 +301,7 @@ serve(async (req) => {
           .from('blog_queue')
           .update({
             status: retryCount >= 3 ? 'failed' : 'pending',
-            error_message: error.message,
+            error_message: errMsg,
             retry_count: retryCount
           })
           .eq('id', item.id);
@@ -309,7 +310,7 @@ serve(async (req) => {
           queueId: item.id,
           title: item.title,
           status: 'error',
-          error: error.message
+          error: errMsg
         });
       }
     }
@@ -327,10 +328,11 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     console.error('Error in process-blog-queue:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: msg }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

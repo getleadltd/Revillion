@@ -400,10 +400,11 @@ REMINDER: ABSOLUTELY ZERO text, letters, numbers, or symbols visible anywhere in
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     console.error('Error in generate-blog-image:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Errore durante la generazione immagine' }),
+      JSON.stringify({ error: msg || 'Errore durante la generazione immagine' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

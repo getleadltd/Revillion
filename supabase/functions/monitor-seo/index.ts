@@ -102,14 +102,14 @@ async function checkBrokenLinks(supabase: any) {
                 severity: response.status >= 500 ? 'critical' : 'high'
               });
             }
-          } catch (error) {
+          } catch (error: unknown) {
             errors.push({
               post_id: post.id,
               post_slug: post.slug,
               post_title: post.title_en,
               language: lang,
               url: url,
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               error_type: 'unreachable_link',
               severity: 'medium'
             });
@@ -312,10 +312,11 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     console.error('❌ SEO monitoring error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: msg }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
