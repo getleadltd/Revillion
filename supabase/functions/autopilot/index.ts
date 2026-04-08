@@ -170,43 +170,50 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
       }
     }).catch((e) => console.error('[autopilot] Background translation error:', e));
 
-    // ── 7. Review swarm ───────────────────────────────────────────────────────
-    await appendLog(sb, taskId, { step: 'review_start', msg: 'Avvio review swarm (7 agenti in parallelo)...' });
-    const reviewHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/article-review-swarm`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
-      body: JSON.stringify({ post_id: savedPost.id, lang: 'it' }),
-    });
-    const reviewData = reviewHttpRes.ok ? await reviewHttpRes.json() : { score: 0 };
-    const reviewScore = reviewData?.score ?? 0;
-    const reviewIssues: string[] = reviewData?.summary?.top_issues ?? [];
-    const reviewSuggestions: string[] = reviewData?.summary?.top_suggestions ?? [];
-    const reviewAgents: any[] = reviewData?.agents ?? [];
-    await appendLog(sb, taskId, { step: 'review_done', score: reviewScore, msg: `Review completata: score ${reviewScore}/100 — ${reviewIssues.length} problemi da correggere` });
+    // ── 7-8. Review → Fix loop (max 2 iterations) ────────────────────────────
+    // Multilingual excluded: translations happen in background, can't be fixed here
+    const EXCLUDE_AGENTS = ['multilingual'];
+    const MAX_FIX_ITERATIONS = 2;
+    let reviewScore = 0;
+    let reviewAgents: any[] = [];
 
-    // ── 8. Auto-fix based on review feedback ──────────────────────────────────
-    if (reviewIssues.length > 0 || reviewSuggestions.length > 0 || reviewAgents.length > 0) {
-      const totalFixes = reviewIssues.length + reviewSuggestions.length;
-      await appendLog(sb, taskId, { step: 'fix_start', msg: `Auto-fix: applico ${totalFixes} correzioni da ${reviewAgents.length} agenti...` });
+    for (let iteration = 1; iteration <= MAX_FIX_ITERATIONS + 1; iteration++) {
+      const isLastIteration = iteration === MAX_FIX_ITERATIONS + 1;
+      await appendLog(sb, taskId, { step: 'review_start', iteration, msg: `Review swarm (iterazione ${iteration})...` });
+
+      const reviewHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/article-review-swarm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+        body: JSON.stringify({ post_id: savedPost.id, lang: 'it', exclude_agents: EXCLUDE_AGENTS }),
+      });
+      const reviewData = reviewHttpRes.ok ? await reviewHttpRes.json() : { score: 0 };
+      reviewScore = reviewData?.score ?? 0;
+      reviewAgents = reviewData?.agents ?? [];
+      const reviewIssues: string[] = reviewData?.summary?.top_issues ?? [];
+      const reviewSuggestions: string[] = reviewData?.summary?.top_suggestions ?? [];
+      await appendLog(sb, taskId, { step: 'review_done', score: reviewScore, iteration, msg: `Review ${iteration}: score ${reviewScore}/100 — ${reviewIssues.length} problemi` });
+
+      // Stop looping if score is good enough or this was the last iteration
+      if (reviewScore >= minScore || isLastIteration || (reviewIssues.length === 0 && reviewSuggestions.length === 0)) break;
+
+      // ── Fix pass ────────────────────────────────────────────────────────────
+      await appendLog(sb, taskId, { step: 'fix_start', iteration, msg: `Auto-fix ${iteration}: applico ${reviewIssues.length + reviewSuggestions.length} correzioni...` });
       try {
-        const { data: currentPost } = await sb.from('blog_posts').select('content_it, content_en, meta_description_it, meta_description_en, title_it').eq('id', savedPost.id).single();
+        const { data: currentPost } = await sb.from('blog_posts').select('content_it, meta_description_it, title_it').eq('id', savedPost.id).single();
         if (currentPost) {
-          // Build per-agent feedback section
           const agentFeedbackSection = reviewAgents.length > 0
             ? `\n\nANALISI DETTAGLIATA PER AGENTE:\n${reviewAgents.map((a: any) => {
                 const lines: string[] = [`### ${a.name} (Score: ${a.score}/100)`];
                 if (a.issues?.length) lines.push(`Problemi: ${a.issues.join(' | ')}`);
                 if (a.suggestions?.length) lines.push(`Suggerimenti: ${a.suggestions.join(' | ')}`);
-                // Include extra fields (e.g. reading_level, word_count, cta_count, etc.)
                 if (a.extra && Object.keys(a.extra).length > 0) {
-                  const extras = Object.entries(a.extra).map(([k, v]) => `${k}: ${v}`).join(', ');
-                  lines.push(`Dati extra: ${extras}`);
+                  lines.push(`Dati extra: ${Object.entries(a.extra).map(([k, v]) => `${k}: ${v}`).join(', ')}`);
                 }
                 return lines.join('\n');
               }).join('\n\n')}`
             : '';
 
-          const fixPrompt = `Sei un esperto editor di contenuti SEO per affiliati iGaming. Correggi questo articolo basandoti sui problemi identificati da 7 agenti specializzati.
+          const fixPrompt = `Sei un esperto editor di contenuti SEO per affiliati iGaming. Correggi questo articolo basandoti sui problemi identificati dagli agenti.
 
 ARTICOLO DA CORREGGERE:
 Titolo: ${currentPost.title_it}
@@ -238,16 +245,11 @@ Rispondi SOLO con JSON valido (no markdown):
           const fixRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}` },
-            body: JSON.stringify({
-              model: 'google/gemini-2.5-flash',
-              messages: [{ role: 'user', content: fixPrompt }],
-              max_tokens: 8192,
-            }),
+            body: JSON.stringify({ model: 'google/gemini-2.5-flash', messages: [{ role: 'user', content: fixPrompt }], max_tokens: 8192 }),
           });
 
           if (fixRes.ok) {
-            const fixData = await fixRes.json();
-            const fixText = fixData.choices?.[0]?.message?.content ?? '';
+            const fixText = (await fixRes.json()).choices?.[0]?.message?.content ?? '';
             const jsonMatch = fixText.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
               try {
@@ -257,18 +259,21 @@ Rispondi SOLO con JSON valido (no markdown):
                     content_it: fixed.content_it,
                     ...(fixed.meta_description_it ? { meta_description_it: fixed.meta_description_it } : {}),
                   }).eq('id', savedPost.id);
-                  await appendLog(sb, taskId, { step: 'fix_done', msg: `✅ Auto-fix applicato: contenuto migliorato` });
+                  await appendLog(sb, taskId, { step: 'fix_done', iteration, msg: `✅ Fix ${iteration} applicato` });
                 } else {
-                  await appendLog(sb, taskId, { step: 'fix_skipped', msg: 'Fix ignorato: risposta AI non valida' });
+                  await appendLog(sb, taskId, { step: 'fix_skipped', iteration, msg: 'Fix ignorato: risposta AI non valida' });
+                  break;
                 }
-              } catch { await appendLog(sb, taskId, { step: 'fix_skipped', msg: 'Fix ignorato: JSON non parsabile' }); }
+              } catch { await appendLog(sb, taskId, { step: 'fix_skipped', iteration, msg: 'Fix ignorato: JSON non parsabile' }); break; }
             }
           } else {
-            await appendLog(sb, taskId, { step: 'fix_skipped', msg: `Fix non applicato: ${fixRes.status}` });
+            await appendLog(sb, taskId, { step: 'fix_skipped', iteration, msg: `Fix non applicato: ${fixRes.status}` });
+            break;
           }
         }
       } catch (fixErr: any) {
-        await appendLog(sb, taskId, { step: 'fix_skipped', msg: `Fix non applicato (non bloccante): ${fixErr.message}` });
+        await appendLog(sb, taskId, { step: 'fix_skipped', iteration, msg: `Fix non applicato: ${fixErr.message}` });
+        break;
       }
     }
 
@@ -284,7 +289,7 @@ Rispondi SOLO con JSON valido (no markdown):
 
     await sb.from('agent_tasks').update({
       status: 'completed',
-      summary: { post_id: savedPost.id, title: gen.title_it, score: reviewScore, published, languages: ['it', 'en', 'de', 'pt', 'es'], category, word_count: gen.estimated_word_count },
+      summary: { post_id: savedPost.id, title: gen.title_it, score: reviewScore, published, category, word_count: gen.estimated_word_count },
       score: reviewScore,
       completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

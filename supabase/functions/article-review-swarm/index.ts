@@ -38,7 +38,7 @@ Title: ${post[`title_${lang}`] || post.title_en}
 Slug: ${post[`slug_${lang}`] || post.slug_en}
 Meta description: ${post[`meta_description_${lang}`] || post.meta_description_en}
 Category: ${post.category}
-Content (first 2000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 2000)}
+Content (first 8000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 8000)}
 
 Evaluate:
 1. Title: is it 50-60 chars? Contains primary keyword? Compelling?
@@ -63,7 +63,7 @@ Respond ONLY with valid JSON:
 You are a content readability expert. Analyze this iGaming article for readability.
 
 Language: ${lang}
-Content (first 3000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 3000)}
+Content (first 8000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 8000)}
 
 Evaluate:
 1. Average sentence length (ideal: <20 words)
@@ -91,14 +91,15 @@ Respond ONLY with valid JSON:
 You are a content structure expert for iGaming affiliate blogs. Analyze article structure.
 
 Title: ${post[`title_${lang}`] || post.title_en}
-Word count estimate: ${Math.round((post[`content_${lang}`] || post.content_en || '').split(' ').length)}
-Content: ${(post[`content_${lang}`] || post.content_en || '').slice(0, 3000)}
+Total word count: ${Math.round((post[`content_${lang}`] || post.content_en || '').split(' ').length)}
+Content START (first 6000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 6000)}
+Content END (last 4000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(-4000)}
 
 Evaluate:
 1. Does it have a compelling introduction (hook + value prop in first 100 words)?
 2. Is the body logically organized with clear sections?
 3. Does it have a conclusion with next steps or CTA?
-4. Word count (aim for 1200-2500 for affiliate content)?
+4. Word count (1200-2500 is standard; 2500-6000+ is fine for comprehensive guides)?
 5. Is there an FAQ section? (boosts featured snippets)
 6. Does it cover the topic comprehensively?
 7. Does it have a clear unique angle vs generic content?
@@ -121,7 +122,8 @@ Respond ONLY with valid JSON:
     prompt: (post: any, lang: string) => `
 You are an affiliate marketing conversion expert. Analyze CTA and affiliate elements.
 
-Content: ${(post[`content_${lang}`] || post.content_en || '').slice(0, 3000)}
+Content START (first 5000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 5000)}
+Content END (last 4000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(-4000)}
 Category: ${post.category}
 
 Evaluate:
@@ -187,7 +189,7 @@ Respond ONLY with valid JSON:
 You are an E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) evaluator for Google quality guidelines.
 
 Title: ${post[`title_${lang}`] || post.title_en}
-Content (first 2500 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 2500)}
+Content (first 8000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 8000)}
 
 Evaluate for iGaming affiliate content:
 1. Experience: Does it show first-hand knowledge of the topic?
@@ -218,7 +220,7 @@ You are an image optimization expert for web content.
 
 Featured image URL: ${post.featured_image_url || 'MISSING'}
 Featured image alt: ${post.featured_image_alt || 'MISSING'}
-Content (looking for img tags): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 2000)}
+Content (looking for img tags): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 6000)}
 
 Evaluate:
 1. Is there a featured image?
@@ -254,7 +256,7 @@ async function callAI(prompt: string): Promise<any> {
       model: 'google/gemini-2.5-flash',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.1,
-      max_tokens: 1024,
+      max_tokens: 2048,
     }),
   });
   if (!res.ok) {
@@ -275,7 +277,7 @@ serve(async (req) => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   try {
-    const { post_id, lang = 'en' } = await req.json();
+    const { post_id, lang = 'en', exclude_agents = [] } = await req.json();
     if (!post_id) throw new Error('post_id required');
 
     // Fetch full post
@@ -299,9 +301,13 @@ serve(async (req) => {
 
     const taskId = task?.id;
 
-    // Run all 7 agents IN PARALLEL
+    // Run agents IN PARALLEL (optionally excluding some)
+    const activeAgents = exclude_agents.length > 0
+      ? AGENTS.filter(a => !exclude_agents.includes(a.id))
+      : AGENTS;
+
     const agentResults = await Promise.allSettled(
-      AGENTS.map(async (agent) => {
+      activeAgents.map(async (agent) => {
         const start = Date.now();
         try {
           const result = await callAI(agent.prompt(post, lang));
