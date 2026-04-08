@@ -342,8 +342,8 @@ serve(async (req) => {
     }
 
     console.log(`=== Inizio traduzione con chunking ===`);
-    console.log(`Lingua sorgente: ${LANGUAGE_NAMES[sourceLang]}`);
-    console.log(`Lingue target: ${targetLanguages.map(l => LANGUAGE_NAMES[l]).join(', ')}`);
+    console.log(`Lingua sorgente: ${LANGUAGE_NAMES[sourceLang as Language]}`);
+    console.log(`Lingue target: ${targetLanguages.map((l: string) => LANGUAGE_NAMES[l as Language]).join(', ')}`);
     console.log(`Titolo: ${title.substring(0, 50)}...`);
     console.log(`Lunghezza contenuto: ${content.length} caratteri`);
 
