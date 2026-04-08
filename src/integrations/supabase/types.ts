@@ -102,7 +102,7 @@ export type Database = {
       }
       blog_posts: {
         Row: {
-          author_id: string
+          author_id: string | null
           category: string
           content_de: string | null
           content_en: string
@@ -115,15 +115,18 @@ export type Database = {
           excerpt_es: string | null
           excerpt_it: string | null
           excerpt_pt: string | null
+          faq_items: Json | null
           featured_image_alt: string | null
           featured_image_url: string | null
           id: string
+          keywords: string[] | null
           meta_description_de: string | null
           meta_description_en: string | null
           meta_description_es: string | null
           meta_description_it: string | null
           meta_description_pt: string | null
           published_at: string | null
+          schema_type: string | null
           slug: string
           slug_de: string | null
           slug_en: string | null
@@ -142,7 +145,7 @@ export type Database = {
           views: number | null
         }
         Insert: {
-          author_id: string
+          author_id?: string | null
           category?: string
           content_de?: string | null
           content_en: string
@@ -155,15 +158,18 @@ export type Database = {
           excerpt_es?: string | null
           excerpt_it?: string | null
           excerpt_pt?: string | null
+          faq_items?: Json | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string
+          keywords?: string[] | null
           meta_description_de?: string | null
           meta_description_en?: string | null
           meta_description_es?: string | null
           meta_description_it?: string | null
           meta_description_pt?: string | null
           published_at?: string | null
+          schema_type?: string | null
           slug: string
           slug_de?: string | null
           slug_en?: string | null
@@ -182,7 +188,7 @@ export type Database = {
           views?: number | null
         }
         Update: {
-          author_id?: string
+          author_id?: string | null
           category?: string
           content_de?: string | null
           content_en?: string
@@ -195,15 +201,18 @@ export type Database = {
           excerpt_es?: string | null
           excerpt_it?: string | null
           excerpt_pt?: string | null
+          faq_items?: Json | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string
+          keywords?: string[] | null
           meta_description_de?: string | null
           meta_description_en?: string | null
           meta_description_es?: string | null
           meta_description_it?: string | null
           meta_description_pt?: string | null
           published_at?: string | null
+          schema_type?: string | null
           slug?: string
           slug_de?: string | null
           slug_en?: string | null
