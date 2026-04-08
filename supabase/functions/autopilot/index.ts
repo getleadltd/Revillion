@@ -121,8 +121,10 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const baseSlug = gen.slug || slugify(gen.title_it);
 
+    const truncateMeta = (m: string) => m.length > 158 ? m.slice(0, 155).replace(/\s+\S*$/, '') + '…' : m;
+
     const postData = {
-      title_it: gen.title_it, content_it: gen.content_it, meta_description_it: gen.meta_description_it,
+      title_it: gen.title_it, content_it: gen.content_it, meta_description_it: truncateMeta(gen.meta_description_it || ''),
       slug: baseSlug, slug_it: baseSlug,
       // EN fallback from IT (will be overwritten by async translation)
       title_en: gen.title_it, content_en: gen.content_it,
@@ -254,11 +256,16 @@ Rispondi SOLO con JSON valido (no markdown):
               try {
                 const fixed = JSON.parse(jsonMatch[0]);
                 if (fixed.content_it && fixed.content_it.length > 500) {
+                  // Programmatic meta description truncation — AI can't count chars reliably
+                  let metaFinal = fixed.meta_description_it || currentPost.meta_description_it || '';
+                  if (metaFinal.length > 158) {
+                    metaFinal = metaFinal.slice(0, 155).replace(/\s+\S*$/, '') + '…';
+                  }
                   await sb.from('blog_posts').update({
                     content_it: fixed.content_it,
-                    ...(fixed.meta_description_it ? { meta_description_it: fixed.meta_description_it } : {}),
+                    meta_description_it: metaFinal,
                   }).eq('id', savedPost.id);
-                  await appendLog(sb, taskId, { step: 'fix_done', iteration, msg: `✅ Fix ${iteration} applicato` });
+                  await appendLog(sb, taskId, { step: 'fix_done', iteration, msg: `✅ Fix ${iteration} applicato (meta: ${metaFinal.length} chars)` });
                 } else {
                   await appendLog(sb, taskId, { step: 'fix_skipped', iteration, msg: 'Fix ignorato: risposta AI non valida' });
                   break;
