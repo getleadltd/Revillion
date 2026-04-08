@@ -121,11 +121,36 @@ Usa 4-6 FAQ rilevanti per il topic. Schema può essere: Article, HowTo, Review, 
     const metaRaw = await callAI(LOVABLE_API_KEY, [{ role: 'user', content: metaPrompt }], 1024);
     console.log(`Metadata generated: ${metaRaw.length} chars`);
 
-    // Parse metadata JSON
+    // Parse metadata JSON — robust: try raw, then clean, then field-by-field fallback
     const metaClean = metaRaw.replace(/^```(?:json)?\s*/im, '').replace(/\s*```\s*$/im, '').trim();
     const metaJsonMatch = metaClean.match(/\{[\s\S]*\}/);
     if (!metaJsonMatch) throw new Error('Metadata JSON non trovato');
-    const meta = JSON.parse(metaJsonMatch[0]);
+
+    let meta: any;
+    try {
+      meta = JSON.parse(metaJsonMatch[0]);
+    } catch {
+      // Attempt to salvage: extract fields individually via regex
+      console.warn('Metadata JSON parse failed, attempting field extraction...');
+      const extract = (key: string) => {
+        const m = metaJsonMatch[0].match(new RegExp(`"${key}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`));
+        return m ? m[1].replace(/\\n/g, ' ').replace(/\\"/g, '"') : '';
+      };
+      meta = {
+        title: extract('title'),
+        slug: extract('slug'),
+        meta: extract('meta'),
+        keywords: [],
+        schema: extract('schema') || 'Article',
+        faq: [],
+      };
+      // Try to extract keywords array
+      const kwMatch = metaJsonMatch[0].match(/"keywords"\s*:\s*\[([^\]]*)\]/);
+      if (kwMatch) {
+        meta.keywords = kwMatch[1].match(/"([^"]+)"/g)?.map((s: string) => s.replace(/"/g, '')) ?? [];
+      }
+      console.log('Field extraction result:', JSON.stringify(meta));
+    }
 
     const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 55);
     const faq_items = (meta.faq || []).map((f: any) => ({ question: f.q || f.question, answer: f.a || f.answer }));
