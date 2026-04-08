@@ -173,7 +173,7 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     // ── 7-8. Review → Fix loop (max 2 iterations) ────────────────────────────
     // Multilingual excluded: translations happen in background, can't be fixed here
     const EXCLUDE_AGENTS = ['multilingual'];
-    const MAX_FIX_ITERATIONS = 2;
+    const MAX_FIX_ITERATIONS = 3;
     let reviewScore = 0;
     let reviewAgents: any[] = [];
 
@@ -193,8 +193,8 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
       const reviewSuggestions: string[] = reviewData?.summary?.top_suggestions ?? [];
       await appendLog(sb, taskId, { step: 'review_done', score: reviewScore, iteration, msg: `Review ${iteration}: score ${reviewScore}/100 — ${reviewIssues.length} problemi` });
 
-      // Stop looping if score is good enough or this was the last iteration
-      if (reviewScore >= minScore || isLastIteration || (reviewIssues.length === 0 && reviewSuggestions.length === 0)) break;
+      // Stop looping only when no more issues or max iterations reached
+      if (isLastIteration || (reviewIssues.length === 0 && reviewSuggestions.length === 0)) break;
 
       // ── Fix pass ────────────────────────────────────────────────────────────
       await appendLog(sb, taskId, { step: 'fix_start', iteration, msg: `Auto-fix ${iteration}: applico ${reviewIssues.length + reviewSuggestions.length} correzioni...` });
