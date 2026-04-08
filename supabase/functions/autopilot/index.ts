@@ -213,11 +213,12 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
               }).join('\n\n')}`
             : '';
 
+          const metaLen = currentPost.meta_description_it?.length ?? 0;
           const fixPrompt = `Sei un esperto editor di contenuti SEO per affiliati iGaming. Correggi questo articolo basandoti sui problemi identificati dagli agenti.
 
 ARTICOLO DA CORREGGERE:
 Titolo: ${currentPost.title_it}
-Meta description: ${currentPost.meta_description_it}
+Meta description attuale (${metaLen} caratteri): ${currentPost.meta_description_it}
 Contenuto (HTML):
 ${currentPost.content_it}
 
@@ -227,20 +228,18 @@ ${reviewIssues.map((i: string, n: number) => `${n + 1}. ${i}`).join('\n')}
 SUGGERIMENTI DA APPLICARE:
 ${reviewSuggestions.map((s: string, n: number) => `${n + 1}. ${s}`).join('\n')}${agentFeedbackSection}
 
-REGOLE GENERALI:
-- Mantieni la stessa struttura HTML e i link interni esistenti
-- Mantieni il link CTA a Revillion Partners: <a href="https://dashboard.revillion.com/en/registration">
-- NON menzionare competitor (Income Access, Bet365, ecc.)
-- Aggiungi definizione di iGaming al primo utilizzo se mancante
-- Spezza frasi lunghe in frasi più corte (max 20 parole)
-- Assicurati che l'articolo sia COMPLETO (introduzione + corpo + conclusione + FAQ presenti)
-- Meta description: 148-158 caratteri, include keyword + benefit + CTA
-- Se il word count è basso, espandi le sezioni principali con dettagli pratici
-- Se mancano CTA, aggiungi almeno 2-3 call to action a Revillion Partners
-- Se la leggibilità è scarsa, usa più punti elenco e sottotitoli H3
+REGOLE PRECISE DA RISPETTARE (VERIFICA OBBLIGATORIA PRIMA DI RISPONDERE):
+1. META DESCRIPTION: deve essere ESATTAMENTE tra 148 e 158 caratteri. Conta i caratteri uno per uno. Attuale: ${metaLen} caratteri. ${metaLen > 158 ? `Devi ACCORCIARE di ${metaLen - 155} caratteri.` : metaLen < 148 ? `Devi ALLUNGARE di ${148 - metaLen} caratteri.` : 'Lunghezza ok.'}
+2. KEYWORD DENSITY: usa la keyword principale MAX 2 volte ogni 100 parole. Se appare più spesso, sostituisci con sinonimi (es. "segmenti di mercato", "verticali iGaming", "nicchie di gioco online").
+3. FRASI CORTE: spezza ogni frase sopra 20 parole in due frasi separate. Usa punti, non virgole.
+4. PARAGRAFI: max 3-4 frasi per paragrafo. Se un paragrafo ha 5+ frasi, dividilo.
+5. Mantieni la stessa struttura HTML e i link interni esistenti.
+6. Mantieni il link CTA a Revillion Partners: <a href="https://dashboard.revillion.com/en/registration">
+7. Assicurati che ci siano almeno 2-3 CTA a Revillion Partners nel contenuto.
+8. NON aggiungere statistiche o dati esterni non verificabili.
 
 Rispondi SOLO con JSON valido (no markdown):
-{"content_it": "<contenuto HTML corretto e completo>", "meta_description_it": "<meta description corretta>"}`;
+{"content_it": "<contenuto HTML corretto e completo>", "meta_description_it": "<meta description di 148-158 caratteri esatti>"}`;
 
           const fixRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
             method: 'POST',
