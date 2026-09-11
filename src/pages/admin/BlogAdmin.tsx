@@ -62,8 +62,14 @@ const BlogAdmin = () => {
   const handleDeletePost = async (postId: string, postTitle: string) => {
     setDeletingPostId(postId);
     try {
-      // Clear FK reference in blog_queue before deleting
-      await supabase.from('blog_queue').update({ generated_post_id: null }).eq('generated_post_id', postId);
+      const { count: linkedQueueItems, error: linkCheckError } = await supabase
+        .from('blog_queue')
+        .select('id', { count: 'exact', head: true })
+        .eq('generated_post_id', postId);
+      if (linkCheckError) throw linkCheckError;
+      if ((linkedQueueItems ?? 0) > 0) {
+        throw new Error('Il post è collegato alla coda Autopilot: riconcilialo prima di eliminarlo.');
+      }
       const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['blog-posts-admin'] });

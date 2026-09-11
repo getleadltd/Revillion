@@ -85,7 +85,7 @@ export default function AutoPilot() {
         const map: Record<string, string> = {};
         data.forEach(r => { map[r.key] = r.value; });
         setEnabled(map.autopilot_enabled === 'true');
-        if (map.autopilot_min_score) setMinScore(parseInt(map.autopilot_min_score));
+        if (map.autopilot_min_score) setMinScore(Math.max(1, parseInt(map.autopilot_min_score)));
         if (map.autopilot_daily_limit) setDailyLimit(parseInt(map.autopilot_daily_limit));
         if (map.autopilot_schedule_hours) {
           setScheduleHours(map.autopilot_schedule_hours.split(',').map(h => parseInt(h.trim())).filter(h => !isNaN(h)));
@@ -329,7 +329,7 @@ export default function AutoPilot() {
                 </div>
                 <Slider
                   value={[minScore]}
-                  min={0}
+                  min={1}
                   max={100}
                   step={5}
                   onValueChange={([v]) => setMinScore(v)}

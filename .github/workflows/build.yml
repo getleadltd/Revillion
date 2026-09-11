@@ -33,6 +33,9 @@ jobs:
     - name: Type-check Edge Functions
       run: deno check supabase/functions/*/index.ts
 
+    - name: Test Edge authentication policy
+      run: deno test --no-remote --no-npm supabase/functions/_shared/pipeline-auth_test.ts
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
