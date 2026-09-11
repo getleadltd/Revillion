@@ -8,7 +8,7 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 
 const MAX_BODY_BYTES = 16_384;
 const META_GRAPH_API_VERSION = 'v26.0';
@@ -23,8 +23,6 @@ const jsonHeaders = {
   'Content-Type': 'application/json',
   'Cache-Control': 'no-store',
 };
-
-type SupabaseClient = ReturnType<typeof createClient>;
 
 function jsonResponse(body: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: jsonHeaders });

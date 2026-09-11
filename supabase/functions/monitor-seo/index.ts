@@ -1,11 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 import { fetchPublicUrl } from '../_shared/public-http.ts';
 
 const MAX_LINKS_PER_SCAN = 500;
 const LINK_CHECK_CONCURRENCY = 8;
 const LINK_SCAN_BUDGET_MS = 110_000;
-type SupabaseClient = ReturnType<typeof createClient>;
 
 interface LinkTarget {
   postId: string;

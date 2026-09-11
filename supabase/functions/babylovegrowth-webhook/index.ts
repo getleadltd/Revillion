@@ -1,6 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 import { fetchPublicUrl, readResponseBytes } from '../_shared/public-http.ts';
 
 const MAX_WEBHOOK_BODY_BYTES = 5 * 1024 * 1024;
@@ -13,7 +13,6 @@ const IMAGE_EXTENSIONS: Readonly<Record<string, string>> = {
   'image/webp': 'webp',
   'image/gif': 'gif',
 };
-type SupabaseClient = ReturnType<typeof createClient>;
 type ExistingIngest = {
   id: string;
   slug: string;
