@@ -3,7 +3,7 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -267,11 +267,12 @@ async function runPipeline(
         if (currentPost) {
           const agentFeedbackSection = reviewAgents.length > 0
             ? `\n\nANALISI DETTAGLIATA PER AGENTE:\n${reviewAgents.map((a: any) => {
+                const feedback = a.result ?? a;
                 const lines: string[] = [`### ${a.name} (Score: ${a.score}/100)`];
-                if (a.issues?.length) lines.push(`Problemi: ${a.issues.join(' | ')}`);
-                if (a.suggestions?.length) lines.push(`Suggerimenti: ${a.suggestions.join(' | ')}`);
-                if (a.extra && Object.keys(a.extra).length > 0) {
-                  lines.push(`Dati extra: ${Object.entries(a.extra).map(([k, v]) => `${k}: ${v}`).join(', ')}`);
+                if (feedback.issues?.length) lines.push(`Problemi: ${feedback.issues.join(' | ')}`);
+                if (feedback.suggestions?.length) lines.push(`Suggerimenti: ${feedback.suggestions.join(' | ')}`);
+                if (feedback.extra && Object.keys(feedback.extra).length > 0) {
+                  lines.push(`Dati extra: ${Object.entries(feedback.extra).map(([k, v]) => `${k}: ${v}`).join(', ')}`);
                 }
                 return lines.join('\n');
               }).join('\n\n')}`

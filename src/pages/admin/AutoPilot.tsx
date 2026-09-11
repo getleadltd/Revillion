@@ -109,8 +109,8 @@ export default function AutoPilot() {
     toast({
       title: next ? '🤖 Autopilot attivato' : '⏸ Autopilot disattivato',
       description: next
-        ? 'Gli agenti inizieranno a pubblicare articoli automaticamente.'
-        : 'La generazione automatica è in pausa.',
+        ? 'Impostazione salvata per le esecuzioni pianificate. "Esegui ora" resta disponibile.'
+        : 'Esecuzioni pianificate in pausa. "Esegui ora" resta disponibile.',
     });
   };
 
@@ -293,8 +293,8 @@ export default function AutoPilot() {
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {enabled
-                    ? 'Gli agenti AI stanno monitorando la coda e pubblicando automaticamente.'
-                    : 'Attiva per avviare la generazione automatica degli articoli.'}
+                    ? 'Autopilot è abilitato per le esecuzioni pianificate. "Esegui ora" resta manuale.'
+                    : 'Le esecuzioni pianificate sono in pausa. Puoi continuare a usare "Esegui ora".'}
                 </p>
               </div>
 
@@ -394,7 +394,7 @@ export default function AutoPilot() {
                 ))}
               </div>
               <p className="text-xs text-muted-foreground/60">
-                Il cron gira ogni ora — pubblica solo nelle ore selezionate. "Esegui ora" ignora l'orario.
+                Le ore selezionate si applicano quando Autopilot viene invocato da uno scheduler. "Esegui ora" ignora l'orario.
               </p>
             </div>
           </div>

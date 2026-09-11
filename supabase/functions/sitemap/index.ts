@@ -45,10 +45,13 @@ function generateAlternateLinks(baseUrl: string, slugs: Record<string, string | 
       return `    <xhtml:link rel="alternate" hreflang="${lang}" href="${escapeXml(url)}"/>`;
     });
   
-  // Add x-default pointing to English version
-  const defaultSlug = slugs['en'] || LANGUAGES.find(l => slugs[l]) ? slugs[LANGUAGES.find(l => slugs[l])!] : '';
-  if (defaultSlug) {
-    const defaultUrl = baseUrl.replace('{lang}', 'en').replace('{slug}', defaultSlug);
+  // Prefer English for x-default, otherwise use the first translation that
+  // actually exists. Keep the language and slug paired to avoid broken URLs.
+  const defaultLanguage = slugs.en ? 'en' : LANGUAGES.find(lang => slugs[lang]);
+  if (defaultLanguage) {
+    const defaultUrl = baseUrl
+      .replace('{lang}', defaultLanguage)
+      .replace('{slug}', slugs[defaultLanguage]!);
     links.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(defaultUrl)}"/>`);
   }
   
@@ -86,10 +89,16 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json', 'Allow': 'GET, HEAD, OPTIONS', ...corsHeaders },
+    });
+  }
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     console.log('Fetching published blog posts for sitemap...');
@@ -108,7 +117,7 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${posts?.length || 0} published posts`);
 
-    let urls: string[] = [];
+    const urls: string[] = [];
 
     // 1. Homepage URLs (one per language)
     LANGUAGES.forEach(lang => {
@@ -221,8 +230,7 @@ ${urls.join('\n')}
     });
   } catch (error: unknown) {
     console.error('Sitemap generation error:', error);
-    const msg = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: msg }), {
+    return new Response(JSON.stringify({ error: 'Sitemap generation failed' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });

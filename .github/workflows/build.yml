@@ -26,6 +26,13 @@ jobs:
     - name: Build project
       run: npm run build
 
+    - uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.9.6
+
+    - name: Type-check Edge Functions
+      run: deno check supabase/functions/*/index.ts
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:

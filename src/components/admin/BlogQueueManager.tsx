@@ -527,7 +527,7 @@ export const BlogQueueManager = () => {
           <span>ℹ️</span> Come Funziona l'Automazione
         </h3>
         <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
-          <li>Gli articoli vengono processati automaticamente ogni 30 minuti</li>
+          <li>Il processamento automatico richiede uno scheduler configurato e autorizzato</li>
           <li>Ogni articolo viene analizzato, generato, tradotto in 5 lingue e pubblicato</li>
           <li>Include link building automatico con 3-5 link interni rilevanti</li>
           <li>Immagine featured generata automaticamente con AI</li>

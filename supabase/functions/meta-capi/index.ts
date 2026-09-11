@@ -2,13 +2,13 @@
  * Meta Conversions API (CAPI) — authenticated, server-to-server ingestion.
  *
  * Browser code must never call this function or receive either secret. The
- * Supabase gateway verifies the caller JWT and this function also requires a
- * dedicated x-capi-ingest-key. META_CAPI_ACCESS_TOKEN and
+ * gateway intentionally allows this machine-to-machine request through, and
+ * the function requires a dedicated x-capi-ingest-key. META_CAPI_ACCESS_TOKEN and
  * META_CAPI_INGEST_KEY must be configured as Edge Function secrets.
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 
 const MAX_BODY_BYTES = 16_384;
 const META_GRAPH_API_VERSION = 'v26.0';

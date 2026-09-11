@@ -276,8 +276,8 @@ serve(async (req) => {
             status: 'published',
             published_at: new Date().toISOString(),
             author_id: item.created_by,
-            // Store FAQ items as JSON for schema markup (if column exists)
-            ...(generatedContent.faq_items?.length > 0 ? { faq_schema: JSON.stringify(generatedContent.faq_items) } : {})
+            // Store FAQ items in the versioned JSONB column.
+            ...(generatedContent.faq_items?.length > 0 ? { faq_items: generatedContent.faq_items } : {})
           })
           .select()
           .single();
