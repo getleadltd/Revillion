@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowRight, Mail } from 'lucide-react';
 import { getDashboardUrl, getSiteLanguage } from '@/lib/dashboard';
 import { OPEN_COOKIE_SETTINGS_EVENT } from '@/lib/consentMode';
-import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=85&w=170';
+import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=95&w=400';
 
 export const Footer = () => {
   const { t } = useTranslation();

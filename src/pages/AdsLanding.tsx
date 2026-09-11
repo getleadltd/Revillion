@@ -16,7 +16,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, TrendingUp, Zap, Shield, Clock, BarChart3, ChevronDown } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { trackMetaPageView, trackMetaViewContent, trackMetaLead } from '@/lib/metaPixel';
-import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=85&w=170';
+import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=95&w=500';
 import { getDashboardUrl } from '@/lib/dashboard';
 
 // ─── Mini calculator (self-contained, no Layout wrapper) ─────────────────────

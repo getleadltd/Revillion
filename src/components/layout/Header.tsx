@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { getDashboardUrl, getSiteLanguage } from '@/lib/dashboard';
-import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=85&w=170';
+import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=95&w=400';
 
 interface HeaderProps {
   showScrollLinks?: boolean;
