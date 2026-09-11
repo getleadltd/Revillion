@@ -5,20 +5,67 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// EdgeRuntime is a Supabase-specific global — declare for TypeScript
-declare const EdgeRuntime: { waitUntil: (promise: Promise<unknown>) => void } | undefined;
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const SUPABASE_URL   = Deno.env.get('SUPABASE_URL') ?? '';
-const SERVICE_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') ?? '';
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 
-function supabaseAdmin() {
-  return createClient(SUPABASE_URL, SERVICE_KEY);
+async function verifyAdmin(req: Request): Promise<{ error?: Response; authorization?: string }> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader || !/^Bearer\s+\S+$/i.test(authHeader)) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: 'Missing or invalid authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      ),
+    };
+  }
+
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error('Admin authorization is not configured');
+    return {
+      error: new Response(
+        JSON.stringify({ error: 'Admin authorization unavailable' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      ),
+    };
+  }
+
+  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: authHeader } },
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  const { data: { user }, error: authError } = await authClient.auth.getUser();
+  if (authError || !user) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      ),
+    };
+  }
+
+  const { data: isAdmin, error: roleError } = await authClient
+    .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+
+  if (roleError || isAdmin !== true) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: 'Admin access required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      ),
+    };
+  }
+
+  return { authorization: authHeader };
+}
+
+function supabaseAdmin(serviceRoleKey: string) {
+  return createClient(SUPABASE_URL, serviceRoleKey);
 }
 
 async function getSetting(sb: any, key: string, fallback = '') {
@@ -38,13 +85,26 @@ async function appendLog(sb: any, taskId: string, entry: object) {
 }
 
 // ── Full pipeline (runs in background) ───────────────────────────────────────
-async function runPipeline(sb: any, item: any, taskId: string, minScore: number) {
+async function runPipeline(
+  sb: any,
+  item: any,
+  taskId: string,
+  minScore: number,
+  adminAuthorization: string,
+  lovableApiKey: string,
+) {
+  const functionHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': adminAuthorization,
+    'apikey': SUPABASE_ANON_KEY,
+  };
+
   try {
     // ── 3. Analyze title ──────────────────────────────────────────────────────
     await appendLog(sb, taskId, { step: 'analyze', msg: 'Analisi parametri articolo...' });
     const analyzeHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/analyze-blog-title`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+      headers: functionHeaders,
       body: JSON.stringify({ title: item.title }),
     });
     if (!analyzeHttpRes.ok) {
@@ -61,12 +121,12 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     const [contentRes, imageRes] = await Promise.allSettled([
       fetch(`${SUPABASE_URL}/functions/v1/generate-blog-content`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+        headers: functionHeaders,
         body: JSON.stringify({ topic: item.title, keywords: keywords.join(', '), category, tone, length, search_intent, content_format }),
       }),
       fetch(`${SUPABASE_URL}/functions/v1/generate-blog-image`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+        headers: functionHeaders,
         body: JSON.stringify({ autoPrompt: { title: item.title, category } }),
       }),
     ]);
@@ -145,12 +205,14 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
     }).eq('id', item.id);
 
     // ── 5b. Translate EN/DE/PT/ES in background (non-blocking) ────────────────
-    fetch(`${SUPABASE_URL}/functions/v1/translate-blog-post`, {
+    const translationPromise = fetch(`${SUPABASE_URL}/functions/v1/translate-blog-post`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+      headers: functionHeaders,
       body: JSON.stringify({
-        post_id: savedPost.id,
-        title_it: gen.title_it, content_it: gen.content_it, meta_description_it: gen.meta_description_it,
+        title: gen.title_it,
+        content: gen.content_it,
+        meta_description: gen.meta_description_it,
+        source_language: 'it',
       }),
     }).then(async (r) => {
       if (r.ok) {
@@ -185,7 +247,7 @@ async function runPipeline(sb: any, item: any, taskId: string, minScore: number)
 
       const reviewHttpRes = await fetch(`${SUPABASE_URL}/functions/v1/article-review-swarm`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` },
+        headers: functionHeaders,
         body: JSON.stringify({ post_id: savedPost.id, lang: 'it', exclude_agents: EXCLUDE_AGENTS }),
       });
       const reviewData = reviewHttpRes.ok ? await reviewHttpRes.json() : { score: 0 };
@@ -245,7 +307,7 @@ Rispondi SOLO con JSON valido (no markdown):
 
           const fixRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}` },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${lovableApiKey}` },
             body: JSON.stringify({ model: 'google/gemini-2.5-flash', messages: [{ role: 'user', content: fixPrompt }], max_tokens: 8192 }),
           });
 
@@ -283,6 +345,11 @@ Rispondi SOLO con JSON valido (no markdown):
       }
     }
 
+    // Keep the translation work inside the lifetime tracked by runPipeline.
+    // It still runs in parallel with review/fix, but must settle before the
+    // pipeline completes (and before a post can be auto-published).
+    await translationPromise;
+
     // ── 9. Auto publish ───────────────────────────────────────────────────────
     let published = false;
     if (reviewScore >= minScore) {
@@ -318,9 +385,21 @@ Rispondi SOLO con JSON valido (no markdown):
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  const sb = supabaseAdmin();
-
   try {
+    const authResult = await verifyAdmin(req);
+    if (authResult.error) return authResult.error;
+
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    if (!serviceRoleKey || !lovableApiKey || !authResult.authorization) {
+      console.error('Autopilot server credentials are not configured');
+      return new Response(JSON.stringify({ error: 'Autopilot service unavailable' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const sb = supabaseAdmin(serviceRoleKey);
     const body = await req.json().catch(() => ({}));
     const force       = body?.force === true;
     const queueItemId: string | null = body?.queue_item_id ?? null;
@@ -389,9 +468,22 @@ serve(async (req) => {
     await sb.from('blog_queue').update({ status: 'processing' }).eq('id', item.id);
 
     // ── Return immediately, process in background ─────────────────────────────
-    const pipeline = runPipeline(sb, item, taskId, minScore);
-    const didSchedule = (globalThis as any).EdgeRuntime?.waitUntil?.(pipeline);
-    if (!didSchedule) await pipeline; // fallback: run sync if EdgeRuntime not available
+    const pipeline = runPipeline(
+      sb,
+      item,
+      taskId,
+      minScore,
+      authResult.authorization,
+      lovableApiKey,
+    );
+    const edgeRuntime = (globalThis as typeof globalThis & {
+      EdgeRuntime?: { waitUntil: (promise: Promise<unknown>) => void };
+    }).EdgeRuntime;
+    if (typeof edgeRuntime?.waitUntil === 'function') {
+      edgeRuntime.waitUntil(pipeline);
+    } else {
+      await pipeline; // fallback: run sync if EdgeRuntime is not available
+    }
 
     return new Response(JSON.stringify({ started: true, task_id: taskId, title: item.title }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

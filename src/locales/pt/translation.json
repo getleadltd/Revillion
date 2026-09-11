@@ -8,7 +8,8 @@
     "contact": "Contacto",
     "calculator": "Calculadora",
     "blog": "Blog",
-    "startEarning": "Comece a Ganhar"
+    "startEarning": "Comece a Ganhar",
+    "login": "Entrar"
   },
   "hero": {
     "badge": "#1 Rede de Afiliados iGaming",
@@ -127,7 +128,7 @@
     "earned": "$4,250 ganhos",
     "realtimeUpdate": "Atualizações de postback em tempo real",
     "accessButton": "Acesse Seu Dashboard",
-    "seeLive": "Ver o painel ao vivo",
+    "seeLive": "Entrar no painel",
     "revenueChart": "Receita — Últimos 7 dias"
   },
   "offers": {
@@ -148,7 +149,7 @@
       "africa": "🌍 África: África do Sul, Nigéria, Quênia",
       "moreMarkets": "📍 E mais de 30 mercados em todo o mundo"
     },
-    "exploreButton": "Explore Nossas Ofertas",
+    "exploreButton": "Cadastre-se para Ver Ofertas",
     "urgency": "Vagas limitadas disponíveis para Q2 2026"
   },
   "testimonials": {
@@ -254,13 +255,32 @@
   "footer": {
     "description": "Seu parceiro de confiança para marketing de afiliados no setor iGaming. Junte-se à nossa rede global e maximize seus ganhos com ofertas exclusivas e suporte dedicado.",
     "quickLinks": "Links Rápidos",
+    "resources": "Recursos",
     "legal": "Informações Legais",
     "privacyPolicy": "Política de Privacidade",
     "termsOfService": "Termos de Serviço",
     "responsibleGaming": "Jogo Responsável",
+    "cookieSettings": "Definições de cookies",
+    "responsibleNotice": "18+ | Jogue com responsabilidade",
     "socialMedia": "Mídias Sociais",
     "rights": "Todos os direitos reservados.",
-    "copyright": "© 2025 Revillion Partners. Todos os direitos reservados."
+    "copyright": "© {{year}} Revillion Partners. Todos os direitos reservados."
+  },
+  "accessibility": {
+    "skipToContent": "Ir para o conteúdo principal",
+    "dismiss": "Fechar",
+    "home": "Página inicial da Revillion",
+    "openMenu": "Abrir menu de navegação",
+    "closeMenu": "Fechar menu de navegação",
+    "changeLanguage": "Alterar idioma. Idioma atual: {{language}}"
+  },
+  "notFound": {
+    "metaTitle": "Página não encontrada | Revillion Partners",
+    "badge": "Página não encontrada",
+    "title": "Perdido na",
+    "titleHighlight": "Matrix?",
+    "description": "Esta página não existe. Pode voltar ao site ou continuar para a sua conta de afiliado.",
+    "cta": "Tornar-se afiliado"
   },
   "blog": {
     "title": "Blog e Notícias",
@@ -268,28 +288,52 @@
     "metaTitle": "Blog de Afiliados iGaming & Notícias | Revillion Partners",
     "metaDescription": "Dicas de especialistas, estratégias para afiliados de cassino e notícias do setor iGaming. Aprenda a maximizar comissões CPA com Revillion Partners.",
     "readMore": "Ler Mais",
-    "categories": "Categorias",
+    "categories": {
+      "label": "Categorias",
+      "news": "Notícias",
+      "reviews": "Avaliações",
+      "tips": "Dicas para Afiliados",
+      "casino-reviews": "Avaliações de Casino",
+      "affiliate-tips": "Dicas para Afiliados",
+      "industry-updates": "Atualizações da Indústria",
+      "guides": "Guias"
+    },
     "allPosts": "Todos os Posts",
     "noPosts": "Nenhum post encontrado",
+    "noSearchResults": "Nenhum artigo corresponde a “{{query}}”.",
+    "searchLabel": "Pesquisar artigos do blog",
+    "searchPlaceholder": "Pesquisar artigos, guias e avaliações...",
+    "loading": "Carregando artigos...",
+    "loadError": "Não foi possível carregar os artigos. Tente novamente em instantes.",
+    "resultsLabel": "Artigos do blog",
+    "resultsFound": "{{count}} artigos encontrados",
     "latestPosts": "Últimos Posts",
     "relatedPosts": "Você Também Pode Gostar",
     "sharePost": "Compartilhar este artigo",
+    "sharing": {
+      "copyLink": "Copiar link",
+      "copied": "Copiado!",
+      "share": "Compartilhar",
+      "copySuccessTitle": "Link copiado!",
+      "copySuccessDescription": "O link foi copiado para a área de transferência.",
+      "copyErrorTitle": "Não foi possível copiar o link",
+      "copyErrorDescription": "Tente novamente."
+    },
     "readingTime": "min de leitura",
     "views": "visualizações",
     "publishedOn": "Publicado em",
     "writtenBy": "Escrito por",
     "postNotFound": "Post não encontrado",
     "backToBlog": "Voltar ao Blog",
-    "categories.news": "Notícias",
-    "categories.casino-reviews": "Avaliações de Casino",
-    "categories.affiliate-tips": "Dicas para Afiliados",
-    "categories.industry-updates": "Atualizações da Indústria",
-    "categories.guides": "Guias",
     "pagination": {
+      "label": "Paginação do blog",
+      "page": "Ir para a página {{page}}",
       "previous": "Anterior",
       "next": "Próximo"
     },
     "cta": {
+      "title": "Pronto para começar a ganhar?",
+      "description": "Candidate-se à Revillion Partners para acessar nossas ofertas de afiliados e nosso suporte.",
       "button": "Torne-se Partner Agora"
     },
     "admin": {
@@ -353,7 +397,26 @@
       "submit": "Enviar Mensagem",
       "submitting": "Enviando...",
       "success": "Mensagem enviada com sucesso! Responderemos em 24 horas.",
-      "error": "Erro ao enviar mensagem. Tente novamente."
+      "error": "Erro ao enviar mensagem. Tente novamente.",
+      "errors": {
+        "nameMin": "O nome deve ter pelo menos 2 caracteres.",
+        "nameMax": "O nome não pode ter mais de 100 caracteres.",
+        "email": "Introduza um endereço de email válido.",
+        "emailMax": "O endereço de email não pode ter mais de 255 caracteres.",
+        "phoneMax": "O número de telefone não pode ter mais de 30 caracteres.",
+        "contactType": "Selecione o tipo de pedido.",
+        "companyMax": "O nome da empresa não pode ter mais de 150 caracteres.",
+        "subjectMin": "O assunto deve ter pelo menos 5 caracteres.",
+        "subjectMax": "O assunto não pode ter mais de 200 caracteres.",
+        "messageMin": "A mensagem deve ter pelo menos 20 caracteres.",
+        "messageMax": "A mensagem não pode ter mais de 2.000 caracteres."
+      }
+    },
+    "trust": {
+      "response": "Respondemos no prazo de 24 horas",
+      "secure": "Formulário seguro",
+      "responseShort": "Resposta em 24 horas",
+      "support": "Apoio dedicado"
     },
     "info": {
       "title": "Oportunidades de Parceria",

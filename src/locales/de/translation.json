@@ -8,7 +8,8 @@
     "contact": "Kontakt",
     "calculator": "Rechner",
     "blog": "Blog",
-    "startEarning": "Jetzt verdienen"
+    "startEarning": "Jetzt verdienen",
+    "login": "Anmelden"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate-Netzwerk",
@@ -127,7 +128,7 @@
     "earned": "$4.250 verdient",
     "realtimeUpdate": "Echtzeit-Postback-Aktualisierungen",
     "accessButton": "Zum Dashboard",
-    "seeLive": "Dashboard live ansehen",
+    "seeLive": "Im Dashboard anmelden",
     "revenueChart": "Einnahmen — Letzte 7 Tage"
   },
   "offers": {
@@ -148,7 +149,7 @@
       "africa": "🌍 Afrika: Südafrika, Nigeria, Kenia",
       "moreMarkets": "📍 Und über 30 weitere Märkte weltweit"
     },
-    "exploreButton": "Unsere Angebote erkunden",
+    "exploreButton": "Registrieren und Angebote ansehen",
     "urgency": "Begrenzte Plätze für Q2 2026 verfügbar"
   },
   "testimonials": {
@@ -254,13 +255,32 @@
   "footer": {
     "description": "Ihr vertrauenswürdiger Partner für Affiliate-Marketing im iGaming-Sektor. Treten Sie unserem globalen Netzwerk bei und maximieren Sie Ihre Einnahmen mit exklusiven Angeboten und dediziertem Support.",
     "quickLinks": "Schnellzugriff",
+    "resources": "Ressourcen",
     "legal": "Rechtliche Informationen",
     "privacyPolicy": "Datenschutzrichtlinie",
     "termsOfService": "Nutzungsbedingungen",
     "responsibleGaming": "Verantwortungsvolles Spielen",
+    "cookieSettings": "Cookie-Einstellungen",
+    "responsibleNotice": "18+ | Verantwortungsbewusst spielen",
     "socialMedia": "Social Media",
     "rights": "Alle Rechte vorbehalten.",
-    "copyright": "© 2025 Revillion Partners. Alle Rechte vorbehalten."
+    "copyright": "© {{year}} Revillion Partners. Alle Rechte vorbehalten."
+  },
+  "accessibility": {
+    "skipToContent": "Zum Hauptinhalt springen",
+    "dismiss": "Schließen",
+    "home": "Revillion-Startseite",
+    "openMenu": "Navigationsmenü öffnen",
+    "closeMenu": "Navigationsmenü schließen",
+    "changeLanguage": "Sprache ändern. Aktuelle Sprache: {{language}}"
+  },
+  "notFound": {
+    "metaTitle": "Seite nicht gefunden | Revillion Partners",
+    "badge": "Seite nicht gefunden",
+    "title": "Verirrt in der",
+    "titleHighlight": "Matrix?",
+    "description": "Diese Seite existiert nicht. Kehren Sie zur Website zurück oder fahren Sie mit Ihrem Affiliate-Konto fort.",
+    "cta": "Affiliate werden"
   },
   "blog": {
     "title": "Blog & News",
@@ -268,28 +288,52 @@
     "metaTitle": "iGaming Affiliate Blog & News | Revillion Partners",
     "metaDescription": "Expertentipps, Casino-Affiliate-Strategien und iGaming-Branchennews. Erfahre, wie du CPA-Provisionen maximierst mit Revillion Partners.",
     "readMore": "Mehr Lesen",
-    "categories": "Kategorien",
+    "categories": {
+      "label": "Kategorien",
+      "news": "Nachrichten",
+      "reviews": "Bewertungen",
+      "tips": "Affiliate-Tipps",
+      "casino-reviews": "Casino-Bewertungen",
+      "affiliate-tips": "Affiliate-Tipps",
+      "industry-updates": "Branchen-Updates",
+      "guides": "Leitfäden"
+    },
     "allPosts": "Alle Beiträge",
     "noPosts": "Keine Beiträge gefunden",
+    "noSearchResults": "Keine Artikel passen zu „{{query}}“.",
+    "searchLabel": "Blogartikel durchsuchen",
+    "searchPlaceholder": "Artikel, Leitfäden und Bewertungen durchsuchen...",
+    "loading": "Artikel werden geladen...",
+    "loadError": "Die Artikel konnten nicht geladen werden. Bitte versuche es später erneut.",
+    "resultsLabel": "Blogartikel",
+    "resultsFound": "{{count}} Artikel gefunden",
     "latestPosts": "Neueste Beiträge",
     "relatedPosts": "Das Könnte Dir Auch Gefallen",
     "sharePost": "Diesen Artikel teilen",
+    "sharing": {
+      "copyLink": "Link kopieren",
+      "copied": "Kopiert!",
+      "share": "Teilen",
+      "copySuccessTitle": "Link kopiert!",
+      "copySuccessDescription": "Der Link wurde in die Zwischenablage kopiert.",
+      "copyErrorTitle": "Link konnte nicht kopiert werden",
+      "copyErrorDescription": "Bitte versuche es erneut."
+    },
     "readingTime": "Min. Lesezeit",
     "views": "Aufrufe",
     "publishedOn": "Veröffentlicht am",
     "writtenBy": "Geschrieben von",
     "postNotFound": "Beitrag nicht gefunden",
     "backToBlog": "Zurück zum Blog",
-    "categories.news": "Nachrichten",
-    "categories.casino-reviews": "Casino-Bewertungen",
-    "categories.affiliate-tips": "Affiliate-Tipps",
-    "categories.industry-updates": "Branchen-Updates",
-    "categories.guides": "Leitfäden",
     "pagination": {
+      "label": "Blog-Seitennavigation",
+      "page": "Zu Seite {{page}} wechseln",
       "previous": "Zurück",
       "next": "Weiter"
     },
     "cta": {
+      "title": "Bereit, Einnahmen zu erzielen?",
+      "description": "Bewirb dich bei Revillion Partners und erhalte Zugang zu unseren Affiliate-Angeboten und unserem Support.",
       "button": "Jetzt Partner Werden"
     },
     "admin": {
@@ -353,7 +397,26 @@
       "submit": "Nachricht Senden",
       "submitting": "Wird gesendet...",
       "success": "Nachricht erfolgreich gesendet! Wir antworten innerhalb von 24 Stunden.",
-      "error": "Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut."
+      "error": "Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut.",
+      "errors": {
+        "nameMin": "Der Name muss mindestens 2 Zeichen lang sein.",
+        "nameMax": "Der Name darf höchstens 100 Zeichen lang sein.",
+        "email": "Geben Sie eine gültige E-Mail-Adresse ein.",
+        "emailMax": "Die E-Mail-Adresse darf höchstens 255 Zeichen lang sein.",
+        "phoneMax": "Die Telefonnummer darf höchstens 30 Zeichen lang sein.",
+        "contactType": "Wählen Sie die Art Ihrer Anfrage aus.",
+        "companyMax": "Der Firmenname darf höchstens 150 Zeichen lang sein.",
+        "subjectMin": "Der Betreff muss mindestens 5 Zeichen lang sein.",
+        "subjectMax": "Der Betreff darf höchstens 200 Zeichen lang sein.",
+        "messageMin": "Die Nachricht muss mindestens 20 Zeichen lang sein.",
+        "messageMax": "Die Nachricht darf höchstens 2.000 Zeichen lang sein."
+      }
+    },
+    "trust": {
+      "response": "Wir antworten innerhalb von 24 Stunden",
+      "secure": "Sicheres Formular",
+      "responseShort": "Antwort innerhalb von 24 Std.",
+      "support": "Persönlicher Support"
     },
     "info": {
       "title": "Partnerschaftsmöglichkeiten",

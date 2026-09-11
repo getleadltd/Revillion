@@ -179,11 +179,20 @@ const BlogAdmin = () => {
                                     const { toast } = await import('@/hooks/use-toast').then(m => m);
                                     toast({ title: '🤖 Avvio review agenti...', description: 'I 7 agenti analizzeranno l\'articolo in parallelo.' });
                                     try {
-                                      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/article-review-swarm`, {
+                                      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                                      if (sessionError || !session?.access_token) {
+                                        throw new Error('Sessione amministratore non disponibile');
+                                      }
+
+                                      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/article-review-swarm`, {
                                         method: 'POST',
-                                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+                                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
                                         body: JSON.stringify({ post_id: post.id, lang }),
                                       });
+                                      if (!response.ok) {
+                                        const message = await response.text().catch(() => `HTTP ${response.status}`);
+                                        throw new Error(message.slice(0, 200));
+                                      }
                                       toast({ title: '✅ Review avviata', description: 'Controlla la Dashboard Agenti per i risultati.' });
                                     } catch {
                                       toast({ title: 'Errore', description: 'Impossibile avviare la review.', variant: 'destructive' });

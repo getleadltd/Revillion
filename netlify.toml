@@ -6,18 +6,164 @@
   NODE_VERSION = "20"
 
 [[redirects]]
-  from = "/sitemap-content.xml"
-  to = "https://pvxndzwaposcttrwkwgd.supabase.co/functions/v1/sitemap"
-  status = 200
+  from = "/"
+  to = "/en"
+  status = 301
   force = true
 
 [[redirects]]
-  from = "/api/meta-capi"
-  to = "https://pvxndzwaposcttrwkwgd.supabase.co/functions/v1/meta-capi"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/*"
+  from = "/admin"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/index.html"
+  status = 200
+
+# Dynamic blog posts remain client-rendered until their database-backed SSG
+# pass is introduced. Static blog index files shadow this rule automatically.
+[[redirects]]
+  from = "/en/blog/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/de/blog/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/it/blog/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pt/blog/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/es/blog/*"
+  to = "/index.html"
+  status = 200
+
+# Authentication and protected routes need the SPA shell, but are explicitly
+# excluded from indexing with response headers below.
+[[redirects]]
+  from = "/en/auth/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/de/auth/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/it/auth/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pt/auth/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/es/auth/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/en/admin*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/de/admin*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/it/admin*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pt/admin*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/es/admin*"
+  to = "/index.html"
+  status = 200
+
+# Known public routes are emitted as static files by generate-static-seo.mjs.
+# No global SPA catch-all is declared here: Netlify can return its native 404,
+# while the explicit dynamic blog/auth/admin rewrites above keep working.
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000"
+
+[[headers]]
+  for = "/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/en/auth/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/de/auth/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/it/auth/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/pt/auth/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/es/auth/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/en/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/de/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/it/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/pt/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/es/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

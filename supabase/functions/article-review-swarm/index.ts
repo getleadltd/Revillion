@@ -21,9 +21,48 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') ?? '';
+function jsonError(error: string, status: number): Response {
+  return new Response(
+    JSON.stringify({ error }),
+    { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+  );
+}
+
+async function requireAdmin(req: Request): Promise<Response | null> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader || !/^Bearer\s+\S+$/i.test(authHeader)) {
+    return jsonError('Missing or invalid authorization header', 401);
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Supabase authentication is not configured');
+    return jsonError('Authentication service not configured', 500);
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return jsonError('Invalid authentication', 401);
+  }
+
+  const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
+    _user_id: user.id,
+    _role: 'admin',
+  });
+
+  if (roleError || !isAdmin) {
+    if (roleError) console.error('Admin role verification failed:', roleError.message);
+    return jsonError('Admin access required', 403);
+  }
+
+  return null;
+}
 
 // ─── Agent definitions ────────────────────────────────────────────────────────
 
@@ -245,11 +284,11 @@ Respond ONLY with valid JSON:
 
 // ─── AI call via Lovable gateway ─────────────────────────────────────────────
 
-async function callAI(prompt: string): Promise<any> {
+async function callAI(prompt: string, lovableApiKey: string): Promise<any> {
   const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+      'Authorization': `Bearer ${lovableApiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -274,9 +313,19 @@ async function callAI(prompt: string): Promise<any> {
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
   try {
+    const authError = await requireAdmin(req);
+    if (authError) return authError;
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    if (!supabaseUrl || !supabaseServiceRoleKey || !lovableApiKey) {
+      console.error('Article review service is not configured');
+      return jsonError('Review service not configured', 500);
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
     const { post_id, lang = 'en', exclude_agents = [] } = await req.json();
     if (!post_id) throw new Error('post_id required');
 
@@ -310,7 +359,7 @@ serve(async (req) => {
       activeAgents.map(async (agent) => {
         const start = Date.now();
         try {
-          const result = await callAI(agent.prompt(post, lang));
+          const result = await callAI(agent.prompt(post, lang), lovableApiKey);
           return { id: agent.id, name: agent.name, score: result.score ?? 0, result, duration_ms: Date.now() - start };
         } catch (e) {
           return { id: agent.id, name: agent.name, score: 0, error: String(e), duration_ms: Date.now() - start };

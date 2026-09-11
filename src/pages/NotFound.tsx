@@ -5,26 +5,35 @@ import { ArrowRight, Home, BarChart3, BookOpen, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Helmet } from "react-helmet-async";
+import { getDashboardUrl, getSiteLanguage } from '@/lib/dashboard';
+import { useTranslation } from 'react-i18next';
 
 const NotFound = () => {
   const location = useLocation();
-  const { lang = 'en' } = useParams();
+  const { lang } = useParams();
+  const { t } = useTranslation();
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
 
-  const baseLang = lang && ['en','it','de','es','pt'].includes(lang) ? lang : 'en';
+  const baseLang = getSiteLanguage(lang || location.pathname.split('/')[1]);
 
   const links = [
-    { href: `/${baseLang}`,            label: 'Home',          icon: Home },
-    { href: `/${baseLang}/blog`,       label: 'Blog',          icon: BookOpen },
-    { href: `/${baseLang}/calculator`, label: 'Calculator',    icon: BarChart3 },
-    { href: `/${baseLang}/contact`,    label: 'Contact',       icon: Mail },
+    { href: `/${baseLang}`,            label: t('nav.home'),       icon: Home },
+    { href: `/${baseLang}/blog`,       label: t('nav.blog'),       icon: BookOpen },
+    { href: `/${baseLang}/calculator`, label: t('nav.calculator'), icon: BarChart3 },
+    { href: `/${baseLang}/contact`,    label: t('nav.contact'),    icon: Mail },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
+      <Helmet>
+        <html lang={baseLang} />
+        <title>{t('notFound.metaTitle')}</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <Header />
       <main className="flex-1 flex items-center justify-center px-4 py-24 relative overflow-hidden">
         {/* Ambient glow */}
@@ -39,28 +48,30 @@ const NotFound = () => {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 border border-orange-500/30 bg-orange-500/5 rounded-full px-4 py-2 mb-6">
               <span className="w-2 h-2 bg-orange-500 rounded-full" />
-              <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">Page not found</span>
+              <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">{t('notFound.badge')}</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-black text-white mb-4 leading-tight tracking-tight">
-              Lost in the <span className="text-orange-500">Matrix?</span>
+              {t('notFound.title')} <span className="text-orange-500">{t('notFound.titleHighlight')}</span>
             </h1>
 
             <p className="text-gray-400 text-lg mb-10 leading-relaxed">
-              This page doesn't exist. Head back to start earning — your affiliate dashboard is waiting.
+              {t('notFound.description')}
             </p>
 
-            <a
-              href="https://dashboard.revillion.com/en/registration"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mb-6"
+            <Button
+              asChild
+              className="mb-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-gray-950 font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20"
             >
-              <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
-                Start Earning Now
+              <a
+                href={getDashboardUrl(baseLang, 'registration')}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('notFound.cta')}
                 <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </a>
+              </a>
+            </Button>
 
             {/* Quick links */}
             <div className="flex flex-wrap justify-center gap-3 mt-2">

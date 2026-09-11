@@ -287,12 +287,20 @@ const PrivacyPolicy = () => {
   };
 
   const currentContent = content[lang as keyof typeof content] || content.en;
+  const metaDescriptions: Record<string, string> = {
+    en: 'Learn how Revillion Partners collects, uses and protects personal information.',
+    de: 'Erfahren Sie, wie Revillion Partners personenbezogene Daten erhebt, verwendet und schützt.',
+    it: 'Scopri come Revillion Partners raccoglie, utilizza e protegge i dati personali.',
+    pt: 'Saiba como a Revillion Partners recolhe, utiliza e protege os dados pessoais.',
+    es: 'Descubre cómo Revillion Partners recopila, utiliza y protege los datos personales.',
+  };
+  const metaDescription = metaDescriptions[lang] || metaDescriptions.en;
 
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": currentContent.title,
-    "description": `${currentContent.title} for Revillion Partners iGaming affiliate program`,
+    "description": metaDescription,
     "url": `https://revillion-partners.com/${lang}/privacy-policy`,
     "inLanguage": lang,
     "publisher": {
@@ -305,8 +313,9 @@ const PrivacyPolicy = () => {
   return (
     <Layout>
       <Helmet>
+        <html lang={lang} />
         <title>{currentContent.title} | Revillion Partners</title>
-        <meta name="description" content={`${currentContent.title} - Learn how Revillion Partners collects, uses, and protects your personal information.`} />
+        <meta name="description" content={metaDescription} />
         <link rel="canonical" href={`https://revillion-partners.com/${lang}/privacy-policy`} />
         <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en/privacy-policy" />
         <link rel="alternate" hrefLang="de" href="https://revillion-partners.com/de/privacy-policy" />
@@ -318,7 +327,7 @@ const PrivacyPolicy = () => {
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${currentContent.title} | Revillion Partners`} />
-        <meta property="og:description" content={`${currentContent.title} - Learn how Revillion Partners collects, uses, and protects your personal information.`} />
+        <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={`https://revillion-partners.com/${lang}/privacy-policy`} />
         <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
         <meta property="og:site_name" content="Revillion" />
@@ -327,7 +336,7 @@ const PrivacyPolicy = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@revillion" />
         <meta name="twitter:title" content={`${currentContent.title} | Revillion Partners`} />
-        <meta name="twitter:description" content={`${currentContent.title} - Learn how Revillion Partners collects, uses, and protects your personal information.`} />
+        <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
 
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>

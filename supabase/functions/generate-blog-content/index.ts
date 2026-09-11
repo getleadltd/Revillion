@@ -7,6 +7,51 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+async function verifyAdmin(req: Request): Promise<Response | null> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader || !/^Bearer\s+\S+$/i.test(authHeader)) {
+    return new Response(
+      JSON.stringify({ error: 'Missing or invalid authorization header' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Admin authorization is not configured');
+    return new Response(
+      JSON.stringify({ error: 'Admin authorization unavailable' }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+
+  const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  const { data: { user }, error: authError } = await authClient.auth.getUser();
+  if (authError || !user) {
+    return new Response(
+      JSON.stringify({ error: 'Invalid authentication' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+
+  const { data: isAdmin, error: roleError } = await authClient
+    .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+
+  if (roleError || isAdmin !== true) {
+    return new Response(
+      JSON.stringify({ error: 'Admin access required' }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+
+  return null;
+}
+
 const GATEWAY = 'https://ai.gateway.lovable.dev/v1/chat/completions';
 // Use flash for reliability — already works for review agents, faster, better instruction-following
 const MODEL = 'google/gemini-2.5-flash';
@@ -29,6 +74,9 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
+    const authError = await verifyAdmin(req);
+    if (authError) return authError;
+
     const { topic, keywords, category, tone, length, search_intent, content_format } = await req.json();
 
     if (!topic?.trim()) {

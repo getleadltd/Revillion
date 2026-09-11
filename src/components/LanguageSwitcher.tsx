@@ -2,6 +2,7 @@ import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { getSiteLanguage, SITE_LANGUAGES } from '@/lib/dashboard';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,10 +19,11 @@ const languages = [
 ];
 
 export const LanguageSwitcher = () => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const navigate = useNavigate();
   const { lang } = useParams();
   const location = useLocation();
+  const currentPathLanguage = getSiteLanguage(lang || location.pathname.split('/')[1]);
 
   const changeLanguage = async (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -38,7 +40,7 @@ export const LanguageSwitcher = () => {
         const slugPattern = /^[a-z0-9-]+$/;
         if (!slugPattern.test(currentSlug)) {
           // Invalid slug, navigate without translation lookup
-          const pathWithoutLang = currentPath.replace(`/${lang}`, '');
+          const pathWithoutLang = currentPath.replace(`/${currentPathLanguage}`, '');
           navigate(`/${langCode}${pathWithoutLang}`);
           return;
         }
@@ -67,7 +69,10 @@ export const LanguageSwitcher = () => {
     }
     
     // Otherwise, normal behavior
-    const pathWithoutLang = currentPath.replace(`/${lang}`, '');
+    const firstSegment = currentPath.split('/')[1];
+    const pathWithoutLang = SITE_LANGUAGES.includes(firstSegment as (typeof SITE_LANGUAGES)[number])
+      ? currentPath.replace(`/${firstSegment}`, '')
+      : currentPath;
     navigate(`/${langCode}${pathWithoutLang}`);
   };
 
@@ -75,9 +80,12 @@ export const LanguageSwitcher = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-1.5 px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-white/10 transition-colors focus:outline-none">
-        <Globe size={18} className="text-gray-400" />
-        <span className="font-medium text-gray-300 text-sm md:text-base">{currentLang.flag} {currentLang.code.toUpperCase()}</span>
+      <DropdownMenuTrigger
+        aria-label={t('accessibility.changeLanguage', { language: currentLang.name })}
+        className="flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+      >
+        <Globe size={16} className="text-gray-400 sm:w-[18px] sm:h-[18px]" />
+        <span className="font-medium text-gray-300 text-xs sm:text-sm md:text-base">{currentLang.flag} {currentLang.code.toUpperCase()}</span>
       </DropdownMenuTrigger>
       
       <DropdownMenuContent align="end" className="w-48">

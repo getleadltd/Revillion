@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
 import { ArrowRight, TrendingUp, Users, DollarSign, BarChart3, Zap } from "lucide-react";
 import { trackCTAClick } from "@/lib/analytics";
+import { getDashboardUrl, getSiteLanguage, type SiteLanguage } from '@/lib/dashboard';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type CommissionType = 'CPA' | 'RevShare' | 'Hybrid';
 
 interface Preset {
-  label: string;
+  id: PresetId;
   icon: string;
   traffic: number;
   ctr: number;
@@ -20,16 +21,81 @@ interface Preset {
   depRate: number;
 }
 
+type PresetId = 'telegram' | 'seoBlog' | 'youtube' | 'socialAds';
+
+interface CalculatorCopy {
+  meta: {
+    title: string;
+    description: string;
+  };
+  schema: {
+    name: string;
+    description: string;
+  };
+  presets: Record<PresetId, string>;
+  badge: string;
+  heroBefore: string;
+  heroHighlight: string;
+  heroDescription: string;
+  quickPresets: string;
+  estimatedEarnings: string;
+  perMonthMonthOne: string;
+  threeMonths: string;
+  sixMonths: string;
+  twelveMonths: string;
+  accumulatingEarnings: string;
+  startEarning: string;
+  ctaNote: string;
+  sixMonthGrowth: string;
+  funnelSummary: string;
+  monthlyVisitors: string;
+  affiliateClicks: string;
+  registeredPlayers: string;
+  depositingPlayers: string;
+  trafficTitle: string;
+  trafficDescription: string;
+  clickThroughRate: string;
+  conversionFunnel: string;
+  conversionDescription: string;
+  clicks: string;
+  registrations: string;
+  depositors: string;
+  registrationRate: string;
+  depositConversionRate: string;
+  commissionModel: string;
+  commissionDescription: string;
+  commissionNames: Record<CommissionType, string>;
+  cpaRate: string;
+  howItWorks: string;
+  cpaExplanation: string;
+  revenueShare: string;
+  averageNgr: string;
+  monthlyRetention: string;
+  retentionExplanation: string;
+  revShareExplanation: string;
+  cpaPerDepositor: string;
+  revShareOnNgr: string;
+  hybridExplanation: string;
+  disclaimerLabel: string;
+  disclaimer: string;
+  affiliatesNote: string;
+  aria: {
+    monthlyVisitorsSlider: string;
+    monthlyVisitorsValue: (value: string) => string;
+    percentValue: (value: string) => string;
+  };
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PRESETS: Preset[] = [
-  { label: 'Telegram Channel', icon: '💬', traffic: 15000, ctr: 5, regRate: 25, depRate: 40 },
-  { label: 'SEO Blog',         icon: '✍️', traffic: 50000, ctr: 2, regRate: 15, depRate: 35 },
-  { label: 'YouTube',          icon: '▶️', traffic: 100000, ctr: 1, regRate: 20, depRate: 45 },
-  { label: 'Social Ads',       icon: '📣', traffic: 30000, ctr: 4, regRate: 30, depRate: 50 },
+  { id: 'telegram', icon: '💬', traffic: 15000, ctr: 5, regRate: 25, depRate: 40 },
+  { id: 'seoBlog',  icon: '✍️', traffic: 50000, ctr: 2, regRate: 15, depRate: 35 },
+  { id: 'youtube',  icon: '▶️', traffic: 100000, ctr: 1, regRate: 20, depRate: 45 },
+  { id: 'socialAds', icon: '📣', traffic: 30000, ctr: 4, regRate: 30, depRate: 50 },
 ];
 
-const CPA_RATES = [50, 100, 150, 200, 250];
+const CPA_RATES = [50, 100, 150, 200, 220];
 const REVSHARE_RATES = [25, 30, 35, 40, 45];
 const AVG_NGR_OPTIONS = [20, 40, 60, 80, 100];
 
@@ -49,39 +115,326 @@ const fmtNum = (n: number): string =>
     ? `${(n / 1_000).toFixed(1)}K`
     : `${Math.round(n)}`;
 
-// ─── SEO meta per lingua ─────────────────────────────────────────────────────
+// ─── Localized copy ──────────────────────────────────────────────────────────
 
-const CALC_META: Record<string, { title: string; description: string }> = {
+const CALCULATOR_COPY: Record<SiteLanguage, CalculatorCopy> = {
   en: {
-    title: 'iGaming Affiliate Earnings Calculator | Revillion Partners',
-    description: 'Calculate your potential earnings as an iGaming affiliate. Estimate CPA, RevShare and Hybrid commissions based on your traffic source, CTR and conversion rates.',
+    meta: {
+      title: 'iGaming Affiliate Earnings Calculator | Revillion Partners',
+      description: 'Calculate your potential earnings as an iGaming affiliate. Estimate CPA, RevShare and Hybrid commissions based on your traffic source, CTR and conversion rates.',
+    },
+    schema: {
+      name: 'iGaming Affiliate Earnings Calculator',
+      description: 'Free calculator to estimate affiliate commissions (CPA, RevShare and Hybrid) for iGaming traffic monetization.',
+    },
+    presets: { telegram: 'Telegram Channel', seoBlog: 'SEO Blog', youtube: 'YouTube', socialAds: 'Social Ads' },
+    badge: 'Commission Calculator',
+    heroBefore: 'How Much Can You',
+    heroHighlight: 'Earn?',
+    heroDescription: 'Enter your traffic and conversion metrics — see your real-time earnings estimate across CPA, RevShare, and Hybrid commission models.',
+    quickPresets: 'Quick presets:',
+    estimatedEarnings: 'Estimated Earnings',
+    perMonthMonthOne: 'per month, month 1',
+    threeMonths: '3 months',
+    sixMonths: '6 months',
+    twelveMonths: '12 months',
+    accumulatingEarnings: 'Earnings grow as your player base accumulates each month',
+    startEarning: 'Start Earning Now',
+    ctaNote: 'No setup fees · Free to join · Instant access',
+    sixMonthGrowth: '6-Month Growth',
+    funnelSummary: 'Your Funnel Summary',
+    monthlyVisitors: 'Monthly visitors',
+    affiliateClicks: 'Clicks on affiliate link',
+    registeredPlayers: 'Registered players',
+    depositingPlayers: 'Depositing players',
+    trafficTitle: 'Your Traffic',
+    trafficDescription: 'Monthly visitors to your channel or site',
+    clickThroughRate: 'Click-Through Rate',
+    conversionFunnel: 'Conversion Funnel',
+    conversionDescription: 'How clicks become paying players',
+    clicks: 'Clicks',
+    registrations: 'Registrations',
+    depositors: 'Depositors',
+    registrationRate: 'Registration Rate',
+    depositConversionRate: 'Deposit Conversion Rate',
+    commissionModel: 'Commission Model',
+    commissionDescription: 'Choose how you want to get paid',
+    commissionNames: { CPA: 'CPA', RevShare: 'RevShare', Hybrid: 'Hybrid' },
+    cpaRate: 'CPA Rate per Depositor',
+    howItWorks: 'How it works:',
+    cpaExplanation: 'You earn a fixed amount for every player who makes their first deposit. Simple, predictable, and paid fast.',
+    revenueShare: 'Revenue Share %',
+    averageNgr: 'Avg. NGR per Player / Month',
+    monthlyRetention: 'Monthly Player Retention',
+    retentionExplanation: "% of last month's players who remain active this month",
+    revShareExplanation: "You earn a % of each player's net gaming revenue every month — for as long as they keep playing. Earnings grow as your player base accumulates.",
+    cpaPerDepositor: 'CPA per depositor',
+    revShareOnNgr: 'RevShare on NGR',
+    hybridExplanation: 'The best of both — an upfront CPA payment for every depositor, plus ongoing RevShare on their activity. Lower rates on each, but combined they often outperform either alone.',
+    disclaimerLabel: 'Disclaimer:',
+    disclaimer: 'These estimates are illustrative projections based on the parameters you enter and industry averages. Actual earnings depend on traffic quality, player behavior, geographic markets, and other factors. Past performance is no guarantee of future results. Revillion Partners makes no income guarantees.',
+    affiliatesNote: 'Join 800+ affiliates already earning with Revillion',
+    aria: {
+      monthlyVisitorsSlider: 'Monthly visitors slider',
+      monthlyVisitorsValue: value => `${value} monthly visitors`,
+      percentValue: value => `${value} percent`,
+    },
   },
   it: {
-    title: 'Calcolatore Guadagni Affiliazione iGaming | Revillion Partners',
-    description: 'Calcola i tuoi guadagni potenziali come affiliato iGaming. Stima commissioni CPA, RevShare e Hybrid in base al tuo traffico, CTR e tassi di conversione.',
+    meta: {
+      title: 'Calcolatore Guadagni Affiliazione iGaming | Revillion Partners',
+      description: 'Calcola i tuoi guadagni potenziali come affiliato iGaming. Stima commissioni CPA, RevShare e Hybrid in base al tuo traffico, CTR e tassi di conversione.',
+    },
+    schema: {
+      name: 'Calcolatore dei guadagni per affiliati iGaming',
+      description: 'Calcolatore gratuito per stimare le commissioni di affiliazione CPA, RevShare e Hybrid generate dal traffico iGaming.',
+    },
+    presets: { telegram: 'Canale Telegram', seoBlog: 'Blog SEO', youtube: 'YouTube', socialAds: 'Annunci social' },
+    badge: 'Calcolatore commissioni',
+    heroBefore: 'Quanto puoi',
+    heroHighlight: 'guadagnare?',
+    heroDescription: 'Inserisci i dati di traffico e conversione per vedere in tempo reale una stima dei guadagni con i modelli CPA, RevShare e Hybrid.',
+    quickPresets: 'Preset rapidi:',
+    estimatedEarnings: 'Guadagni stimati',
+    perMonthMonthOne: 'al mese, primo mese',
+    threeMonths: '3 mesi',
+    sixMonths: '6 mesi',
+    twelveMonths: '12 mesi',
+    accumulatingEarnings: 'I guadagni crescono man mano che la tua base giocatori aumenta ogni mese',
+    startEarning: 'Inizia a guadagnare',
+    ctaNote: 'Nessun costo di attivazione · Iscrizione gratuita · Accesso immediato',
+    sixMonthGrowth: 'Crescita in 6 mesi',
+    funnelSummary: 'Riepilogo del funnel',
+    monthlyVisitors: 'Visitatori mensili',
+    affiliateClicks: 'Clic sul link di affiliazione',
+    registeredPlayers: 'Giocatori registrati',
+    depositingPlayers: 'Giocatori depositanti',
+    trafficTitle: 'Il tuo traffico',
+    trafficDescription: 'Visitatori mensili del tuo canale o sito',
+    clickThroughRate: 'Tasso di clic',
+    conversionFunnel: 'Funnel di conversione',
+    conversionDescription: 'Come i clic diventano giocatori paganti',
+    clicks: 'Clic',
+    registrations: 'Registrazioni',
+    depositors: 'Depositanti',
+    registrationRate: 'Tasso di registrazione',
+    depositConversionRate: 'Tasso di conversione in deposito',
+    commissionModel: 'Modello di commissione',
+    commissionDescription: 'Scegli come vuoi essere pagato',
+    commissionNames: { CPA: 'CPA', RevShare: 'RevShare', Hybrid: 'Hybrid' },
+    cpaRate: 'CPA per depositante',
+    howItWorks: 'Come funziona:',
+    cpaExplanation: 'Ricevi un importo fisso per ogni giocatore che effettua il primo deposito. Semplice, prevedibile e pagato rapidamente.',
+    revenueShare: 'Quota ricavi %',
+    averageNgr: 'NGR medio per giocatore / mese',
+    monthlyRetention: 'Retention mensile dei giocatori',
+    retentionExplanation: '% dei giocatori del mese precedente che resta attivo nel mese corrente',
+    revShareExplanation: 'Ricevi ogni mese una percentuale dei ricavi netti di gioco di ciascun giocatore, finché continua a giocare. I guadagni aumentano con la crescita della tua base giocatori.',
+    cpaPerDepositor: 'CPA per depositante',
+    revShareOnNgr: 'RevShare sul NGR',
+    hybridExplanation: 'Il meglio di entrambi: un pagamento CPA iniziale per ogni depositante e una RevShare continuativa sulla sua attività. Le singole percentuali sono inferiori, ma insieme spesso rendono più di un solo modello.',
+    disclaimerLabel: 'Avvertenza:',
+    disclaimer: 'Queste stime sono proiezioni illustrative basate sui parametri inseriti e sulle medie del settore. I guadagni effettivi dipendono dalla qualità del traffico, dal comportamento dei giocatori, dai mercati geografici e da altri fattori. I risultati passati non garantiscono quelli futuri. Revillion Partners non garantisce alcun reddito.',
+    affiliatesNote: 'Unisciti a oltre 800 affiliati che guadagnano già con Revillion',
+    aria: {
+      monthlyVisitorsSlider: 'Cursore dei visitatori mensili',
+      monthlyVisitorsValue: value => `${value} visitatori mensili`,
+      percentValue: value => `${value} percento`,
+    },
   },
   de: {
-    title: 'iGaming Affiliate Einnahmen Rechner | Revillion Partners',
-    description: 'Berechne deine potenziellen Einnahmen als iGaming-Affiliate. Schätze CPA-, RevShare- und Hybrid-Provisionen basierend auf Traffic, CTR und Konversionsraten.',
+    meta: {
+      title: 'iGaming Affiliate Einnahmen Rechner | Revillion Partners',
+      description: 'Berechne deine potenziellen Einnahmen als iGaming-Affiliate. Schätze CPA-, RevShare- und Hybrid-Provisionen basierend auf Traffic, CTR und Konversionsraten.',
+    },
+    schema: {
+      name: 'iGaming-Affiliate-Einnahmenrechner',
+      description: 'Kostenloser Rechner zur Schätzung von CPA-, RevShare- und Hybrid-Affiliate-Provisionen bei der Monetarisierung von iGaming-Traffic.',
+    },
+    presets: { telegram: 'Telegram-Kanal', seoBlog: 'SEO-Blog', youtube: 'YouTube', socialAds: 'Social Ads' },
+    badge: 'Provisionsrechner',
+    heroBefore: 'Wie viel kannst du',
+    heroHighlight: 'verdienen?',
+    heroDescription: 'Gib deine Traffic- und Conversion-Daten ein und erhalte in Echtzeit eine Einnahmenschätzung für CPA-, RevShare- und Hybrid-Provisionsmodelle.',
+    quickPresets: 'Schnellauswahl:',
+    estimatedEarnings: 'Geschätzte Einnahmen',
+    perMonthMonthOne: 'pro Monat, im 1. Monat',
+    threeMonths: '3 Monate',
+    sixMonths: '6 Monate',
+    twelveMonths: '12 Monate',
+    accumulatingEarnings: 'Die Einnahmen wachsen, wenn deine Spielerbasis jeden Monat größer wird',
+    startEarning: 'Jetzt Geld verdienen',
+    ctaNote: 'Keine Einrichtungsgebühr · Kostenlose Teilnahme · Sofortiger Zugang',
+    sixMonthGrowth: 'Wachstum über 6 Monate',
+    funnelSummary: 'Zusammenfassung deines Funnels',
+    monthlyVisitors: 'Monatliche Besucher',
+    affiliateClicks: 'Klicks auf den Affiliate-Link',
+    registeredPlayers: 'Registrierte Spieler',
+    depositingPlayers: 'Einzahlende Spieler',
+    trafficTitle: 'Dein Traffic',
+    trafficDescription: 'Monatliche Besucher deines Kanals oder deiner Website',
+    clickThroughRate: 'Klickrate',
+    conversionFunnel: 'Conversion-Funnel',
+    conversionDescription: 'So werden Klicks zu zahlenden Spielern',
+    clicks: 'Klicks',
+    registrations: 'Registrierungen',
+    depositors: 'Einzahler',
+    registrationRate: 'Registrierungsrate',
+    depositConversionRate: 'Einzahlungsrate',
+    commissionModel: 'Provisionsmodell',
+    commissionDescription: 'Wähle aus, wie du bezahlt werden möchtest',
+    commissionNames: { CPA: 'CPA', RevShare: 'RevShare', Hybrid: 'Hybrid' },
+    cpaRate: 'CPA-Satz pro Einzahler',
+    howItWorks: 'So funktioniert es:',
+    cpaExplanation: 'Du erhältst einen festen Betrag für jeden Spieler, der seine erste Einzahlung tätigt. Einfach, planbar und schnell ausgezahlt.',
+    revenueShare: 'Umsatzbeteiligung in %',
+    averageNgr: 'Durchschn. NGR pro Spieler / Monat',
+    monthlyRetention: 'Monatliche Spielerbindung',
+    retentionExplanation: '% der Spieler des Vormonats, die im aktuellen Monat aktiv bleiben',
+    revShareExplanation: 'Du erhältst jeden Monat einen Anteil am Nettospielertrag jedes Spielers – solange er weiterspielt. Deine Einnahmen wachsen mit deiner Spielerbasis.',
+    cpaPerDepositor: 'CPA pro Einzahler',
+    revShareOnNgr: 'RevShare auf den NGR',
+    hybridExplanation: 'Das Beste aus beiden Modellen: eine einmalige CPA-Zahlung für jeden Einzahler plus laufende RevShare für seine Aktivität. Die einzelnen Sätze sind niedriger, zusammen übertreffen sie aber häufig ein einzelnes Modell.',
+    disclaimerLabel: 'Hinweis:',
+    disclaimer: 'Diese Schätzungen sind beispielhafte Prognosen auf Grundlage deiner Eingaben und von Branchendurchschnitten. Die tatsächlichen Einnahmen hängen von der Traffic-Qualität, dem Spielerverhalten, den geografischen Märkten und weiteren Faktoren ab. Vergangene Ergebnisse garantieren keine zukünftigen Erträge. Revillion Partners gibt keine Einkommensgarantie.',
+    affiliatesNote: 'Schließe dich mehr als 800 Affiliates an, die bereits mit Revillion verdienen',
+    aria: {
+      monthlyVisitorsSlider: 'Regler für monatliche Besucher',
+      monthlyVisitorsValue: value => `${value} monatliche Besucher`,
+      percentValue: value => `${value} Prozent`,
+    },
   },
   pt: {
-    title: 'Calculadora de Ganhos para Afiliados iGaming | Revillion Partners',
-    description: 'Calcule seus ganhos potenciais como afiliado iGaming. Estime comissões CPA, RevShare e Híbridas com base no seu tráfego e taxas de conversão.',
+    meta: {
+      title: 'Calculadora de Ganhos para Afiliados iGaming | Revillion Partners',
+      description: 'Calcule os seus ganhos potenciais como afiliado iGaming. Estime comissões CPA, RevShare e Híbridas com base no seu tráfego e taxas de conversão.',
+    },
+    schema: {
+      name: 'Calculadora de ganhos para afiliados iGaming',
+      description: 'Calculadora gratuita para estimar comissões CPA, RevShare e Híbridas geradas pela monetização de tráfego iGaming.',
+    },
+    presets: { telegram: 'Canal de Telegram', seoBlog: 'Blogue SEO', youtube: 'YouTube', socialAds: 'Anúncios nas redes sociais' },
+    badge: 'Calculadora de comissões',
+    heroBefore: 'Quanto pode',
+    heroHighlight: 'ganhar?',
+    heroDescription: 'Introduza os seus dados de tráfego e conversão para ver, em tempo real, uma estimativa de ganhos nos modelos CPA, RevShare e Híbrido.',
+    quickPresets: 'Predefinições rápidas:',
+    estimatedEarnings: 'Ganhos estimados',
+    perMonthMonthOne: 'por mês, no 1.º mês',
+    threeMonths: '3 meses',
+    sixMonths: '6 meses',
+    twelveMonths: '12 meses',
+    accumulatingEarnings: 'Os ganhos aumentam à medida que a sua base de jogadores cresce todos os meses',
+    startEarning: 'Comece a ganhar agora',
+    ctaNote: 'Sem custos de configuração · Adesão gratuita · Acesso imediato',
+    sixMonthGrowth: 'Crescimento em 6 meses',
+    funnelSummary: 'Resumo do seu funil',
+    monthlyVisitors: 'Visitantes mensais',
+    affiliateClicks: 'Cliques no link de afiliado',
+    registeredPlayers: 'Jogadores registados',
+    depositingPlayers: 'Jogadores com depósito',
+    trafficTitle: 'O seu tráfego',
+    trafficDescription: 'Visitantes mensais do seu canal ou site',
+    clickThroughRate: 'Taxa de cliques',
+    conversionFunnel: 'Funil de conversão',
+    conversionDescription: 'Como os cliques se tornam jogadores pagantes',
+    clicks: 'Cliques',
+    registrations: 'Registos',
+    depositors: 'Depositantes',
+    registrationRate: 'Taxa de registo',
+    depositConversionRate: 'Taxa de conversão em depósito',
+    commissionModel: 'Modelo de comissão',
+    commissionDescription: 'Escolha como pretende receber',
+    commissionNames: { CPA: 'CPA', RevShare: 'RevShare', Hybrid: 'Híbrido' },
+    cpaRate: 'Valor CPA por depositante',
+    howItWorks: 'Como funciona:',
+    cpaExplanation: 'Recebe um valor fixo por cada jogador que faz o primeiro depósito. Simples, previsível e pago rapidamente.',
+    revenueShare: 'Partilha de receita %',
+    averageNgr: 'NGR médio por jogador / mês',
+    monthlyRetention: 'Retenção mensal de jogadores',
+    retentionExplanation: '% dos jogadores do mês anterior que continuam ativos no mês atual',
+    revShareExplanation: 'Recebe todos os meses uma percentagem da receita líquida de jogo de cada jogador, enquanto este continuar a jogar. Os ganhos aumentam com a sua base de jogadores.',
+    cpaPerDepositor: 'CPA por depositante',
+    revShareOnNgr: 'RevShare sobre o NGR',
+    hybridExplanation: 'O melhor dos dois modelos: um pagamento CPA inicial por cada depositante, mais RevShare contínua sobre a sua atividade. As taxas individuais são mais baixas, mas, em conjunto, muitas vezes superam um modelo isolado.',
+    disclaimerLabel: 'Aviso:',
+    disclaimer: 'Estas estimativas são projeções ilustrativas baseadas nos parâmetros introduzidos e nas médias do setor. Os ganhos reais dependem da qualidade do tráfego, do comportamento dos jogadores, dos mercados geográficos e de outros fatores. O desempenho passado não garante resultados futuros. A Revillion Partners não garante rendimentos.',
+    affiliatesNote: 'Junte-se a mais de 800 afiliados que já ganham com a Revillion',
+    aria: {
+      monthlyVisitorsSlider: 'Controlo de visitantes mensais',
+      monthlyVisitorsValue: value => `${value} visitantes mensais`,
+      percentValue: value => `${value} por cento`,
+    },
   },
   es: {
-    title: 'Calculadora de Ganancias para Afiliados iGaming | Revillion Partners',
-    description: 'Calcula tus ganancias potenciales como afiliado iGaming. Estima comisiones CPA, RevShare e Híbridas según tu tráfico, CTR y tasas de conversión.',
+    meta: {
+      title: 'Calculadora de Ganancias para Afiliados iGaming | Revillion Partners',
+      description: 'Calcula tus ganancias potenciales como afiliado iGaming. Estima comisiones CPA, RevShare e Híbridas según tu tráfico, CTR y tasas de conversión.',
+    },
+    schema: {
+      name: 'Calculadora de ganancias para afiliados iGaming',
+      description: 'Calculadora gratuita para estimar comisiones CPA, RevShare e Híbridas generadas por la monetización de tráfico iGaming.',
+    },
+    presets: { telegram: 'Canal de Telegram', seoBlog: 'Blog SEO', youtube: 'YouTube', socialAds: 'Anuncios en redes sociales' },
+    badge: 'Calculadora de comisiones',
+    heroBefore: '¿Cuánto puedes',
+    heroHighlight: 'ganar?',
+    heroDescription: 'Introduce tus datos de tráfico y conversión para ver en tiempo real una estimación de ganancias con los modelos CPA, RevShare e Híbrido.',
+    quickPresets: 'Preajustes rápidos:',
+    estimatedEarnings: 'Ganancias estimadas',
+    perMonthMonthOne: 'al mes, en el 1.er mes',
+    threeMonths: '3 meses',
+    sixMonths: '6 meses',
+    twelveMonths: '12 meses',
+    accumulatingEarnings: 'Las ganancias aumentan a medida que tu base de jugadores crece cada mes',
+    startEarning: 'Empieza a ganar ahora',
+    ctaNote: 'Sin costes de configuración · Registro gratuito · Acceso inmediato',
+    sixMonthGrowth: 'Crecimiento en 6 meses',
+    funnelSummary: 'Resumen de tu embudo',
+    monthlyVisitors: 'Visitantes mensuales',
+    affiliateClicks: 'Clics en el enlace de afiliado',
+    registeredPlayers: 'Jugadores registrados',
+    depositingPlayers: 'Jugadores con depósito',
+    trafficTitle: 'Tu tráfico',
+    trafficDescription: 'Visitantes mensuales de tu canal o sitio',
+    clickThroughRate: 'Tasa de clics',
+    conversionFunnel: 'Embudo de conversión',
+    conversionDescription: 'Cómo los clics se convierten en jugadores de pago',
+    clicks: 'Clics',
+    registrations: 'Registros',
+    depositors: 'Depositantes',
+    registrationRate: 'Tasa de registro',
+    depositConversionRate: 'Tasa de conversión en depósito',
+    commissionModel: 'Modelo de comisión',
+    commissionDescription: 'Elige cómo quieres cobrar',
+    commissionNames: { CPA: 'CPA', RevShare: 'RevShare', Hybrid: 'Híbrido' },
+    cpaRate: 'Tarifa CPA por depositante',
+    howItWorks: 'Cómo funciona:',
+    cpaExplanation: 'Recibes una cantidad fija por cada jugador que realiza su primer depósito. Sencillo, predecible y con pago rápido.',
+    revenueShare: 'Participación en ingresos %',
+    averageNgr: 'NGR medio por jugador / mes',
+    monthlyRetention: 'Retención mensual de jugadores',
+    retentionExplanation: '% de jugadores del mes anterior que siguen activos este mes',
+    revShareExplanation: 'Recibes cada mes un porcentaje de los ingresos netos de juego de cada jugador, mientras siga jugando. Las ganancias aumentan junto con tu base de jugadores.',
+    cpaPerDepositor: 'CPA por depositante',
+    revShareOnNgr: 'RevShare sobre el NGR',
+    hybridExplanation: 'Lo mejor de ambos modelos: un pago CPA inicial por cada depositante y RevShare continua sobre su actividad. Las tarifas individuales son menores, pero combinadas suelen superar a un solo modelo.',
+    disclaimerLabel: 'Aviso:',
+    disclaimer: 'Estas estimaciones son proyecciones ilustrativas basadas en los parámetros introducidos y en promedios del sector. Las ganancias reales dependen de la calidad del tráfico, el comportamiento de los jugadores, los mercados geográficos y otros factores. Los resultados pasados no garantizan resultados futuros. Revillion Partners no garantiza ingresos.',
+    affiliatesNote: 'Únete a más de 800 afiliados que ya ganan con Revillion',
+    aria: {
+      monthlyVisitorsSlider: 'Control de visitantes mensuales',
+      monthlyVisitorsValue: value => `${value} visitantes mensuales`,
+      percentValue: value => `${value} por ciento`,
+    },
   },
 };
 
 const calculatorSchema = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'iGaming Affiliate Earnings Calculator',
   applicationCategory: 'FinanceApplication',
   operatingSystem: 'Web',
-  url: 'https://revillion-partners.com/en/calculator',
-  description: 'Free calculator to estimate affiliate commissions (CPA, RevShare, Hybrid) for iGaming traffic monetization.',
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -97,9 +450,18 @@ const calculatorSchema = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const Calculator = () => {
-  const { lang = 'en' } = useParams();
-  const m = CALC_META[lang] ?? CALC_META.en;
+  const { lang: routeLanguage } = useParams();
+  const lang = getSiteLanguage(routeLanguage);
+  const copy = CALCULATOR_COPY[lang];
+  const m = copy.meta;
   const canonicalUrl = `https://revillion-partners.com/${lang}/calculator`;
+  const localizedCalculatorSchema = {
+    ...calculatorSchema,
+    name: copy.schema.name,
+    description: copy.schema.description,
+    url: canonicalUrl,
+    inLanguage: lang,
+  };
 
   // Traffic inputs
   const [traffic, setTraffic]     = useState(20000);
@@ -224,7 +586,7 @@ const Calculator = () => {
         <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
 
         {/* SoftwareApplication schema */}
-        <script type="application/ld+json">{JSON.stringify(calculatorSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(localizedCalculatorSchema)}</script>
       </Helmet>
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
@@ -233,13 +595,13 @@ const Calculator = () => {
         <div className="container mx-auto px-4 sm:px-6 max-w-5xl text-center relative z-10">
           <div className="inline-flex items-center gap-2 border border-orange-500/30 bg-orange-500/5 rounded-full px-4 py-2 mb-6">
             <Zap className="w-3.5 h-3.5 text-orange-400" />
-            <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">Commission Calculator</span>
+            <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">{copy.badge}</span>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight tracking-tight">
-            How Much Can You <span className="text-orange-500">Earn?</span>
+            {copy.heroBefore} <span className="text-orange-500">{copy.heroHighlight}</span>
           </h1>
           <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Enter your traffic and conversion metrics — see your real-time earnings estimate across CPA, RevShare, and Hybrid commission models.
+            {copy.heroDescription}
           </p>
         </div>
       </section>
@@ -248,15 +610,16 @@ const Calculator = () => {
       <section className="bg-[#F8F7F4] border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl py-5">
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-gray-400 font-mono text-xs uppercase tracking-widest mr-1 shrink-0">Quick presets:</span>
+            <span className="text-gray-400 font-mono text-xs uppercase tracking-widest mr-1 shrink-0">{copy.quickPresets}</span>
             {PRESETS.map((p) => (
               <button
-                key={p.label}
+                type="button"
+                key={p.id}
                 onClick={() => applyPreset(p)}
                 className="flex items-center gap-2 bg-white border border-gray-200 hover:border-orange-400 hover:bg-orange-50 text-gray-700 text-sm font-semibold rounded-full px-4 py-2 transition-all duration-200"
               >
-                <span>{p.icon}</span>
-                {p.label}
+                <span aria-hidden="true">{p.icon}</span>
+                {copy.presets[p.id]}
               </button>
             ))}
           </div>
@@ -276,48 +639,50 @@ const Calculator = () => {
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-4">
                     <BarChart3 className="w-4 h-4 text-orange-400" />
-                    <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">Estimated Earnings</span>
+                    <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">{copy.estimatedEarnings}</span>
                   </div>
                   <div className="mb-1">
                     <div className="text-5xl font-black text-white tabular-nums leading-none">
                       {fmt(stats.monthly)}
                     </div>
-                    <div className="text-gray-400 text-sm mt-2">per month, month 1</div>
+                    <div className="text-gray-400 text-sm mt-2">{copy.perMonthMonthOne}</div>
                   </div>
                   <div className="border-t border-white/10 mt-5 pt-5 grid grid-cols-3 gap-3">
                     <div>
                       <div className="text-lg font-black text-white tabular-nums">{fmt(stats.q1)}</div>
-                      <div className="text-gray-400 text-xs mt-1">3 months</div>
+                      <div className="text-gray-400 text-xs mt-1">{copy.threeMonths}</div>
                     </div>
                     <div>
                       <div className="text-lg font-black text-white tabular-nums">{fmt(stats.q2)}</div>
-                      <div className="text-gray-400 text-xs mt-1">6 months</div>
+                      <div className="text-gray-400 text-xs mt-1">{copy.sixMonths}</div>
                     </div>
                     <div>
                       <div className="text-lg font-black text-orange-400 tabular-nums">{fmt(stats.annual)}</div>
-                      <div className="text-gray-400 text-xs mt-1">12 months</div>
+                      <div className="text-gray-400 text-xs mt-1">{copy.twelveMonths}</div>
                     </div>
                   </div>
                   {commType !== 'CPA' && (
                     <div className="mt-4 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-xl px-3 py-2">
                       <TrendingUp className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span className="text-orange-300 text-xs">Earnings grow as your player base accumulates each month</span>
+                      <span className="text-orange-300 text-xs">{copy.accumulatingEarnings}</span>
                     </div>
                   )}
                   <div className="mt-5 pt-5 border-t border-white/10">
-                    <a
-                      href="https://dashboard.revillion.com/en/registration"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => trackCTAClick('calculator_results_panel_mobile')}
-                      className="block"
+                    <Button
+                      asChild
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-gray-950 font-bold py-3 text-base rounded-xl"
                     >
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 text-base rounded-xl">
-                        Start Earning Now
+                      <a
+                        href={getDashboardUrl(lang, 'registration')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => trackCTAClick('calculator_results_panel_mobile')}
+                      >
+                        {copy.startEarning}
                         <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
-                    </a>
-                    <p className="text-center text-xs text-gray-500 mt-2">No setup fees · Free to join · Instant access</p>
+                      </a>
+                    </Button>
+                    <p className="text-center text-xs text-gray-500 mt-2">{copy.ctaNote}</p>
                   </div>
                 </div>
               </div>
@@ -325,8 +690,8 @@ const Calculator = () => {
               {/* 6-month bar chart — mobile */}
               <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-bold text-gray-900">6-Month Growth</h3>
-                  <span className="text-xs text-gray-400 font-mono uppercase tracking-wider">{commType}</span>
+                  <h3 className="text-sm font-bold text-gray-900">{copy.sixMonthGrowth}</h3>
+                  <span className="text-xs text-gray-400 font-mono uppercase tracking-wider">{copy.commissionNames[commType]}</span>
                 </div>
                 <div className="flex items-end gap-2 h-28">
                   {chartData.map((d) => (
@@ -344,13 +709,13 @@ const Calculator = () => {
 
               {/* Funnel summary — mobile */}
               <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-                <h3 className="text-sm font-bold text-gray-900 mb-3">Your Funnel Summary</h3>
+                <h3 className="text-sm font-bold text-gray-900 mb-3">{copy.funnelSummary}</h3>
                 <div className="space-y-2.5">
                   {[
-                    { label: 'Monthly visitors', value: fmtNum(traffic), color: 'text-gray-700' },
-                    { label: 'Clicks on affiliate link', value: fmtNum(stats.clicks), color: 'text-orange-600' },
-                    { label: 'Registered players', value: fmtNum(stats.regs), color: 'text-blue-600' },
-                    { label: 'Depositing players', value: fmtNum(stats.depositors), color: 'text-green-600' },
+                    { label: copy.monthlyVisitors, value: fmtNum(traffic), color: 'text-gray-700' },
+                    { label: copy.affiliateClicks, value: fmtNum(stats.clicks), color: 'text-orange-600' },
+                    { label: copy.registeredPlayers, value: fmtNum(stats.regs), color: 'text-blue-600' },
+                    { label: copy.depositingPlayers, value: fmtNum(stats.depositors), color: 'text-green-600' },
                   ].map(({ label, value, color }) => (
                     <div key={label} className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">{label}</span>
@@ -371,8 +736,8 @@ const Calculator = () => {
                     <Users className="w-4 h-4 text-orange-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">Your Traffic</h2>
-                    <p className="text-gray-400 text-sm">Monthly visitors to your channel or site</p>
+                    <h2 className="text-lg font-bold text-gray-900">{copy.trafficTitle}</h2>
+                    <p className="text-gray-400 text-sm">{copy.trafficDescription}</p>
                   </div>
                 </div>
 
@@ -380,17 +745,26 @@ const Calculator = () => {
                   {/* Monthly visitors */}
                   <div>
                     <div className="flex justify-between items-baseline mb-3 gap-2">
-                      <label className="text-sm font-semibold text-gray-700 min-w-0 truncate">Monthly Visitors</label>
+                      <label htmlFor="monthly-visitors" className="text-sm font-semibold text-gray-700 min-w-0 truncate">{copy.monthlyVisitors}</label>
                       <div className="flex items-center gap-1 shrink-0">
                         <input
+                          id="monthly-visitors"
                           type="number"
+                          min={1000}
+                          max={500000}
+                          step={1000}
+                          inputMode="numeric"
                           value={traffic}
-                          onChange={e => setTraffic(Math.max(1000, Math.min(1000000, Number(e.target.value))))}
+                          onChange={e => setTraffic(Math.max(1000, Math.min(500000, Number(e.target.value))))}
                           className="w-20 sm:w-28 text-right text-lg font-black text-gray-900 bg-transparent border-none outline-none focus:text-orange-600 transition-colors"
                         />
                       </div>
                     </div>
                     <Slider
+                      thumbProps={{
+                        'aria-label': copy.aria.monthlyVisitorsSlider,
+                        'aria-valuetext': copy.aria.monthlyVisitorsValue(traffic.toLocaleString(lang)),
+                      }}
                       value={[traffic]}
                       onValueChange={([v]) => setTraffic(v)}
                       min={1000} max={500000} step={1000}
@@ -404,10 +778,15 @@ const Calculator = () => {
                   {/* CTR */}
                   <div>
                     <div className="flex justify-between items-baseline mb-3">
-                      <label className="text-sm font-semibold text-gray-700">Click-Through Rate</label>
-                      <span className="text-lg font-black text-gray-900">{ctr.toFixed(1)}%</span>
+                      <span id="ctr-label" className="text-sm font-semibold text-gray-700">{copy.clickThroughRate}</span>
+                      <span id="ctr-value" className="text-lg font-black text-gray-900">{ctr.toFixed(1)}%</span>
                     </div>
                     <Slider
+                      thumbProps={{
+                        'aria-labelledby': 'ctr-label',
+                        'aria-describedby': 'ctr-value',
+                        'aria-valuetext': copy.aria.percentValue(ctr.toFixed(1)),
+                      }}
                       value={[ctr]}
                       onValueChange={([v]) => setCtr(v)}
                       min={0.5} max={15} step={0.5}
@@ -427,17 +806,17 @@ const Calculator = () => {
                     <TrendingUp className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">Conversion Funnel</h2>
-                    <p className="text-gray-400 text-sm">How clicks become paying players</p>
+                    <h2 className="text-lg font-bold text-gray-900">{copy.conversionFunnel}</h2>
+                    <p className="text-gray-400 text-sm">{copy.conversionDescription}</p>
                   </div>
                 </div>
 
                 {/* Funnel visual */}
                 <div className="grid grid-cols-3 gap-2 mb-7">
                   {[
-                    { label: 'Clicks', value: fmtNum(stats.clicks), color: 'bg-orange-100 text-orange-700 border-orange-200' },
-                    { label: 'Registrations', value: fmtNum(stats.regs), color: 'bg-blue-100 text-blue-700 border-blue-200' },
-                    { label: 'Depositors', value: fmtNum(stats.depositors), color: 'bg-green-100 text-green-700 border-green-200' },
+                    { label: copy.clicks, value: fmtNum(stats.clicks), color: 'bg-orange-100 text-orange-700 border-orange-200' },
+                    { label: copy.registrations, value: fmtNum(stats.regs), color: 'bg-blue-100 text-blue-700 border-blue-200' },
+                    { label: copy.depositors, value: fmtNum(stats.depositors), color: 'bg-green-100 text-green-700 border-green-200' },
                   ].map((s) => (
                     <div key={s.label} className={`border rounded-xl px-2 py-2.5 text-center ${s.color}`}>
                       <div className="text-lg sm:text-xl font-black">{s.value}</div>
@@ -450,10 +829,15 @@ const Calculator = () => {
                   {/* Registration rate */}
                   <div>
                     <div className="flex justify-between items-baseline mb-3">
-                      <label className="text-sm font-semibold text-gray-700">Registration Rate</label>
-                      <span className="text-lg font-black text-gray-900">{regRate}%</span>
+                      <span id="registration-rate-label" className="text-sm font-semibold text-gray-700">{copy.registrationRate}</span>
+                      <span id="registration-rate-value" className="text-lg font-black text-gray-900">{regRate}%</span>
                     </div>
                     <Slider
+                      thumbProps={{
+                        'aria-labelledby': 'registration-rate-label',
+                        'aria-describedby': 'registration-rate-value',
+                        'aria-valuetext': copy.aria.percentValue(String(regRate)),
+                      }}
                       value={[regRate]}
                       onValueChange={([v]) => setRegRate(v)}
                       min={5} max={50} step={1}
@@ -467,10 +851,15 @@ const Calculator = () => {
                   {/* Deposit rate */}
                   <div>
                     <div className="flex justify-between items-baseline mb-3">
-                      <label className="text-sm font-semibold text-gray-700">Deposit Conversion Rate</label>
-                      <span className="text-lg font-black text-gray-900">{depRate}%</span>
+                      <span id="deposit-rate-label" className="text-sm font-semibold text-gray-700">{copy.depositConversionRate}</span>
+                      <span id="deposit-rate-value" className="text-lg font-black text-gray-900">{depRate}%</span>
                     </div>
                     <Slider
+                      thumbProps={{
+                        'aria-labelledby': 'deposit-rate-label',
+                        'aria-describedby': 'deposit-rate-value',
+                        'aria-valuetext': copy.aria.percentValue(String(depRate)),
+                      }}
                       value={[depRate]}
                       onValueChange={([v]) => setDepRate(v)}
                       min={10} max={70} step={1}
@@ -490,24 +879,26 @@ const Calculator = () => {
                     <DollarSign className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">Commission Model</h2>
-                    <p className="text-gray-400 text-sm">Choose how you want to get paid</p>
+                    <h2 className="text-lg font-bold text-gray-900">{copy.commissionModel}</h2>
+                    <p className="text-gray-400 text-sm">{copy.commissionDescription}</p>
                   </div>
                 </div>
 
                 {/* Model tabs */}
-                <div className="flex gap-1 mb-7 p-1 bg-gray-100 rounded-xl">
+                <div className="flex gap-1 mb-7 p-1 bg-gray-100 rounded-xl" role="group" aria-label={copy.commissionModel}>
                   {(['CPA', 'RevShare', 'Hybrid'] as CommissionType[]).map((type) => (
                     <button
+                      type="button"
                       key={type}
                       onClick={() => setCommType(type)}
+                      aria-pressed={commType === type}
                       className={`flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 ${
                         commType === type
                           ? 'bg-white text-gray-900 shadow-sm'
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
-                      {type}
+                      {copy.commissionNames[type]}
                     </button>
                   ))}
                 </div>
@@ -516,15 +907,17 @@ const Calculator = () => {
                 {commType === 'CPA' && (
                   <div className="space-y-5">
                     <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-3">CPA Rate per Depositor</p>
-                      <div className="flex flex-wrap gap-2 mb-3">
+                      <p id="cpa-rate-label" className="text-sm font-semibold text-gray-700 mb-3">{copy.cpaRate}</p>
+                      <div className="flex flex-wrap gap-2 mb-3" role="group" aria-labelledby="cpa-rate-label">
                         {CPA_RATES.map((r) => (
                           <button
+                            type="button"
                             key={r}
                             onClick={() => setCpaRate(r)}
+                            aria-pressed={cpaRate === r}
                             className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all duration-200 ${
                               cpaRate === r
-                                ? 'bg-orange-500 border-orange-500 text-white'
+                                ? 'bg-orange-500 border-orange-500 text-gray-950'
                                 : 'bg-white border-gray-200 text-gray-700 hover:border-orange-300'
                             }`}
                           >
@@ -533,7 +926,7 @@ const Calculator = () => {
                         ))}
                       </div>
                       <div className="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-orange-700">
-                        <span className="font-semibold">How it works:</span> You earn a fixed amount for every player who makes their first deposit. Simple, predictable, and paid fast.
+                        <span className="font-semibold">{copy.howItWorks}</span>{' '}{copy.cpaExplanation}
                       </div>
                     </div>
                   </div>
@@ -544,17 +937,19 @@ const Calculator = () => {
                   <div className="space-y-6">
                     <div>
                       <div className="flex justify-between items-baseline mb-3">
-                        <label className="text-sm font-semibold text-gray-700">Revenue Share %</label>
+                        <span id="revshare-rate-label" className="text-sm font-semibold text-gray-700">{copy.revenueShare}</span>
                         <span className="text-xl font-black text-gray-900">{revshare}%</span>
                       </div>
-                      <div className="flex flex-wrap gap-2 mb-4">
+                      <div className="flex flex-wrap gap-2 mb-4" role="group" aria-labelledby="revshare-rate-label">
                         {REVSHARE_RATES.map((r) => (
                           <button
+                            type="button"
                             key={r}
                             onClick={() => setRevshare(r)}
+                            aria-pressed={revshare === r}
                             className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all duration-200 ${
                               revshare === r
-                                ? 'bg-orange-500 border-orange-500 text-white'
+                                ? 'bg-orange-500 border-orange-500 text-gray-950'
                                 : 'bg-white border-gray-200 text-gray-700 hover:border-orange-300'
                             }`}
                           >
@@ -565,15 +960,17 @@ const Calculator = () => {
                     </div>
 
                     <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Avg. NGR per Player / Month</p>
-                      <div className="flex flex-wrap gap-2 mb-4">
+                      <p id="revshare-ngr-label" className="text-sm font-semibold text-gray-700 mb-3">{copy.averageNgr}</p>
+                      <div className="flex flex-wrap gap-2 mb-4" role="group" aria-labelledby="revshare-ngr-label">
                         {AVG_NGR_OPTIONS.map((n) => (
                           <button
+                            type="button"
                             key={n}
                             onClick={() => setAvgNGR(n)}
+                            aria-pressed={avgNGR === n}
                             className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all duration-200 ${
                               avgNGR === n
-                                ? 'bg-orange-500 border-orange-500 text-white'
+                                ? 'bg-orange-500 border-orange-500 text-gray-950'
                                 : 'bg-white border-gray-200 text-gray-700 hover:border-orange-300'
                             }`}
                           >
@@ -585,10 +982,15 @@ const Calculator = () => {
 
                     <div>
                       <div className="flex justify-between items-baseline mb-3">
-                        <label className="text-sm font-semibold text-gray-700">Monthly Player Retention</label>
-                        <span className="text-xl font-black text-gray-900">{retention}%</span>
+                        <span id="retention-label" className="text-sm font-semibold text-gray-700">{copy.monthlyRetention}</span>
+                        <span id="retention-value" className="text-xl font-black text-gray-900">{retention}%</span>
                       </div>
                       <Slider
+                        thumbProps={{
+                          'aria-labelledby': 'retention-label',
+                          'aria-describedby': 'retention-value',
+                          'aria-valuetext': copy.aria.percentValue(String(retention)),
+                        }}
                         value={[retention]}
                         onValueChange={([v]) => setRetention(v)}
                         min={20} max={90} step={5}
@@ -597,11 +999,11 @@ const Calculator = () => {
                       <div className="flex justify-between text-xs text-gray-400 mt-1.5">
                         <span>20%</span><span>90%</span>
                       </div>
-                      <p className="text-xs text-gray-400 mt-2">% of last month's players who remain active this month</p>
+                      <p className="text-xs text-gray-400 mt-2">{copy.retentionExplanation}</p>
                     </div>
 
                     <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-blue-700">
-                      <span className="font-semibold">How it works:</span> You earn a % of each player's net gaming revenue every month — for as long as they keep playing. Earnings grow as your player base accumulates.
+                      <span className="font-semibold">{copy.howItWorks}</span>{' '}{copy.revShareExplanation}
                     </div>
                   </div>
                 )}
@@ -612,24 +1014,26 @@ const Calculator = () => {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 text-center">
                         <div className="text-2xl font-black text-purple-700">${HYBRID_CPA}</div>
-                        <div className="text-xs text-purple-600 font-semibold mt-1">CPA per depositor</div>
+                        <div className="text-xs text-purple-600 font-semibold mt-1">{copy.cpaPerDepositor}</div>
                       </div>
                       <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
                         <div className="text-2xl font-black text-blue-700">{HYBRID_RS}%</div>
-                        <div className="text-xs text-blue-600 font-semibold mt-1">RevShare on NGR</div>
+                        <div className="text-xs text-blue-600 font-semibold mt-1">{copy.revShareOnNgr}</div>
                       </div>
                     </div>
 
                     <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Avg. NGR per Player / Month</p>
-                      <div className="flex flex-wrap gap-2">
+                      <p id="hybrid-ngr-label" className="text-sm font-semibold text-gray-700 mb-3">{copy.averageNgr}</p>
+                      <div className="flex flex-wrap gap-2" role="group" aria-labelledby="hybrid-ngr-label">
                         {AVG_NGR_OPTIONS.map((n) => (
                           <button
+                            type="button"
                             key={n}
                             onClick={() => setAvgNGR(n)}
+                            aria-pressed={avgNGR === n}
                             className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all duration-200 ${
                               avgNGR === n
-                                ? 'bg-orange-500 border-orange-500 text-white'
+                                ? 'bg-orange-500 border-orange-500 text-gray-950'
                                 : 'bg-white border-gray-200 text-gray-700 hover:border-orange-300'
                             }`}
                           >
@@ -640,7 +1044,7 @@ const Calculator = () => {
                     </div>
 
                     <div className="bg-purple-50 border border-purple-100 rounded-xl px-4 py-3 text-sm text-purple-700">
-                      <span className="font-semibold">How it works:</span> The best of both — an upfront CPA payment for every depositor, plus ongoing RevShare on their activity. Lower rates on each, but combined they often outperform either alone.
+                      <span className="font-semibold">{copy.howItWorks}</span>{' '}{copy.hybridExplanation}
                     </div>
                   </div>
                 )}
@@ -656,52 +1060,54 @@ const Calculator = () => {
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-6">
                     <BarChart3 className="w-4 h-4 text-orange-400" />
-                    <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">Estimated Earnings</span>
+                    <span className="text-orange-400 font-mono text-xs uppercase tracking-widest">{copy.estimatedEarnings}</span>
                   </div>
 
                   <div className="mb-1">
                     <div className="text-5xl sm:text-6xl font-black text-white tabular-nums leading-none">
                       {fmt(stats.monthly)}
                     </div>
-                    <div className="text-gray-500 text-sm mt-2">per month, month 1</div>
+                    <div className="text-gray-500 text-sm mt-2">{copy.perMonthMonthOne}</div>
                   </div>
 
                   <div className="border-t border-white/8 mt-6 pt-6 grid grid-cols-3 gap-4">
                     <div>
                       <div className="text-xl font-black text-white tabular-nums">{fmt(stats.q1)}</div>
-                      <div className="text-gray-500 text-xs mt-1">3 months</div>
+                      <div className="text-gray-500 text-xs mt-1">{copy.threeMonths}</div>
                     </div>
                     <div>
                       <div className="text-xl font-black text-white tabular-nums">{fmt(stats.q2)}</div>
-                      <div className="text-gray-500 text-xs mt-1">6 months</div>
+                      <div className="text-gray-500 text-xs mt-1">{copy.sixMonths}</div>
                     </div>
                     <div>
                       <div className="text-xl font-black text-orange-400 tabular-nums">{fmt(stats.annual)}</div>
-                      <div className="text-gray-500 text-xs mt-1">12 months</div>
+                      <div className="text-gray-500 text-xs mt-1">{copy.twelveMonths}</div>
                     </div>
                   </div>
 
                   {commType !== 'CPA' && (
                     <div className="mt-4 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-xl px-3 py-2">
                       <TrendingUp className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span className="text-orange-300 text-xs">Earnings grow as your player base accumulates each month</span>
+                      <span className="text-orange-300 text-xs">{copy.accumulatingEarnings}</span>
                     </div>
                   )}
 
                   <div className="mt-6 pt-6 border-t border-white/8">
-                    <a
-                      href="https://dashboard.revillion.com/en/registration"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => trackCTAClick('calculator_results_panel')}
-                      className="block"
+                    <Button
+                      asChild
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-gray-950 font-bold py-4 text-base rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-orange-500/20"
                     >
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 text-base rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-orange-500/20">
-                        Start Earning Now
+                      <a
+                        href={getDashboardUrl(lang, 'registration')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => trackCTAClick('calculator_results_panel')}
+                      >
+                        {copy.startEarning}
                         <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
-                    </a>
-                    <p className="text-center text-xs text-gray-500 mt-2">No setup fees · Free to join · Instant access</p>
+                      </a>
+                    </Button>
+                    <p className="text-center text-xs text-gray-500 mt-2">{copy.ctaNote}</p>
                   </div>
                 </div>
               </div>
@@ -709,8 +1115,8 @@ const Calculator = () => {
               {/* 6-month bar chart */}
               <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-sm font-bold text-gray-900">6-Month Growth</h3>
-                  <span className="text-xs text-gray-400 font-mono uppercase tracking-wider">{commType}</span>
+                  <h3 className="text-sm font-bold text-gray-900">{copy.sixMonthGrowth}</h3>
+                  <span className="text-xs text-gray-400 font-mono uppercase tracking-wider">{copy.commissionNames[commType]}</span>
                 </div>
                 <div className="flex items-end gap-2 h-32">
                   {chartData.map((d) => (
@@ -728,13 +1134,13 @@ const Calculator = () => {
 
               {/* Funnel summary */}
               <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-                <h3 className="text-sm font-bold text-gray-900 mb-4">Your Funnel Summary</h3>
+                <h3 className="text-sm font-bold text-gray-900 mb-4">{copy.funnelSummary}</h3>
                 <div className="space-y-3">
                   {[
-                    { label: 'Monthly visitors', value: fmtNum(traffic), color: 'text-gray-700' },
-                    { label: 'Clicks on affiliate link', value: fmtNum(stats.clicks), color: 'text-orange-600' },
-                    { label: 'Registered players', value: fmtNum(stats.regs), color: 'text-blue-600' },
-                    { label: 'Depositing players', value: fmtNum(stats.depositors), color: 'text-green-600' },
+                    { label: copy.monthlyVisitors, value: fmtNum(traffic), color: 'text-gray-700' },
+                    { label: copy.affiliateClicks, value: fmtNum(stats.clicks), color: 'text-orange-600' },
+                    { label: copy.registeredPlayers, value: fmtNum(stats.regs), color: 'text-blue-600' },
+                    { label: copy.depositingPlayers, value: fmtNum(stats.depositors), color: 'text-green-600' },
                   ].map(({ label, value, color }) => (
                     <div key={label} className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">{label}</span>
@@ -745,19 +1151,21 @@ const Calculator = () => {
               </div>
 
               {/* CTA */}
-              <a
-                href="https://dashboard.revillion.com/en/registration"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackCTAClick('calculator_page')}
-                className="block"
+              <Button
+                asChild
+                className="w-full bg-orange-500 hover:bg-orange-600 text-gray-950 font-bold py-4 text-base rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-orange-500/20"
               >
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 text-base rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-orange-500/20">
-                  Start Earning Now
+                <a
+                  href={getDashboardUrl(lang, 'registration')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackCTAClick('calculator_page')}
+                >
+                  {copy.startEarning}
                   <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </a>
-              <p className="text-center text-xs text-gray-400">No setup fees · Free to join · Instant access</p>
+                </a>
+              </Button>
+              <p className="text-center text-xs text-gray-400">{copy.ctaNote}</p>
             </div>
 
           </div>
@@ -768,10 +1176,10 @@ const Calculator = () => {
       <section className="bg-[#F8F7F4] border-t border-gray-200 py-8">
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
           <p className="text-gray-400 text-xs leading-relaxed max-w-3xl">
-            <span className="font-semibold">Disclaimer:</span> These estimates are illustrative projections based on the parameters you enter and industry averages. Actual earnings depend on traffic quality, player behavior, geographic markets, and other factors. Past performance is no guarantee of future results. Revillion Partners makes no income guarantees.
+            <span className="font-semibold">{copy.disclaimerLabel}</span>{' '}{copy.disclaimer}
           </p>
           <p className="text-gray-500 text-sm font-semibold mt-4">
-            Join 800+ affiliates already earning with Revillion
+            {copy.affiliatesNote}
           </p>
         </div>
       </section>

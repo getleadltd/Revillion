@@ -1,10 +1,18 @@
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string, locale = 'en-US'): string => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
+  const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(date);
+  };
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  try {
+    return new Intl.DateTimeFormat(locale, options).format(date);
+  } catch {
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+  }
 };
 
 export const calculateReadingTime = (text: string): number => {

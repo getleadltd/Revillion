@@ -1,16 +1,10 @@
 // Google Analytics 4 Helper Functions
-
-declare global {
-  interface Window {
-    dataLayer: any[];
-    gtag?: (...args: any[]) => void;
-  }
-}
+import type {} from '@/types/tracking';
 
 /**
  * Track a custom event in Google Analytics 4
  */
-export const trackEvent = (eventName: string, eventParams?: Record<string, any>) => {
+export const trackEvent = (eventName: string, eventParams?: Record<string, unknown>) => {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', eventName, eventParams);
   }

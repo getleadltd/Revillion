@@ -61,6 +61,10 @@ serve(async (req) => {
     if (authResult.error) {
       return authResult.error;
     }
+    // Forward the already-verified admin JWT to downstream Edge Functions.
+    // The service-role key used by the database client is not a user session
+    // and therefore cannot pass their auth.getUser() + has_role() gates.
+    const authHeader = req.headers.get('authorization')!;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -107,6 +111,7 @@ serve(async (req) => {
         // Step 1: Analyze title to get parameters
         console.log('Step 1: Analyzing title...');
         const analyzeResponse = await supabase.functions.invoke('analyze-blog-title', {
+          headers: { Authorization: authHeader },
           body: { title: item.title }
         });
 
@@ -120,6 +125,7 @@ serve(async (req) => {
         // Step 2: Generate content
         console.log('Step 2: Generating content...');
         const contentResponse = await supabase.functions.invoke('generate-blog-content', {
+          headers: { Authorization: authHeader },
           body: {
             topic: item.title,
             keywords: keywords.join(', '),
@@ -141,10 +147,12 @@ serve(async (req) => {
         // Step 3: Translate content
         console.log('Step 3: Translating content...');
         const translateResponse = await supabase.functions.invoke('translate-blog-post', {
+          headers: { Authorization: authHeader },
           body: {
-            title_it: generatedContent.title_it,
-            content_it: generatedContent.content_it,
-            meta_description_it: generatedContent.meta_description_it
+            title: generatedContent.title_it,
+            content: generatedContent.content_it,
+            meta_description: generatedContent.meta_description_it,
+            source_language: 'it'
           }
         });
 
@@ -152,7 +160,15 @@ serve(async (req) => {
           throw new Error(`Translation failed: ${translateResponse.error.message}`);
         }
 
-        const translationsData = translateResponse.data.translations;
+        const translationsData = translateResponse.data?.translations;
+        const requiredLanguages = ['en', 'de', 'es', 'pt'] as const;
+        const missingLanguages = requiredLanguages.filter((language) => {
+          const translation = translationsData?.[language];
+          return !translation?.title || !translation?.content;
+        });
+        if (missingLanguages.length > 0) {
+          throw new Error(`Translation incomplete for: ${missingLanguages.join(', ')}`);
+        }
         console.log('Translations completed');
 
         // Slug generation utility
@@ -166,6 +182,7 @@ serve(async (req) => {
         // Step 4: Generate featured image
         console.log('Step 4: Generating image...');
         const imageResponse = await supabase.functions.invoke('generate-blog-image', {
+          headers: { Authorization: authHeader },
           body: {
             autoPrompt: {
               title: generatedContent.title_it,

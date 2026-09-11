@@ -1,11 +1,18 @@
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowRight, Mail } from 'lucide-react';
+import { getDashboardUrl, getSiteLanguage } from '@/lib/dashboard';
+import { OPEN_COOKIE_SETTINGS_EVENT } from '@/lib/consentMode';
 import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=85&w=170';
 
 export const Footer = () => {
   const { t } = useTranslation();
-  const { lang } = useParams();
+  const { lang: routeLanguage } = useParams();
+  const location = useLocation();
+  const lang = getSiteLanguage(routeLanguage || location.pathname.split('/')[1]);
+  const currentYear = new Date().getFullYear();
+  const registrationUrl = getDashboardUrl(lang, 'registration');
+  const loginUrl = getDashboardUrl(lang, 'login');
 
   return (
     <footer className="bg-[#0a0a0a] text-gray-300 relative overflow-hidden">
@@ -15,17 +22,17 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-white text-2xl md:text-3xl font-bold tracking-tight">
-                Ready to start earning?
+                {t('blog.cta.title')}
               </h3>
-              <p className="text-gray-400 mt-1 text-base">Join 800+ affiliates already growing with Revillion.</p>
+              <p className="text-gray-400 mt-1 text-base">{t('blog.cta.description')}</p>
             </div>
             <a
-              href="https://dashboard.revillion.com"
+              href={registrationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-sm rounded-full px-7 py-3.5 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-300 whitespace-nowrap"
+              className="group flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-gray-950 font-bold text-sm rounded-full px-7 py-3.5 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-300 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
             >
-              Become an Affiliate
+              {t('blog.cta.button')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </a>
           </div>
@@ -44,7 +51,7 @@ export const Footer = () => {
               width="170"
               height="48"
             />
-            <p className="text-gray-500 leading-relaxed text-sm mb-5">
+            <p className="text-gray-400 leading-relaxed text-sm mb-5">
               {t('footer.description')}
             </p>
             <a href="mailto:info@revillion.com" className="inline-flex items-center gap-2 text-gray-400 hover:text-orange-400 transition-colors text-sm">
@@ -66,11 +73,11 @@ export const Footer = () => {
               ].map(({ to, label, isLink }) =>
                 <li key={to}>
                   {isLink ? (
-                    <Link to={to} className="text-gray-500 hover:text-orange-400 transition-colors text-sm">
+                    <Link to={to} className="text-gray-400 hover:text-orange-400 transition-colors text-sm">
                       {label}
                     </Link>
                   ) : (
-                    <a href={to} className="text-gray-500 hover:text-orange-400 transition-colors text-sm">
+                    <a href={to} className="text-gray-400 hover:text-orange-400 transition-colors text-sm">
                       {label}
                     </a>
                   )}
@@ -81,22 +88,32 @@ export const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-5">Resources</h4>
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-5">{t('footer.resources')}</h4>
             <ul className="space-y-2.5">
               <li>
-                <Link to={`/${lang}/blog`} className="text-gray-500 hover:text-orange-400 transition-colors text-sm">
-                  Blog
+                <Link to={`/${lang}/blog`} className="text-gray-400 hover:text-orange-400 transition-colors text-sm">
+                  {t('nav.blog')}
                 </Link>
               </li>
               <li>
-                <Link to={`/${lang}/calculator`} className="text-gray-500 hover:text-orange-400 transition-colors text-sm">
-                  Calculator
+                <Link to={`/${lang}/calculator`} className="text-gray-400 hover:text-orange-400 transition-colors text-sm">
+                  {t('nav.calculator')}
                 </Link>
+              </li>
+              <li>
+                <a
+                  href={loginUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-orange-400 transition-colors text-sm"
+                >
+                  {t('nav.login')}
+                </a>
               </li>
               <li>
                 <Link
                   to={`/${lang}/contact`}
-                  className="text-gray-500 hover:text-orange-400 transition-colors text-sm"
+                  className="text-gray-400 hover:text-orange-400 transition-colors text-sm"
                   onClick={(e) => {
                     if (window.location.pathname.includes('/contact')) {
                       e.preventDefault();
@@ -115,19 +132,28 @@ export const Footer = () => {
             <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-5">{t('footer.legal')}</h4>
             <ul className="space-y-2.5">
               <li>
-                <Link to={`/${lang}/privacy-policy`} className="text-gray-500 hover:text-orange-400 transition-colors text-sm">
+                <Link to={`/${lang}/privacy-policy`} className="text-gray-400 hover:text-orange-400 transition-colors text-sm">
                   {t('footer.privacyPolicy')}
                 </Link>
               </li>
               <li>
-                <Link to={`/${lang}/terms-of-service`} className="text-gray-500 hover:text-orange-400 transition-colors text-sm">
+                <Link to={`/${lang}/terms-of-service`} className="text-gray-400 hover:text-orange-400 transition-colors text-sm">
                   {t('footer.termsOfService')}
                 </Link>
               </li>
               <li>
-                <Link to={`/${lang}/responsible-gaming`} className="text-gray-500 hover:text-orange-400 transition-colors text-sm">
+                <Link to={`/${lang}/responsible-gaming`} className="text-gray-400 hover:text-orange-400 transition-colors text-sm">
                   {t('footer.responsibleGaming')}
                 </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="text-gray-400 hover:text-orange-400 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                  onClick={() => window.dispatchEvent(new Event(OPEN_COOKIE_SETTINGS_EVENT))}
+                >
+                  {t('footer.cookieSettings')}
+                </button>
               </li>
             </ul>
           </div>
@@ -135,11 +161,11 @@ export const Footer = () => {
 
         {/* Bottom bar */}
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-gray-500 text-xs">
-            {t('footer.copyright')}
+          <p className="text-gray-400 text-xs">
+            {t('footer.copyright', { year: currentYear })}
           </p>
-          <p className="text-gray-500 text-xs">
-            18+ | Gamble Responsibly
+          <p className="text-gray-400 text-xs">
+            {t('footer.responsibleNotice')}
           </p>
         </div>
       </div>

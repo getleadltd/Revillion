@@ -6,11 +6,46 @@ interface UseBlogPostsParams {
   page?: number;
   limit?: number;
   lang: string;
+  search?: string;
 }
 
-export const useBlogPosts = ({ category, page = 1, limit = 9, lang }: UseBlogPostsParams) => {
+const SEARCH_COLUMNS = {
+  de: 'title_de',
+  en: 'title_en',
+  es: 'title_es',
+  it: 'title_it',
+  pt: 'title_pt',
+} as const;
+
+type SupportedLanguage = keyof typeof SEARCH_COLUMNS;
+
+const getSearchColumn = (lang: string) => {
+  const normalizedLang = lang.toLowerCase().split('-')[0];
+  const safeLang: SupportedLanguage = Object.prototype.hasOwnProperty.call(
+    SEARCH_COLUMNS,
+    normalizedLang,
+  )
+    ? (normalizedLang as SupportedLanguage)
+    : 'en';
+
+  return SEARCH_COLUMNS[safeLang];
+};
+
+const escapeLikePattern = (value: string) => value.replace(/[\\%_]/g, '\\$&');
+
+export const useBlogPosts = ({
+  category,
+  page = 1,
+  limit = 9,
+  lang,
+  search,
+}: UseBlogPostsParams) => {
+  const normalizedSearch = search?.trim().slice(0, 100) || '';
+  const searchColumn = getSearchColumn(lang);
+  const searchPattern = `%${escapeLikePattern(normalizedSearch)}%`;
+
   return useQuery({
-    queryKey: ['blog-posts', category, page, lang],
+    queryKey: ['blog-posts', category, page, limit, searchColumn, normalizedSearch],
     queryFn: async () => {
       // Build base query for counting
       let countQuery = supabase
@@ -22,7 +57,13 @@ export const useBlogPosts = ({ category, page = 1, limit = 9, lang }: UseBlogPos
         countQuery = countQuery.eq('category', category);
       }
 
-      const { count } = await countQuery;
+      if (normalizedSearch) {
+        countQuery = countQuery.ilike(searchColumn, searchPattern);
+      }
+
+      const { count, error: countError } = await countQuery;
+
+      if (countError) throw countError;
 
       // Build query for fetching posts
       let query = supabase
@@ -33,6 +74,10 @@ export const useBlogPosts = ({ category, page = 1, limit = 9, lang }: UseBlogPos
 
       if (category && category !== 'all') {
         query = query.eq('category', category);
+      }
+
+      if (normalizedSearch) {
+        query = query.ilike(searchColumn, searchPattern);
       }
 
       const from = (page - 1) * limit;

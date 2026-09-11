@@ -14,18 +14,14 @@
 import { useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSettingsMap } from '@/hooks/useSiteSettings';
-import { initConsentMode } from '@/lib/consentMode';
-
-declare global {
-  interface Window {
-    dataLayer: any[];
-    gtag?: (...args: any[]) => void;
-    fbq?: (...args: any[]) => void;
-    _fbq?: any;
-    hj?: (...args: any[]) => void;
-    _hjSettings?: { hjid: number; hjsv: number };
-  }
-}
+import {
+  ANALYTICS_READY_EVENT,
+  CONSENT_CHANGE_EVENT,
+  getConsentStatus,
+  initConsentMode,
+  updateConsent,
+} from '@/lib/consentMode';
+import type {} from '@/types/tracking';
 
 function loadScript(src: string, id: string): Promise<void> {
   return new Promise((resolve) => {
@@ -41,21 +37,25 @@ function loadScript(src: string, id: string): Promise<void> {
 }
 
 function initGA4(measurementId: string) {
-  if (!measurementId || window.gtag) return;
+  if (!/^G-[A-Z0-9]+$/i.test(measurementId) || document.getElementById('ga4-script')) return;
   initConsentMode();
+  const gtag = window.gtag;
+  if (!gtag) return;
+
+  gtag('js', new Date());
+  gtag('config', measurementId, { send_page_view: false });
+  updateConsent(true, false);
+  window.dispatchEvent(new Event(ANALYTICS_READY_EVENT));
 
   loadScript(`https://www.googletagmanager.com/gtag/js?id=${measurementId}`, 'ga4-script').then(() => {
-    window.dataLayer = window.dataLayer || [];
-    function gtag(..._args: any[]) { window.dataLayer.push(arguments); }
-    window.gtag = gtag;
-    gtag('js', new Date());
-    gtag('config', measurementId, { send_page_view: false });
     console.log('[GA4] initialized:', measurementId);
   });
 }
 
 function initGTM(containerId: string) {
-  if (!containerId || document.getElementById('gtm-script')) return;
+  if (!/^GTM-[A-Z0-9]+$/i.test(containerId) || document.getElementById('gtm-script')) return;
+  initConsentMode();
+  updateConsent(true, false);
   const s = document.createElement('script');
   s.id = 'gtm-script';
   s.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -64,21 +64,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${containerId}');`;
   document.head.appendChild(s);
+  window.dispatchEvent(new Event(ANALYTICS_READY_EVENT));
   console.log('[GTM] initialized:', containerId);
 }
 
 function initMetaPixelFromSettings(pixelId: string) {
-  if (!pixelId || window.fbq) return;
+  if (!/^\d{5,20}$/.test(pixelId) || window.fbq) return;
 
-  const f = window as any;
-  f.fbq = f.fbq || function () {
-    f.fbq.callMethod ? f.fbq.callMethod.apply(f.fbq, arguments) : f.fbq.queue.push(arguments);
-  };
-  if (!f._fbq) f._fbq = f.fbq;
-  f.fbq.push = f.fbq;
-  f.fbq.loaded = true;
-  f.fbq.version = '2.0';
-  f.fbq.queue = [];
+  const fbq = ((...args: unknown[]) => {
+    if (fbq.callMethod) {
+      fbq.callMethod(...args);
+    } else {
+      fbq.queue.push(args);
+    }
+  }) as MetaPixelFunction;
+  fbq.push = fbq;
+  fbq.loaded = true;
+  fbq.version = '2.0';
+  fbq.queue = [];
+  window.fbq = fbq;
+  window._fbq ??= fbq;
 
   loadScript('https://connect.facebook.net/en_US/fbevents.js', 'meta-pixel-script').then(() => {
     window.fbq?.('init', pixelId);
@@ -88,13 +93,16 @@ function initMetaPixelFromSettings(pixelId: string) {
 }
 
 function initHotjar(siteId: string) {
-  if (!siteId || window.hj) return;
+  if (!/^\d+$/.test(siteId) || window.hj) return;
   const id = parseInt(siteId, 10);
   if (isNaN(id)) return;
 
   window._hjSettings = { hjid: id, hjsv: 6 };
-  const f = window as any;
-  f.hj = f.hj || function () { (f.hj.q = f.hj.q || []).push(arguments); };
+  const hj = ((...args: unknown[]) => {
+    hj.q.push(args);
+  }) as HotjarFunction;
+  hj.q = [];
+  window.hj = hj;
 
   loadScript(`https://static.hotjar.com/c/hotjar-${id}.js?sv=6`, 'hotjar-script').then(() => {
     console.log('[Hotjar] initialized:', id);
@@ -106,25 +114,44 @@ export const TrackingProvider = ({ children }: { children: React.ReactNode }) =>
   const initialized = useRef(false);
 
   useEffect(() => {
-    // Wait until settings are loaded (non-empty object)
-    if (Object.keys(settings).length === 0) return;
-    if (initialized.current) return;
-    initialized.current = true;
+    const initializeTracking = () => {
+      // Settings are fetched without marketing trackers so the IDs can remain
+      // centrally managed. No third-party tracker is loaded before opt-in.
+      if (Object.keys(settings).length === 0) return;
+      if (getConsentStatus() !== 'accepted' || initialized.current) return;
 
-    const { ga4_measurement_id, gtm_container_id, meta_pixel_id, hotjar_site_id } = settings;
+      const { ga4_measurement_id, gtm_container_id, meta_pixel_id, hotjar_site_id } = settings;
+      const validGtmId = Boolean(gtm_container_id && /^GTM-[A-Z0-9]+$/i.test(gtm_container_id));
+      const validGa4Id = Boolean(ga4_measurement_id && /^G-[A-Z0-9]+$/i.test(ga4_measurement_id));
+      const validMetaPixelId = Boolean(meta_pixel_id && /^\d{5,20}$/.test(meta_pixel_id));
+      const validHotjarId = Boolean(hotjar_site_id && /^\d+$/.test(hotjar_site_id));
 
-    // GTM takes priority over direct GA4 (if both set, use GTM)
-    if (gtm_container_id) {
-      initGTM(gtm_container_id);
-    } else if (ga4_measurement_id) {
-      initGA4(ga4_measurement_id);
-    }
+      if (!validGtmId && !validGa4Id && !validMetaPixelId && !validHotjarId) return;
+      initialized.current = true;
 
-    if (meta_pixel_id) initMetaPixelFromSettings(meta_pixel_id);
-    if (hotjar_site_id) initHotjar(hotjar_site_id);
+      // GTM takes priority over direct GA4 (if both are configured).
+      if (validGtmId) {
+        initGTM(gtm_container_id);
+      } else if (validGa4Id) {
+        initGA4(ga4_measurement_id);
+      }
+
+      if (validMetaPixelId) initMetaPixelFromSettings(meta_pixel_id);
+      if (validHotjarId) initHotjar(hotjar_site_id);
+    };
+
+    const handleConsentChange = (event: Event) => {
+      const consentEvent = event as CustomEvent<{ status?: string }>;
+      if (consentEvent.detail?.status === 'accepted') initializeTracking();
+    };
+
+    window.addEventListener(CONSENT_CHANGE_EVENT, handleConsentChange);
+    initializeTracking();
+
+    return () => window.removeEventListener(CONSENT_CHANGE_EVENT, handleConsentChange);
   }, [settings]);
 
-  const { google_site_verification, bing_site_verification, gtm_container_id } = settings;
+  const { google_site_verification, bing_site_verification } = settings;
 
   return (
     <>
@@ -136,18 +163,6 @@ export const TrackingProvider = ({ children }: { children: React.ReactNode }) =>
           <meta name="msvalidate.01" content={bing_site_verification} />
         )}
       </Helmet>
-
-      {/* GTM noscript fallback */}
-      {gtm_container_id && (
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${gtm_container_id}`}
-            height="0"
-            width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
-          />
-        </noscript>
-      )}
 
       {children}
     </>

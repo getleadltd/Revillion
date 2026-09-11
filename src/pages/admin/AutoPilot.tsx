@@ -186,12 +186,17 @@ export default function AutoPilot() {
   const handleRunNow = async () => {
     setIsRunning(true);
     try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        throw new Error('Sessione amministratore non disponibile');
+      }
+
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/autopilot`;
       const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ force: true }),
       });

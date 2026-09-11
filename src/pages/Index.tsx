@@ -10,53 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
-
-const homepageFaqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What is Revillion Partners?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Revillion Partners is a premier iGaming affiliate network offering high CPA commissions for promoting 16+ top casino brands including 22Bet, Rabona, Spinit, and more. We provide dedicated affiliate support, real-time tracking, and multiple payment options."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How much can I earn as a Revillion affiliate?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Affiliates earn premium CPA (Cost Per Acquisition) commissions with competitive rates depending on the brand and geographic region. We offer flexible payment terms and transparent tracking to maximize your earnings potential."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What payment methods does Revillion offer?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "We support multiple payment methods including bank transfers, e-wallets, and cryptocurrency payments. Payments are processed regularly with transparent reporting through our affiliate dashboard."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How do I get started with Revillion Partners?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Getting started is simple: visit our dashboard at dashboard.revillion.com, register your affiliate account, get your unique tracking links, and start promoting our premium casino brands immediately. Our dedicated support team is available to help you succeed."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Which casino brands can I promote?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "You can promote 16+ top-tier casino brands including 22Bet, Rabona, Spinit, Nomini, Casinia, Librabet, BetLabel, SafeCasino, Spinanga, RoboCat, Onlyspins, Bassbet, TikiTaka, Burancasino, Cazeus, and AzurSlot. Each brand offers unique features and targets different markets."
-      }
-    }
-  ]
-};
+import { getDashboardUrl } from '@/lib/dashboard';
 
 import bassbetLogo from "@/assets/Bassbet-partner.png?partner";
 import rabonaLogo from "@/assets/Rabona-partner.png?partner";
@@ -143,6 +97,21 @@ const Index = () => {
   const { t, i18n } = useTranslation();
   const { lang } = useParams();
 
+  // Keep FAQ structured data identical to the questions and answers rendered
+  // on the page, including the active language.
+  const homepageFaqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [1, 2, 3, 4, 5].map((index) => ({
+      '@type': 'Question',
+      name: t(`faq.q${index}.question`),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: t(`faq.q${index}.answer`),
+      },
+    })),
+  };
+
   useEffect(() => {
     if (lang && i18n.language !== lang) {
       i18n.changeLanguage(lang);
@@ -214,26 +183,29 @@ const Index = () => {
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-10">
-                <a
-                  href="https://dashboard.revillion.com/en/registration"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackCTAClick('hero_section')}
-                  className="w-full sm:w-auto"
+                <Button
+                  asChild
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-gray-950 font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20"
                 >
-                  <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
+                  <a
+                    href={getDashboardUrl(lang, 'registration')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackCTAClick('hero_section')}
+                  >
                     {t('hero.ctaPrimary')}
                     <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </a>
-                <RouterLink to={`/${lang || 'en'}/calculator`} className="w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto border border-white/15 text-white hover:bg-white/8 hover:border-white/30 font-semibold py-4 px-8 text-base rounded-full transition-all duration-200 bg-transparent"
-                  >
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full sm:w-auto border border-white/15 text-white hover:bg-white/8 hover:border-white/30 font-semibold py-4 px-8 text-base rounded-full transition-all duration-200 bg-transparent"
+                >
+                  <RouterLink to={`/${lang || 'en'}/calculator`}>
                     {t('hero.ctaSecondary')}
-                  </Button>
-                </RouterLink>
+                  </RouterLink>
+                </Button>
               </motion.div>
 
               {/* Trust bar */}
@@ -522,21 +494,24 @@ const Index = () => {
                 {t('dashboard.subtitle')}
               </motion.p>
               <motion.div variants={fadeUp}>
-                <a
-                  href="https://dashboard.revillion.com/en/registration"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackCTAClick('dashboard_section')}
+                <Button
+                  asChild
+                  className="bg-orange-500 hover:bg-orange-600 text-gray-950 font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20"
                 >
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
+                  <a
+                    href={getDashboardUrl(lang, 'login')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackCTAClick('dashboard_section')}
+                  >
                     {t('dashboard.accessButton')}
                     <BarChart3 className="ml-2 w-4 h-4" />
-                  </Button>
-                </a>
+                  </a>
+                </Button>
                 {/* Micro-CTA */}
                 <div className="mt-4">
                   <a
-                    href="https://dashboard.revillion.com/en/registration"
+                    href={getDashboardUrl(lang, 'login')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-sm transition-colors"
@@ -615,17 +590,20 @@ const Index = () => {
               </motion.h2>
               <motion.p variants={fadeUp} className="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 md:mb-10">{t('offers.subtitle')}</motion.p>
               <motion.div variants={fadeUp}>
-                <a
-                  href="https://dashboard.revillion.com/en/registration"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackCTAClick('offers_section')}
+                <Button
+                  asChild
+                  className="bg-orange-500 hover:bg-orange-600 text-gray-950 font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20"
                 >
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
+                  <a
+                    href={getDashboardUrl(lang, 'registration')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackCTAClick('offers_section')}
+                  >
                     {t('offers.exploreButton')}
                     <Globe className="ml-2 w-4 h-4" />
-                  </Button>
-                </a>
+                  </a>
+                </Button>
               </motion.div>
             </motion.div>
 
@@ -664,12 +642,6 @@ const Index = () => {
                     <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-orange-400 transition-colors" />
                   </motion.div>
                 ))}
-              </div>
-
-              {/* Urgency text */}
-              <div className="mt-5 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
-                <span className="text-orange-400 text-sm font-semibold">{t('offers.urgency')}</span>
               </div>
 
               <div className="mt-8 pt-8 border-t border-white/8 grid grid-cols-3 gap-4 md:gap-6">
@@ -761,18 +733,20 @@ const Index = () => {
           </div>
 
           <div className="text-center mt-12 md:mt-16">
-            <a
-              href="https://dashboard.revillion.com/en/registration"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackCTAClick('social_media_section')}
-              className="inline-block w-full sm:w-auto"
+            <Button
+              asChild
+              className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-gray-950 font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20"
             >
-              <Button className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
+              <a
+                href={getDashboardUrl(lang, 'login')}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCTAClick('social_media_section')}
+              >
                 {t('socialMedia.getUrlsButton')}
                 <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </a>
+              </a>
+            </Button>
           </div>
         </div>
       </section>
@@ -811,18 +785,20 @@ const Index = () => {
           </motion.div>
 
           <div className="text-center mt-8">
-            <a
-              href="https://dashboard.revillion.com/en/registration"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackCTAClick('testimonials_section')}
-              className="inline-block"
+            <Button
+              asChild
+              className="bg-orange-500 hover:bg-orange-600 text-gray-950 font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20"
             >
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 text-base rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-orange-500/20">
+              <a
+                href={getDashboardUrl(lang, 'registration')}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCTAClick('testimonials_section')}
+              >
                 {t('testimonials.cta')}
                 <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </a>
+              </a>
+            </Button>
           </div>
         </div>
       </section>
@@ -852,18 +828,20 @@ const Index = () => {
           <motion.p variants={fadeUp} className="text-gray-400 text-base md:text-xl mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
             {t('finalCta.footer')}
           </motion.p>
-          <a
-            href="https://dashboard.revillion.com/en/registration"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackCTAClick('final_cta_section')}
-            className="inline-block w-full sm:w-auto"
+          <Button
+            asChild
+            className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-gray-950 font-black py-4 md:py-6 px-8 md:px-14 text-lg md:text-xl rounded-full transition-all duration-200 hover:scale-105 shadow-2xl shadow-orange-500/30"
           >
-            <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-black py-4 md:py-6 px-8 md:px-14 text-lg md:text-xl rounded-full transition-all duration-200 hover:scale-105 shadow-2xl shadow-orange-500/30">
+            <a
+              href={getDashboardUrl(lang, 'registration')}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCTAClick('final_cta_section')}
+            >
               {t('finalCta.button')}
               <TrendingUp className="ml-3 w-5 h-5 md:w-6 md:h-6" />
-            </Button>
-          </a>
+            </a>
+          </Button>
 
           {/* Trust icons */}
           <motion.div variants={fadeUp} className="flex flex-wrap items-center justify-center gap-6 mt-8 md:mt-10">

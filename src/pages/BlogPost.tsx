@@ -226,6 +226,10 @@ const BlogPost = () => {
   if (!post) {
     return (
       <Layout>
+        <Helmet>
+          <title>{t('blog.postNotFound')} | Revillion Partners</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">{t('blog.postNotFound')}</h1>
@@ -393,6 +397,7 @@ const BlogPost = () => {
       </Helmet>
 
       <BlogCTA 
+        lang={lang}
         postSlug={slug} 
         postTitle={title} 
         postCategory={post.category}
@@ -420,7 +425,7 @@ const BlogPost = () => {
           {/* Breadcrumbs with Structured Data */}
           <Breadcrumbs
             items={[
-              { name: 'Home', url: `https://revillion-partners.com/${lang}`, position: 1 },
+              { name: t('nav.home'), url: `https://revillion-partners.com/${lang}`, position: 1 },
               { name: t('blog.title'), url: `https://revillion-partners.com/${lang}/blog`, position: 2 }
             ]}
             currentPage={title}
@@ -435,7 +440,7 @@ const BlogPost = () => {
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8 pb-8 border-b">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                {formatDate(post.published_at || post.created_at)}
+                {formatDate(post.published_at || post.created_at, lang)}
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />

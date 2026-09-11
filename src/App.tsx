@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useParams } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { AnimatePresence, motion } from "framer-motion";
 import { pageVariants } from "./lib/motion";
@@ -17,6 +17,7 @@ import { TrackingProvider } from "./components/TrackingProvider";
 import { RedirectHandler } from "./components/RedirectHandler";
 import { ScrollToTop } from "./components/ScrollToTop";
 import './lib/i18n';
+import { SITE_LANGUAGES } from './lib/dashboard';
 
 // Lazy-loaded public pages
 const Blog = lazy(() => import("./pages/Blog"));
@@ -55,6 +56,14 @@ const GAListener = () => {
   return null;
 };
 
+const LanguageGuard = () => {
+  const { lang } = useParams();
+  if (!lang || !SITE_LANGUAGES.includes(lang as (typeof SITE_LANGUAGES)[number])) {
+    return <NotFound />;
+  }
+  return <Outlet />;
+};
+
 // Animated page wrapper
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -72,28 +81,31 @@ const AnimatedRoutes = () => {
             <Route path="/" element={<Navigate to="/en" replace />} />
             <Route path="/admin" element={<AdminRedirect />} />
             <Route path="/admin/*" element={<AdminRedirect />} />
-            <Route path="/:lang" element={<Index />} />
-            <Route path="/:lang/contact" element={<Contact />} />
-            <Route path="/:lang/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/:lang/terms-of-service" element={<TermsOfService />} />
-            <Route path="/:lang/responsible-gaming" element={<ResponsibleGaming />} />
-            <Route path="/:lang/calculator" element={<Calculator />} />
-            <Route path="/:lang/earn" element={<AdsLanding />} />
-            <Route path="/:lang/blog" element={<Blog />} />
-            <Route path="/:lang/blog/:slug" element={<BlogPost />} />
-            <Route path="/:lang/auth/login" element={<Login />} />
-            <Route path="/:lang/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/:lang/admin/blog" element={<ProtectedRoute><BlogAdmin /></ProtectedRoute>} />
-            <Route path="/:lang/admin/blog/new" element={<ProtectedRoute><BlogEditor /></ProtectedRoute>} />
-            <Route path="/:lang/admin/blog/edit/:id" element={<ProtectedRoute><BlogEditor /></ProtectedRoute>} />
-            <Route path="/:lang/admin/analytics" element={<ProtectedRoute><BlogAnalytics /></ProtectedRoute>} />
-            <Route path="/:lang/admin/blog/queue" element={<ProtectedRoute><BlogQueue /></ProtectedRoute>} />
-            <Route path="/:lang/admin/seo-monitoring" element={<ProtectedRoute><SEOMonitoring /></ProtectedRoute>} />
-            <Route path="/:lang/admin/contact-messages" element={<ProtectedRoute><ContactMessages /></ProtectedRoute>} />
-            <Route path="/:lang/admin/incoming" element={<ProtectedRoute><IncomingArticles /></ProtectedRoute>} />
-            <Route path="/:lang/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
-            <Route path="/:lang/admin/agents" element={<ProtectedRoute><AgentsDashboard /></ProtectedRoute>} />
-            <Route path="/:lang/admin/autopilot" element={<ProtectedRoute><AutoPilot /></ProtectedRoute>} />
+            <Route path="/:lang" element={<LanguageGuard />}>
+              <Route index element={<Index />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="terms-of-service" element={<TermsOfService />} />
+              <Route path="responsible-gaming" element={<ResponsibleGaming />} />
+              <Route path="calculator" element={<Calculator />} />
+              <Route path="earn" element={<AdsLanding />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="blog/:slug" element={<BlogPost />} />
+              <Route path="auth/login" element={<Login />} />
+              <Route path="admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="admin/blog" element={<ProtectedRoute><BlogAdmin /></ProtectedRoute>} />
+              <Route path="admin/blog/new" element={<ProtectedRoute><BlogEditor /></ProtectedRoute>} />
+              <Route path="admin/blog/edit/:id" element={<ProtectedRoute><BlogEditor /></ProtectedRoute>} />
+              <Route path="admin/analytics" element={<ProtectedRoute><BlogAnalytics /></ProtectedRoute>} />
+              <Route path="admin/blog/queue" element={<ProtectedRoute><BlogQueue /></ProtectedRoute>} />
+              <Route path="admin/seo-monitoring" element={<ProtectedRoute><SEOMonitoring /></ProtectedRoute>} />
+              <Route path="admin/contact-messages" element={<ProtectedRoute><ContactMessages /></ProtectedRoute>} />
+              <Route path="admin/incoming" element={<ProtectedRoute><IncomingArticles /></ProtectedRoute>} />
+              <Route path="admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+              <Route path="admin/agents" element={<ProtectedRoute><AgentsDashboard /></ProtectedRoute>} />
+              <Route path="admin/autopilot" element={<ProtectedRoute><AutoPilot /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

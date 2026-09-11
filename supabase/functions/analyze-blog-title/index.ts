@@ -1,9 +1,53 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.79.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+function jsonError(error: string, status: number): Response {
+  return new Response(
+    JSON.stringify({ error }),
+    { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+  );
+}
+
+async function requireAdmin(req: Request): Promise<Response | null> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader || !/^Bearer\s+\S+$/i.test(authHeader)) {
+    return jsonError('Missing or invalid authorization header', 401);
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Supabase authentication is not configured');
+    return jsonError('Authentication service not configured', 500);
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return jsonError('Invalid authentication', 401);
+  }
+
+  const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
+    _user_id: user.id,
+    _role: 'admin',
+  });
+
+  if (roleError || !isAdmin) {
+    if (roleError) console.error('Admin role verification failed:', roleError.message);
+    return jsonError('Admin access required', 403);
+  }
+
+  return null;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,6 +55,9 @@ serve(async (req) => {
   }
 
   try {
+    const authError = await requireAdmin(req);
+    if (authError) return authError;
+
     const { title } = await req.json();
 
     if (!title) {

@@ -17,6 +17,7 @@ import { ArrowRight, CheckCircle2, TrendingUp, Zap, Shield, Clock, BarChart3, Ch
 import { Slider } from '@/components/ui/slider';
 import { trackMetaPageView, trackMetaViewContent, trackMetaLead } from '@/lib/metaPixel';
 import revillionLogo from '@/assets/revillion-logo.png?format=webp&quality=85&w=170';
+import { getDashboardUrl } from '@/lib/dashboard';
 
 // ─── Mini calculator (self-contained, no Layout wrapper) ─────────────────────
 
@@ -93,31 +94,31 @@ function MiniCalculator({ onResult }: { onResult: (monthly: number) => void }) {
       <div className="grid sm:grid-cols-2 gap-5">
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-sm text-gray-400">Monthly visitors</span>
-            <span className="text-sm font-bold text-white tabular-nums">{traffic.toLocaleString()}</span>
+            <span id="ads-traffic-label" className="text-sm text-gray-400">Monthly visitors</span>
+            <span id="ads-traffic-value" className="text-sm font-bold text-white tabular-nums">{traffic.toLocaleString()}</span>
           </div>
-          <Slider min={1000} max={500000} step={1000} value={[traffic]} onValueChange={([v]) => { setActive(null); setTraffic(v); }} />
+          <Slider thumbProps={{ 'aria-labelledby': 'ads-traffic-label', 'aria-describedby': 'ads-traffic-value', 'aria-valuetext': `${traffic.toLocaleString()} monthly visitors` }} min={1000} max={500000} step={1000} value={[traffic]} onValueChange={([v]) => { setActive(null); setTraffic(v); }} />
         </div>
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-sm text-gray-400">Click-through rate</span>
-            <span className="text-sm font-bold text-white tabular-nums">{ctr}%</span>
+            <span id="ads-ctr-label" className="text-sm text-gray-400">Click-through rate</span>
+            <span id="ads-ctr-value" className="text-sm font-bold text-white tabular-nums">{ctr}%</span>
           </div>
-          <Slider min={0.5} max={15} step={0.5} value={[ctr]} onValueChange={([v]) => { setActive(null); setCtr(v); }} />
+          <Slider thumbProps={{ 'aria-labelledby': 'ads-ctr-label', 'aria-describedby': 'ads-ctr-value', 'aria-valuetext': `${ctr} percent` }} min={0.5} max={15} step={0.5} value={[ctr]} onValueChange={([v]) => { setActive(null); setCtr(v); }} />
         </div>
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-sm text-gray-400">Registration rate</span>
-            <span className="text-sm font-bold text-white tabular-nums">{regRate}%</span>
+            <span id="ads-registration-label" className="text-sm text-gray-400">Registration rate</span>
+            <span id="ads-registration-value" className="text-sm font-bold text-white tabular-nums">{regRate}%</span>
           </div>
-          <Slider min={1} max={60} step={1} value={[regRate]} onValueChange={([v]) => { setActive(null); setRegRate(v); }} />
+          <Slider thumbProps={{ 'aria-labelledby': 'ads-registration-label', 'aria-describedby': 'ads-registration-value', 'aria-valuetext': `${regRate} percent` }} min={1} max={60} step={1} value={[regRate]} onValueChange={([v]) => { setActive(null); setRegRate(v); }} />
         </div>
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-sm text-gray-400">Deposit rate</span>
-            <span className="text-sm font-bold text-white tabular-nums">{depRate}%</span>
+            <span id="ads-deposit-label" className="text-sm text-gray-400">Deposit rate</span>
+            <span id="ads-deposit-value" className="text-sm font-bold text-white tabular-nums">{depRate}%</span>
           </div>
-          <Slider min={5} max={80} step={1} value={[depRate]} onValueChange={([v]) => { setActive(null); setDepRate(v); }} />
+          <Slider thumbProps={{ 'aria-labelledby': 'ads-deposit-label', 'aria-describedby': 'ads-deposit-value', 'aria-valuetext': `${depRate} percent` }} min={5} max={80} step={1} value={[depRate]} onValueChange={([v]) => { setActive(null); setDepRate(v); }} />
         </div>
       </div>
 
@@ -127,6 +128,7 @@ function MiniCalculator({ onResult }: { onResult: (monthly: number) => void }) {
         <div className="flex flex-wrap gap-2">
           {[50, 100, 150, 200, 220].map(r => (
             <button
+              type="button"
               key={r}
               onClick={() => setCpaRate(r)}
               className={`px-4 py-2 rounded-xl border text-sm font-bold transition-all duration-200 ${
@@ -222,11 +224,11 @@ export default function AdsLanding() {
               <img src={revillionLogo} alt="Revillion Partners" height={40} className="h-10 w-auto" />
             </Link>
             <a
-              href="https://dashboard.revillion.com/en/registration"
+              href={getDashboardUrl(lang, 'registration')}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => handleCTAClick('header')}
-              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm rounded-full px-5 py-2 transition-all duration-200 hover:scale-[1.03] shadow-lg shadow-orange-500/20"
+              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-gray-950 font-bold text-sm rounded-full px-5 py-2 transition-all duration-200 hover:scale-[1.03] shadow-lg shadow-orange-500/20"
             >
               Join free <ArrowRight className="w-3.5 h-3.5" />
             </a>
@@ -278,11 +280,11 @@ export default function AdsLanding() {
               </div>
 
               <a
-                href="https://dashboard.revillion.com/en/registration"
+                href={getDashboardUrl(lang, 'registration')}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => handleCTAClick('hero')}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg rounded-full px-10 py-4 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.03]"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-gray-950 font-bold text-lg rounded-full px-10 py-4 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.03]"
               >
                 Create free account <ArrowRight className="w-5 h-5" />
               </a>
@@ -317,11 +319,11 @@ export default function AdsLanding() {
 
             <div className="text-center mt-8">
               <a
-                href="https://dashboard.revillion.com/en/registration"
+                href={getDashboardUrl(lang, 'registration')}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => handleCTAClick('calculator')}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-base rounded-full px-8 py-3.5 shadow-lg shadow-orange-500/20 transition-all duration-300 hover:scale-[1.03]"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-gray-950 font-bold text-base rounded-full px-8 py-3.5 shadow-lg shadow-orange-500/20 transition-all duration-300 hover:scale-[1.03]"
               >
                 {ctaLabel}
               </a>
@@ -402,17 +404,17 @@ export default function AdsLanding() {
               Setup takes less than 5 minutes.
             </p>
             <a
-              href="https://dashboard.revillion.com/en/registration"
+              href={getDashboardUrl(lang, 'registration')}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => handleCTAClick('footer_cta')}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-xl rounded-full px-12 py-5 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.03]"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-gray-950 font-bold text-xl rounded-full px-12 py-5 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.03]"
             >
               {ctaLabel}
             </a>
             <p className="text-gray-600 text-xs mt-4">
               Already have an account?{' '}
-              <a href="https://dashboard.revillion.com" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline">
+              <a href={getDashboardUrl(lang, 'login')} target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">
                 Log in →
               </a>
             </p>

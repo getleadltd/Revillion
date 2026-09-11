@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import DOMPurify from "dompurify";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Helmet } from 'react-helmet-async';
@@ -731,7 +732,18 @@ export default function BlogEditor() {
                 )}
                 <div
                   className="prose prose-sm dark:prose-invert max-w-none"
-                  dangerouslySetInnerHTML={{ __html: form.watch("content_it") || "<em>Nessun contenuto</em>" }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      form.watch("content_it") || "<em>Nessun contenuto</em>",
+                      {
+                        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'br', 'img', 'blockquote', 'code', 'pre', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+                        ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height', 'id', 'tabindex'],
+                        ALLOW_DATA_ATTR: false,
+                        FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
+                        FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
+                      },
+                    ),
+                  }}
                 />
               </article>
             </SheetContent>

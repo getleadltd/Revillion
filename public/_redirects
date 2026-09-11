@@ -1,0 +1,50 @@
+# Canonical URL normalization for Cloudflare Pages and Netlify.
+# Route HTML is emitted as flat files so slashless URLs serve the SEO head.
+/ /en 301
+/en/ /en 301
+/en/contact/ /en/contact 301
+/en/privacy-policy/ /en/privacy-policy 301
+/en/terms-of-service/ /en/terms-of-service 301
+/en/responsible-gaming/ /en/responsible-gaming 301
+/en/calculator/ /en/calculator 301
+/en/blog/ /en/blog 301
+/en/earn/ /en/earn 301
+/de/ /de 301
+/de/contact/ /de/contact 301
+/de/privacy-policy/ /de/privacy-policy 301
+/de/terms-of-service/ /de/terms-of-service 301
+/de/responsible-gaming/ /de/responsible-gaming 301
+/de/calculator/ /de/calculator 301
+/de/blog/ /de/blog 301
+/de/earn/ /de/earn 301
+/it/ /it 301
+/it/contact/ /it/contact 301
+/it/privacy-policy/ /it/privacy-policy 301
+/it/terms-of-service/ /it/terms-of-service 301
+/it/responsible-gaming/ /it/responsible-gaming 301
+/it/calculator/ /it/calculator 301
+/it/blog/ /it/blog 301
+/it/earn/ /it/earn 301
+/pt/ /pt 301
+/pt/contact/ /pt/contact 301
+/pt/privacy-policy/ /pt/privacy-policy 301
+/pt/terms-of-service/ /pt/terms-of-service 301
+/pt/responsible-gaming/ /pt/responsible-gaming 301
+/pt/calculator/ /pt/calculator 301
+/pt/blog/ /pt/blog 301
+/pt/earn/ /pt/earn 301
+/es/ /es 301
+/es/contact/ /es/contact 301
+/es/privacy-policy/ /es/privacy-policy 301
+/es/terms-of-service/ /es/terms-of-service 301
+/es/responsible-gaming/ /es/responsible-gaming 301
+/es/calculator/ /es/calculator 301
+/es/blog/ /es/blog 301
+/es/earn/ /es/earn 301
+
+# Dynamic blog posts use slashless canonicals too.
+/en/blog/:slug/ /en/blog/:slug 301
+/de/blog/:slug/ /de/blog/:slug 301
+/it/blog/:slug/ /it/blog/:slug 301
+/pt/blog/:slug/ /pt/blog/:slug 301
+/es/blog/:slug/ /es/blog/:slug 301

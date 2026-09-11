@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Share2, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface ShareButtonsProps {
   title: string;
@@ -11,6 +12,7 @@ interface ShareButtonsProps {
 export const ShareButtons = ({ title, url }: ShareButtonsProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const shareUrl = encodeURIComponent(url);
   const shareTitle = encodeURIComponent(title);
@@ -20,14 +22,14 @@ export const ShareButtons = ({ title, url }: ShareButtonsProps) => {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       toast({
-        title: 'Link copied!',
-        description: 'The link has been copied to your clipboard.',
+        title: t('blog.sharing.copySuccessTitle'),
+        description: t('blog.sharing.copySuccessDescription'),
       });
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       toast({
-        title: 'Failed to copy',
-        description: 'Please try again.',
+        title: t('blog.sharing.copyErrorTitle'),
+        description: t('blog.sharing.copyErrorDescription'),
         variant: 'destructive',
       });
     }
@@ -37,7 +39,7 @@ export const ShareButtons = ({ title, url }: ShareButtonsProps) => {
     if (navigator.share) {
       try {
         await navigator.share({ title, url });
-      } catch (error) {
+      } catch {
         // User cancelled share
       }
     }
@@ -52,7 +54,7 @@ export const ShareButtons = ({ title, url }: ShareButtonsProps) => {
         className="gap-2"
       >
         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-        {copied ? 'Copied!' : 'Copy Link'}
+        {copied ? t('blog.sharing.copied') : t('blog.sharing.copyLink')}
       </Button>
 
       {navigator.share && (
@@ -63,7 +65,7 @@ export const ShareButtons = ({ title, url }: ShareButtonsProps) => {
           className="gap-2"
         >
           <Share2 className="h-4 w-4" />
-          Share
+          {t('blog.sharing.share')}
         </Button>
       )}
 

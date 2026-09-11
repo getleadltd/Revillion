@@ -1,7 +1,7 @@
 project_id = "pvxndzwaposcttrwkwgd"
 
 [functions.meta-capi]
-verify_jwt = false
+verify_jwt = true
 
 [functions.translate-blog-post]
 verify_jwt = true
@@ -15,11 +15,17 @@ verify_jwt = true
 [functions.analyze-blog-title]
 verify_jwt = true
 
+[functions.autopilot]
+verify_jwt = true
+
+[functions.article-review-swarm]
+verify_jwt = true
+
 [functions.process-blog-queue]
-verify_jwt = false
+verify_jwt = true
 
 [functions.monitor-seo]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sitemap]
 verify_jwt = false
