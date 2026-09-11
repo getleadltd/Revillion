@@ -331,7 +331,7 @@ export default function AutoPilot() {
                   value={[minScore]}
                   min={1}
                   max={100}
-                  step={5}
+                  step={1}
                   onValueChange={([v]) => setMinScore(v)}
                   onValueCommit={([v]) => saveScore(v)}
                   className="w-full"
