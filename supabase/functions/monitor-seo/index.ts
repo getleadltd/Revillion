@@ -5,6 +5,7 @@ import { fetchPublicUrl } from '../_shared/public-http.ts';
 const MAX_LINKS_PER_SCAN = 500;
 const LINK_CHECK_CONCURRENCY = 8;
 const LINK_SCAN_BUDGET_MS = 110_000;
+const BLOG_LANGUAGES = ['en', 'de', 'it', 'pt', 'es'] as const;
 
 interface LinkTarget {
   postId: string;
@@ -77,9 +78,7 @@ async function checkBrokenLinks(supabase: SupabaseClient) {
   const seenUrls = new Set<string>();
   
   scanPosts: for (const post of posts || []) {
-    const languages = ['en', 'de', 'it', 'pt', 'es'];
-    
-    for (const lang of languages) {
+    for (const lang of BLOG_LANGUAGES) {
       const content = post[`content_${lang}`];
       if (!content) continue;
       
@@ -222,9 +221,7 @@ async function checkMissingAltTags(supabase: SupabaseClient) {
     .eq('status', 'published');
   
   for (const post of allPosts || []) {
-    const languages = ['en', 'de', 'it', 'pt', 'es'];
-    
-    for (const lang of languages) {
+    for (const lang of BLOG_LANGUAGES) {
       const content = post[`content_${lang}`];
       if (!content) continue;
       
@@ -270,7 +267,6 @@ async function checkMissingAltTags(supabase: SupabaseClient) {
 async function checkHreflangErrors(supabase: SupabaseClient) {
   const startTime = Date.now();
   const errors: Record<string, unknown>[] = [];
-  const LANGUAGES = ['en', 'de', 'it', 'pt', 'es'];
   
   const { data: posts } = await supabase
     .from('blog_posts')
@@ -284,8 +280,8 @@ async function checkHreflangErrors(supabase: SupabaseClient) {
     const missingLanguages = [];
     const invalidSlugs = [];
     
-    for (const lang of LANGUAGES) {
-      const slugField = `slug_${lang}`;
+    for (const lang of BLOG_LANGUAGES) {
+      const slugField = `slug_${lang}` as const;
       if (!post[slugField] || post[slugField].trim() === '') {
         missingLanguages.push(lang);
       } else {
