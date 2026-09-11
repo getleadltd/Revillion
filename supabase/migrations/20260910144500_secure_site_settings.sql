@@ -4,9 +4,22 @@
 DROP POLICY IF EXISTS "Public can read site_settings"
   ON public.site_settings;
 
+-- The production project uses this older policy name. Because PostgreSQL RLS
+-- policies are permissive by default, leaving it in place would keep every
+-- setting publicly readable even after adding the restricted policy below.
+DROP POLICY IF EXISTS "Public can read settings"
+  ON public.site_settings;
+
+-- Make a retry after a rolled-forward/manual application safe.
+DROP POLICY IF EXISTS "Public can read non-sensitive site settings"
+  ON public.site_settings;
+
 -- The legacy FOR ALL admin policy also applied to anonymous SELECT requests.
 -- Scope it explicitly so public reads never evaluate the private role helper.
 DROP POLICY IF EXISTS "Admins can modify site_settings"
+  ON public.site_settings;
+
+DROP POLICY IF EXISTS "Admins can update settings"
   ON public.site_settings;
 
 CREATE POLICY "Admins can modify site_settings"

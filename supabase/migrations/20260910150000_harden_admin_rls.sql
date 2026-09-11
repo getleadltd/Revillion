@@ -5,6 +5,11 @@
 DROP POLICY IF EXISTS "Authenticated can manage agent tasks"
   ON public.agent_tasks;
 
+-- This policy already exists in the production project. Recreate it below so
+-- the migration remains safe across both legacy schema variants.
+DROP POLICY IF EXISTS "Admins can manage agent tasks"
+  ON public.agent_tasks;
+
 CREATE POLICY "Admins can manage agent tasks"
   ON public.agent_tasks
   FOR ALL
