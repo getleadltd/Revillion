@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -36,10 +37,10 @@ const Login = () => {
       });
 
       navigate(`/${lang}/admin/blog`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: t('auth.loginError'),
-        description: error.message,
+        description: error instanceof Error ? error.message : t('auth.loginError'),
         variant: 'destructive',
       });
     } finally {
@@ -49,6 +50,11 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-primary/5 p-4">
+      <Helmet>
+        <html lang={lang} />
+        <title>Admin login | Revillion Partners</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">{t('auth.login')}</CardTitle>

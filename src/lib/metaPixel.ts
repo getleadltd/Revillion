@@ -4,13 +4,7 @@
  * Pixel initialization is handled by TrackingProvider (reads pixel ID from DB).
  * These helpers assume window.fbq is already available.
  */
-
-declare global {
-  interface Window {
-    fbq?: (...args: any[]) => void;
-    _fbq?: any;
-  }
-}
+import type {} from '@/types/tracking';
 
 /** Fire PageView — call on every route change */
 export const trackMetaPageView = () => {
@@ -29,10 +23,9 @@ export const trackMetaViewContent = (contentName: string, contentCategory = 'aff
 
 /**
  * Fire Lead — when user clicks a primary CTA
- * Also fires server-side via CAPI for reliability (post iOS 14)
+ * Server-side CAPI events must be sent independently by a trusted backend.
  */
-export const trackMetaLead = async (params?: {
-  email?: string;
+export const trackMetaLead = (params?: {
   source?: string;
   value?: number;
 }) => {
@@ -45,23 +38,6 @@ export const trackMetaLead = async (params?: {
     });
   }
 
-  // Server-side CAPI (more reliable, bypasses ad blockers)
-  if (params?.email) {
-    try {
-      await fetch('/api/meta-capi', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event_name: 'Lead',
-          email: params.email,
-          source: params.source,
-          page_url: window.location.href,
-        }),
-      });
-    } catch {
-      // CAPI failure is non-blocking
-    }
-  }
 };
 
 /**

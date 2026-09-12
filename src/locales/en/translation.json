@@ -8,7 +8,8 @@
     "contact": "Contact",
     "calculator": "Calculator",
     "blog": "Blog",
-    "startEarning": "Start Earning"
+    "startEarning": "Start Earning",
+    "login": "Login"
   },
   "hero": {
     "badge": "#1 iGaming Affiliate Network",
@@ -127,7 +128,7 @@
     "earned": "$4,250 earned",
     "realtimeUpdate": "Real-time postback updates",
     "accessButton": "Access Your Dashboard",
-    "seeLive": "See the dashboard live",
+    "seeLive": "Log in to the dashboard",
     "revenueChart": "Revenue — Last 7 days"
   },
   "offers": {
@@ -148,7 +149,7 @@
       "africa": "🌍 Africa: South Africa, Nigeria, Kenya",
       "moreMarkets": "📍 And 30+ more markets worldwide"
     },
-    "exploreButton": "Explore Our Offers",
+    "exploreButton": "Join to Access Offers",
     "urgency": "Limited slots available for Q2 2026"
   },
   "testimonials": {
@@ -254,13 +255,32 @@
   "footer": {
     "description": "Your trusted partner for affiliate marketing in the iGaming sector. Join our global network and maximize your earnings with exclusive offers and dedicated support.",
     "quickLinks": "Quick Links",
+    "resources": "Resources",
     "legal": "Legal Information",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "responsibleGaming": "Responsible Gaming",
+    "cookieSettings": "Cookie settings",
+    "responsibleNotice": "18+ | Gamble responsibly",
     "socialMedia": "Social Media",
     "rights": "All rights reserved.",
-    "copyright": "© 2025 Revillion Partners. All rights reserved."
+    "copyright": "© {{year}} Revillion Partners. All rights reserved."
+  },
+  "accessibility": {
+    "skipToContent": "Skip to main content",
+    "dismiss": "Dismiss",
+    "home": "Revillion home page",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "changeLanguage": "Change language. Current language: {{language}}"
+  },
+  "notFound": {
+    "metaTitle": "Page Not Found | Revillion Partners",
+    "badge": "Page not found",
+    "title": "Lost in the",
+    "titleHighlight": "Matrix?",
+    "description": "This page doesn't exist. You can return to the website or continue to your affiliate account.",
+    "cta": "Become an Affiliate"
   },
   "blog": {
     "title": "Blog & News",
@@ -268,28 +288,52 @@
     "metaTitle": "iGaming Affiliate Blog & News | Revillion Partners",
     "metaDescription": "Expert tips, casino affiliate strategies, and iGaming industry news. Learn how to maximize CPA commissions and grow your affiliate business with Revillion Partners.",
     "readMore": "Read More",
-    "categories": "Categories",
+    "categories": {
+      "label": "Categories",
+      "news": "News",
+      "reviews": "Reviews",
+      "tips": "Affiliate Tips",
+      "casino-reviews": "Casino Reviews",
+      "affiliate-tips": "Affiliate Tips",
+      "industry-updates": "Industry Updates",
+      "guides": "Guides"
+    },
     "allPosts": "All Posts",
     "noPosts": "No posts found",
+    "noSearchResults": "No articles match “{{query}}”.",
+    "searchLabel": "Search blog articles",
+    "searchPlaceholder": "Search articles, guides, and reviews...",
+    "loading": "Loading articles...",
+    "loadError": "We couldn't load the articles. Please try again shortly.",
+    "resultsLabel": "Blog articles",
+    "resultsFound": "{{count}} articles found",
     "latestPosts": "Latest Posts",
     "relatedPosts": "You Might Also Like",
     "sharePost": "Share this article",
+    "sharing": {
+      "copyLink": "Copy link",
+      "copied": "Copied!",
+      "share": "Share",
+      "copySuccessTitle": "Link copied!",
+      "copySuccessDescription": "The link has been copied to your clipboard.",
+      "copyErrorTitle": "Couldn't copy the link",
+      "copyErrorDescription": "Please try again."
+    },
     "readingTime": "min read",
     "views": "views",
     "publishedOn": "Published on",
     "writtenBy": "Written by",
     "postNotFound": "Post not found",
     "backToBlog": "Back to Blog",
-    "categories.news": "News",
-    "categories.casino-reviews": "Casino Reviews",
-    "categories.affiliate-tips": "Affiliate Tips",
-    "categories.industry-updates": "Industry Updates",
-    "categories.guides": "Guides",
     "pagination": {
+      "label": "Blog pagination",
+      "page": "Go to page {{page}}",
       "previous": "Previous",
       "next": "Next"
     },
     "cta": {
+      "title": "Ready to start earning?",
+      "description": "Apply to join Revillion Partners and access our affiliate offers and support.",
       "button": "Become Partner Now"
     },
     "admin": {
@@ -353,7 +397,26 @@
       "submit": "Send Message",
       "submitting": "Sending...",
       "success": "Message sent successfully! We'll respond within 24 hours.",
-      "error": "Error sending message. Please try again."
+      "error": "Error sending message. Please try again.",
+      "errors": {
+        "nameMin": "Name must be at least 2 characters.",
+        "nameMax": "Name must be 100 characters or fewer.",
+        "email": "Enter a valid email address.",
+        "emailMax": "Email address must be 255 characters or fewer.",
+        "phoneMax": "Phone number must be 30 characters or fewer.",
+        "contactType": "Select the type of inquiry.",
+        "companyMax": "Company name must be 150 characters or fewer.",
+        "subjectMin": "Subject must be at least 5 characters.",
+        "subjectMax": "Subject must be 200 characters or fewer.",
+        "messageMin": "Message must be at least 20 characters.",
+        "messageMax": "Message must be 2,000 characters or fewer."
+      }
+    },
+    "trust": {
+      "response": "We respond within 24 hours",
+      "secure": "Secure form",
+      "responseShort": "Response within 24h",
+      "support": "Dedicated support"
     },
     "info": {
       "title": "Partnership Opportunities",

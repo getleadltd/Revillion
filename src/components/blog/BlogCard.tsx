@@ -24,6 +24,10 @@ interface BlogPost {
   excerpt_pt?: string;
   excerpt_es?: string;
   content_en: string;
+  content_de?: string;
+  content_it?: string;
+  content_pt?: string;
+  content_es?: string;
   featured_image_url?: string;
   category: string;
   published_at: string;
@@ -40,6 +44,7 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
   
   const title = post[`title_${lang}` as keyof BlogPost] as string || post.title_en;
   const excerpt = post[`excerpt_${lang}` as keyof BlogPost] as string || post.excerpt_en || '';
+  const content = post[`content_${lang}` as keyof BlogPost] as string || post.content_en;
   
   // Priorità: 1) slug della lingua corrente, 2) slug legacy, 3) slug_en come fallback
   const langSlugKey = `slug_${lang}` as keyof BlogPost;
@@ -48,7 +53,9 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
 
   const categoryConfig: Record<string, { icon: typeof BookOpen; gradient: string }> = {
     guides: { icon: BookOpen, gradient: 'from-blue-600 to-indigo-700' },
+    tips: { icon: BookOpen, gradient: 'from-violet-500 to-purple-700' },
     news: { icon: Newspaper, gradient: 'from-orange-500 to-red-600' },
+    reviews: { icon: Star, gradient: 'from-emerald-500 to-teal-700' },
     'casino-reviews': { icon: Star, gradient: 'from-emerald-500 to-teal-700' },
   };
   const { icon: FallbackIcon, gradient } = categoryConfig[post.category] || categoryConfig.news;
@@ -94,12 +101,12 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
       <CardFooter className="flex items-center justify-between pt-0">
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Calendar className="h-3.5 w-3.5" />
-            {formatDate(post.published_at || post.created_at)}
+            <Calendar aria-hidden="true" className="h-3.5 w-3.5" />
+            {formatDate(post.published_at || post.created_at, lang)}
           </span>
           <span className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            {calculateReadingTime(post.content_en)} min
+            <Clock aria-hidden="true" className="h-3.5 w-3.5" />
+            {calculateReadingTime(content)} {t('blog.readingTime')}
           </span>
         </div>
 
@@ -108,7 +115,7 @@ export const BlogCard = ({ post, lang }: BlogCardProps) => {
           className="flex items-center gap-1 text-orange-600 hover:text-orange-700 font-semibold text-sm group-hover:gap-2 transition-all duration-200"
         >
           {t('blog.readMore')}
-          <ArrowRight className="w-3.5 h-3.5" />
+          <ArrowRight aria-hidden="true" className="w-3.5 h-3.5" />
         </Link>
       </CardFooter>
     </Card>

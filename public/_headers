@@ -1,0 +1,45 @@
+/*
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Strict-Transport-Security: max-age=31536000
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/admin*
+  X-Robots-Tag: noindex, nofollow
+
+/en/auth/*
+  X-Robots-Tag: noindex, nofollow
+/de/auth/*
+  X-Robots-Tag: noindex, nofollow
+/it/auth/*
+  X-Robots-Tag: noindex, nofollow
+/pt/auth/*
+  X-Robots-Tag: noindex, nofollow
+/es/auth/*
+  X-Robots-Tag: noindex, nofollow
+
+/en/admin*
+  X-Robots-Tag: noindex, nofollow
+/de/admin*
+  X-Robots-Tag: noindex, nofollow
+/it/admin*
+  X-Robots-Tag: noindex, nofollow
+/pt/admin*
+  X-Robots-Tag: noindex, nofollow
+/es/admin*
+  X-Robots-Tag: noindex, nofollow
+
+/en/earn
+  X-Robots-Tag: noindex, nofollow
+/de/earn
+  X-Robots-Tag: noindex, nofollow
+/it/earn
+  X-Robots-Tag: noindex, nofollow
+/pt/earn
+  X-Robots-Tag: noindex, nofollow
+/es/earn
+  X-Robots-Tag: noindex, nofollow

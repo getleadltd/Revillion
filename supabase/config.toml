@@ -4,22 +4,28 @@ project_id = "pvxndzwaposcttrwkwgd"
 verify_jwt = false
 
 [functions.translate-blog-post]
-verify_jwt = true
+verify_jwt = false
 
 [functions.generate-blog-content]
-verify_jwt = true
+verify_jwt = false
 
 [functions.generate-blog-image]
-verify_jwt = true
+verify_jwt = false
 
 [functions.analyze-blog-title]
-verify_jwt = true
+verify_jwt = false
+
+[functions.autopilot]
+verify_jwt = false
+
+[functions.article-review-swarm]
+verify_jwt = false
 
 [functions.process-blog-queue]
-verify_jwt = false
+verify_jwt = true
 
 [functions.monitor-seo]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sitemap]
 verify_jwt = false

@@ -85,7 +85,7 @@ export default function AutoPilot() {
         const map: Record<string, string> = {};
         data.forEach(r => { map[r.key] = r.value; });
         setEnabled(map.autopilot_enabled === 'true');
-        if (map.autopilot_min_score) setMinScore(parseInt(map.autopilot_min_score));
+        if (map.autopilot_min_score) setMinScore(Math.max(1, parseInt(map.autopilot_min_score)));
         if (map.autopilot_daily_limit) setDailyLimit(parseInt(map.autopilot_daily_limit));
         if (map.autopilot_schedule_hours) {
           setScheduleHours(map.autopilot_schedule_hours.split(',').map(h => parseInt(h.trim())).filter(h => !isNaN(h)));
@@ -109,8 +109,8 @@ export default function AutoPilot() {
     toast({
       title: next ? '🤖 Autopilot attivato' : '⏸ Autopilot disattivato',
       description: next
-        ? 'Gli agenti inizieranno a pubblicare articoli automaticamente.'
-        : 'La generazione automatica è in pausa.',
+        ? 'Impostazione salvata per le esecuzioni pianificate. "Esegui ora" resta disponibile.'
+        : 'Esecuzioni pianificate in pausa. "Esegui ora" resta disponibile.',
     });
   };
 
@@ -186,12 +186,17 @@ export default function AutoPilot() {
   const handleRunNow = async () => {
     setIsRunning(true);
     try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        throw new Error('Sessione amministratore non disponibile');
+      }
+
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/autopilot`;
       const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ force: true }),
       });
@@ -288,8 +293,8 @@ export default function AutoPilot() {
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {enabled
-                    ? 'Gli agenti AI stanno monitorando la coda e pubblicando automaticamente.'
-                    : 'Attiva per avviare la generazione automatica degli articoli.'}
+                    ? 'Autopilot è abilitato per le esecuzioni pianificate. "Esegui ora" resta manuale.'
+                    : 'Le esecuzioni pianificate sono in pausa. Puoi continuare a usare "Esegui ora".'}
                 </p>
               </div>
 
@@ -324,9 +329,9 @@ export default function AutoPilot() {
                 </div>
                 <Slider
                   value={[minScore]}
-                  min={0}
+                  min={1}
                   max={100}
-                  step={5}
+                  step={1}
                   onValueChange={([v]) => setMinScore(v)}
                   onValueCommit={([v]) => saveScore(v)}
                   className="w-full"
@@ -389,7 +394,7 @@ export default function AutoPilot() {
                 ))}
               </div>
               <p className="text-xs text-muted-foreground/60">
-                Il cron gira ogni ora — pubblica solo nelle ore selezionate. "Esegui ora" ignora l'orario.
+                Le ore selezionate si applicano quando Autopilot viene invocato da uno scheduler. "Esegui ora" ignora l'orario.
               </p>
             </div>
           </div>

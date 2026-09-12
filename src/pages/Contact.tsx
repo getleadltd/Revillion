@@ -13,8 +13,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Clock, Users, Building2, HeadphonesIcon, Shield, ArrowRight, CreditCard, Wallet } from 'lucide-react';
+import { Mail, Clock, Users, Building2, HeadphonesIcon, Shield, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { getDashboardUrl, getSiteLanguage } from '@/lib/dashboard';
 
 // Temporary type until Supabase types are regenerated
 type ContactMessageInsert = {
@@ -30,36 +31,39 @@ type ContactMessageInsert = {
 const contactSchema = z.object({
   name: z.string()
     .trim()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name too long"),
+    .min(2, 'contact.form.errors.nameMin')
+    .max(100, 'contact.form.errors.nameMax'),
   email: z.string()
     .trim()
-    .email("Invalid email address")
-    .max(255),
+    .email('contact.form.errors.email')
+    .max(255, 'contact.form.errors.emailMax'),
   phone: z.string()
     .trim()
-    .max(30)
+    .max(30, 'contact.form.errors.phoneMax')
     .optional(),
-  contactType: z.enum(['affiliate', 'partner', 'general']),
+  contactType: z.enum(['affiliate', 'partner', 'general'], {
+    required_error: 'contact.form.errors.contactType',
+  }),
   companyName: z.string()
     .trim()
-    .max(150)
+    .max(150, 'contact.form.errors.companyMax')
     .optional(),
   subject: z.string()
     .trim()
-    .min(5, "Subject too short")
-    .max(200),
+    .min(5, 'contact.form.errors.subjectMin')
+    .max(200, 'contact.form.errors.subjectMax'),
   message: z.string()
     .trim()
-    .min(20, "Message must be at least 20 characters")
-    .max(2000, "Message too long")
+    .min(20, 'contact.form.errors.messageMin')
+    .max(2000, 'contact.form.errors.messageMax')
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
 const Contact = () => {
   const { t } = useTranslation();
-  const { lang = 'en' } = useParams();
+  const { lang: routeLanguage } = useParams();
+  const lang = getSiteLanguage(routeLanguage);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState<string>('');
 
@@ -146,7 +150,7 @@ const Contact = () => {
             </p>
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10">
               <Clock className="w-4 h-4 text-orange-400" />
-              <span className="text-sm font-medium text-gray-300">We respond within 24 hours</span>
+              <span className="text-sm font-medium text-gray-300">{t('contact.trust.response')}</span>
             </div>
           </div>
         </div>
@@ -162,15 +166,15 @@ const Contact = () => {
               <div className="flex flex-wrap items-center gap-4 mb-6 px-1">
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Shield className="w-4 h-4 text-orange-500" />
-                  <span>Secure</span>
+                  <span>{t('contact.trust.secure')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Mail className="w-4 h-4 text-orange-500" />
-                  <span>24h Response</span>
+                  <span>{t('contact.trust.responseShort')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Users className="w-4 h-4 text-orange-500" />
-                  <span>Dedicated Support</span>
+                  <span>{t('contact.trust.support')}</span>
                 </div>
               </div>
 
@@ -179,17 +183,23 @@ const Contact = () => {
                   <CardTitle>{t('contact.form.submit')}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                     <div>
                       <Label htmlFor="name">{t('contact.form.name')}</Label>
                       <Input
                         id="name"
                         {...register('name')}
+                        autoComplete="name"
+                        minLength={2}
+                        maxLength={100}
+                        required
+                        aria-invalid={Boolean(errors.name)}
+                        aria-describedby={errors.name ? 'name-error' : undefined}
                         placeholder={t('contact.form.namePlaceholder')}
                         className={errors.name ? 'border-destructive' : ''}
                       />
                       {errors.name && (
-                        <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
+                        <p id="name-error" role="alert" className="text-sm text-destructive mt-1">{t(errors.name.message || '')}</p>
                       )}
                     </div>
 
@@ -199,11 +209,16 @@ const Contact = () => {
                         id="email"
                         type="email"
                         {...register('email')}
+                        autoComplete="email"
+                        maxLength={255}
+                        required
+                        aria-invalid={Boolean(errors.email)}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                         placeholder={t('contact.form.emailPlaceholder')}
                         className={errors.email ? 'border-destructive' : ''}
                       />
                       {errors.email && (
-                        <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+                        <p id="email-error" role="alert" className="text-sm text-destructive mt-1">{t(errors.email.message || '')}</p>
                       )}
                     </div>
 
@@ -213,8 +228,16 @@ const Contact = () => {
                         id="phone"
                         type="tel"
                         {...register('phone')}
+                        autoComplete="tel"
+                        maxLength={30}
+                        aria-invalid={Boolean(errors.phone)}
+                        aria-describedby={errors.phone ? 'phone-error' : undefined}
                         placeholder={t('contact.form.phonePlaceholder')}
+                        className={errors.phone ? 'border-destructive' : ''}
                       />
+                      {errors.phone && (
+                        <p id="phone-error" role="alert" className="text-sm text-destructive mt-1">{t(errors.phone.message || '')}</p>
+                      )}
                     </div>
 
                     <div>
@@ -222,11 +245,21 @@ const Contact = () => {
                       <Select
                         onValueChange={(value) => {
                           setSelectedType(value);
-                          setValue('contactType', value as 'affiliate' | 'partner' | 'general');
+                          setValue('contactType', value as 'affiliate' | 'partner' | 'general', {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                            shouldValidate: true,
+                          });
                         }}
                         value={selectedType}
                       >
-                        <SelectTrigger className={errors.contactType ? 'border-destructive' : ''}>
+                        <SelectTrigger
+                          id="contactType"
+                          aria-required="true"
+                          aria-invalid={Boolean(errors.contactType)}
+                          aria-describedby={errors.contactType ? 'contact-type-error' : undefined}
+                          className={errors.contactType ? 'border-destructive' : ''}
+                        >
                           <SelectValue placeholder={t('contact.form.contactType')} />
                         </SelectTrigger>
                         <SelectContent>
@@ -236,7 +269,7 @@ const Contact = () => {
                         </SelectContent>
                       </Select>
                       {errors.contactType && (
-                        <p className="text-sm text-destructive mt-1">{errors.contactType.message}</p>
+                        <p id="contact-type-error" role="alert" className="text-sm text-destructive mt-1">{t(errors.contactType.message || 'contact.form.errors.contactType')}</p>
                       )}
                     </div>
 
@@ -246,8 +279,16 @@ const Contact = () => {
                         <Input
                           id="companyName"
                           {...register('companyName')}
+                          autoComplete="organization"
+                          maxLength={150}
+                          aria-invalid={Boolean(errors.companyName)}
+                          aria-describedby={errors.companyName ? 'company-error' : undefined}
                           placeholder={t('contact.form.companyPlaceholder')}
+                          className={errors.companyName ? 'border-destructive' : ''}
                         />
+                        {errors.companyName && (
+                          <p id="company-error" role="alert" className="text-sm text-destructive mt-1">{t(errors.companyName.message || '')}</p>
+                        )}
                       </div>
                     )}
 
@@ -256,11 +297,16 @@ const Contact = () => {
                       <Input
                         id="subject"
                         {...register('subject')}
+                        minLength={5}
+                        maxLength={200}
+                        required
+                        aria-invalid={Boolean(errors.subject)}
+                        aria-describedby={errors.subject ? 'subject-error' : undefined}
                         placeholder={t('contact.form.subjectPlaceholder')}
                         className={errors.subject ? 'border-destructive' : ''}
                       />
                       {errors.subject && (
-                        <p className="text-sm text-destructive mt-1">{errors.subject.message}</p>
+                        <p id="subject-error" role="alert" className="text-sm text-destructive mt-1">{t(errors.subject.message || '')}</p>
                       )}
                     </div>
 
@@ -269,16 +315,21 @@ const Contact = () => {
                       <Textarea
                         id="message"
                         {...register('message')}
+                        minLength={20}
+                        maxLength={2000}
+                        required
+                        aria-invalid={Boolean(errors.message)}
+                        aria-describedby={errors.message ? 'message-error' : undefined}
                         placeholder={t('contact.form.messagePlaceholder')}
                         rows={5}
                         className={errors.message ? 'border-destructive' : ''}
                       />
                       {errors.message && (
-                        <p className="text-sm text-destructive mt-1">{errors.message.message}</p>
+                        <p id="message-error" role="alert" className="text-sm text-destructive mt-1">{t(errors.message.message || '')}</p>
                       )}
                     </div>
 
-                    <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white" disabled={isSubmitting}>
+                    <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-gray-950" disabled={isSubmitting}>
                       {isSubmitting ? t('contact.form.submitting') : t('contact.form.submit')}
                     </Button>
                   </form>
@@ -324,16 +375,19 @@ const Contact = () => {
                 </div>
 
                 <div className="mt-6 pt-5 border-t border-white/10">
-                  <a
-                    href="https://dashboard.revillion.com/en/registration"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
+                  <Button
+                    asChild
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-gray-950 font-semibold"
+                    size="lg"
                   >
-                    <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold" size="lg">
-                      Start Earning <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </a>
+                    <a
+                      href={getDashboardUrl(lang, 'registration')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t('nav.startEarning')} <ArrowRight className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
                 </div>
               </div>
 
@@ -365,15 +419,6 @@ const Contact = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                      <Wallet className="w-4 h-4 text-orange-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Payment Methods</p>
-                      <p className="text-sm text-muted-foreground">Skrill, Neteller, Crypto, Bank Transfer</p>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </div>

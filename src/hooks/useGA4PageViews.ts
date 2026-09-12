@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { ANALYTICS_READY_EVENT, getConsentStatus } from '@/lib/consentMode';
 
 // Check if debug mode is enabled
 const isDebugMode = () => {
@@ -16,28 +17,44 @@ export const useGA4PageViews = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Wait a bit for the page title to update
-    const timer = setTimeout(() => {
-      if (typeof window !== 'undefined' && window.gtag) {
-        const pagePath = location.pathname + location.search;
-        const pageTitle = document.title;
-        const debugMode = isDebugMode();
-        
-        window.gtag('event', 'page_view', {
-          page_path: pagePath,
-          page_title: pageTitle,
-          debug_mode: debugMode
-        });
-        
-        console.debug('[GA4] page_view sent', {
-          path: pagePath,
-          title: pageTitle,
-          debugMode,
-          timestamp: new Date().toISOString()
-        });
-      }
-    }, 100);
+    let hasSentForLocation = false;
 
-    return () => clearTimeout(timer);
+    const sendPageView = () => {
+      if (
+        hasSentForLocation
+        || typeof window === 'undefined'
+        || getConsentStatus() !== 'accepted'
+        || !window.gtag
+      ) {
+        return;
+      }
+
+      hasSentForLocation = true;
+      const pagePath = location.pathname + location.search;
+      const pageTitle = document.title;
+      const debugMode = isDebugMode();
+
+      window.gtag('event', 'page_view', {
+        page_path: pagePath,
+        page_title: pageTitle,
+        debug_mode: debugMode
+      });
+
+      console.debug('[GA4] page_view sent', {
+        path: pagePath,
+        title: pageTitle,
+        debugMode,
+        timestamp: new Date().toISOString()
+      });
+    };
+
+    // Wait a bit for the page title to update
+    const timer = setTimeout(sendPageView, 100);
+    window.addEventListener(ANALYTICS_READY_EVENT, sendPageView);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener(ANALYTICS_READY_EVENT, sendPageView);
+    };
   }, [location.pathname, location.search]);
 };

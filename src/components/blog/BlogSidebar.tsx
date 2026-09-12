@@ -13,8 +13,9 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
   const allCategories = [
     { id: 'all', label: t('blog.allPosts') },
     { id: 'guides', label: t('blog.categories.guides') },
+    { id: 'tips', label: t('blog.categories.tips') },
     { id: 'news', label: t('blog.categories.news') },
-    { id: 'casino-reviews', label: t('blog.categories.casino-reviews') },
+    { id: 'reviews', label: t('blog.categories.reviews') },
   ];
 
   return (
@@ -26,17 +27,20 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
           const isActive = selectedCategory === category.id;
           return (
             <button
+              type="button"
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
+              aria-controls="blog-results"
+              aria-pressed={isActive}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-150 ${
                 isActive
-                  ? 'bg-orange-500 border-orange-500 text-white'
+                  ? 'bg-orange-500 border-orange-500 text-gray-950'
                   : 'bg-white border-gray-200 text-gray-600 hover:border-orange-400 hover:text-orange-500'
               }`}
             >
               {category.label}
               {category.id !== 'all' && count > 0 && (
-                <span className={`text-xs ${isActive ? 'text-orange-100' : 'text-gray-400'}`}>
+                <span className={`text-xs ${isActive ? 'text-gray-950/75' : 'text-gray-400'}`}>
                   {count}
                 </span>
               )}
@@ -48,7 +52,7 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
       {/* Desktop: vertical sidebar */}
       <div className="hidden lg:block sticky top-24 rounded-xl border border-border/60 bg-card p-5 shadow-sm">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-          {t('blog.categories')}
+          {t('blog.categories.label')}
         </h3>
         <div className="space-y-1.5">
           {allCategories.map((category) => {
@@ -56,8 +60,11 @@ export const BlogSidebar = ({ selectedCategory, onCategoryChange }: BlogSidebarP
             const isActive = selectedCategory === category.id;
             return (
               <button
+                type="button"
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
+                aria-controls="blog-results"
+                aria-pressed={isActive}
                 className={`
                   w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
                   ${isActive

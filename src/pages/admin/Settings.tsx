@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Save, BarChart3, Megaphone, Search, CheckCircle2, ExternalLink, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Save, BarChart3, Megaphone, Search, CheckCircle2, ExternalLink } from 'lucide-react';
 
 // ─── Field definitions (always shown, values loaded from DB) ─────────────────
 
@@ -19,7 +19,6 @@ interface FieldDef {
   description: string;
   placeholder: string;
   docUrl?: string;
-  secret?: boolean; // masked input (password type)
 }
 
 interface CategoryDef {
@@ -64,7 +63,7 @@ const CATEGORIES: CategoryDef[] = [
     key: 'meta_ads',
     label: 'Meta Ads',
     icon: <Megaphone className="w-4 h-4" />,
-    description: 'Facebook/Instagram Pixel e Conversions API (CAPI) server-side',
+    description: 'Facebook/Instagram Pixel. I secret CAPI si configurano nei Supabase Edge Function secrets.',
     fields: [
       {
         key: 'meta_pixel_id',
@@ -72,13 +71,6 @@ const CATEGORIES: CategoryDef[] = [
         description: 'Pixel ID del tuo account Facebook Business. Solo numeri.',
         placeholder: '1234567890123456',
         docUrl: 'https://www.facebook.com/business/help/952192354843755',
-      },
-      {
-        key: 'meta_capi_access_token',
-        label: 'Meta CAPI Access Token',
-        description: 'Token di accesso per il Conversions API server-side. Generalo da Meta Business → Events Manager → il tuo Pixel → Impostazioni → Conversions API.',
-        placeholder: 'EAAxxxxxxxxxxxxxxxx...',
-        secret: true,
       },
     ],
   },
@@ -115,7 +107,6 @@ export default function Settings() {
   const [form, setForm] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
-  const [showSecret, setShowSecret] = useState<Record<string, boolean>>({});
 
   // Load values from DB (best-effort — show inputs even if table doesn't exist yet)
   useEffect(() => {
@@ -233,21 +224,12 @@ export default function Settings() {
                       <div className="relative">
                         <Input
                           id={field.key}
-                          type={field.secret && !showSecret[field.key] ? 'password' : 'text'}
+                          type="text"
                           value={currentValue}
                           onChange={(e) => handleChange(field.key, e.target.value)}
                           placeholder={`es. ${field.placeholder}`}
-                          className="font-mono text-sm pr-10"
+                          className="font-mono text-sm"
                         />
-                        {field.secret && (
-                          <button
-                            type="button"
-                            onClick={() => setShowSecret(prev => ({ ...prev, [field.key]: !prev[field.key] }))}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            {showSecret[field.key] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                          </button>
-                        )}
                       </div>
                       <p className="text-xs text-muted-foreground">{field.description}</p>
                     </div>

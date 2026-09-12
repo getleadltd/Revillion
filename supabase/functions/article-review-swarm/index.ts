@@ -13,32 +13,39 @@
  * Stores results in agent_tasks table. Returns task ID immediately (async).
  */
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') ?? '';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.79.0";
+import { authorizeAdminOrMachine } from "../_shared/function-auth.ts";
+import {
+  isValidReviewAgentResult,
+  normalizeScore,
+} from "../_shared/autopilot-policy.ts";
+import {
+  AUTOPILOT_INTERNAL_HEADER,
+  AUTOPILOT_INTERNAL_SECRET_ENV,
+  jsonResponse,
+  methodNotAllowed,
+  pipelineCorsHeaders as corsHeaders,
+} from "../_shared/pipeline-auth-core.ts";
 
 // ─── Agent definitions ────────────────────────────────────────────────────────
 
 const AGENTS = [
   {
-    id: 'seo',
-    name: 'SEO Agent',
+    id: "seo",
+    name: "SEO Agent",
     prompt: (post: any, lang: string) => `
 You are an expert SEO analyst for iGaming affiliate content. Analyze this article for SEO quality.
 
 Title: ${post[`title_${lang}`] || post.title_en}
 Slug: ${post[`slug_${lang}`] || post.slug_en}
-Meta description: ${post[`meta_description_${lang}`] || post.meta_description_en}
+Meta description: ${
+      post[`meta_description_${lang}`] || post.meta_description_en
+    }
 Category: ${post.category}
-Content (first 8000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 8000)}
+Content (first 8000 chars): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(0, 8000)
+    }
 
 Evaluate:
 1. Title: is it 50-60 chars? Contains primary keyword? Compelling?
@@ -57,13 +64,15 @@ Respond ONLY with valid JSON:
 }`,
   },
   {
-    id: 'readability',
-    name: 'Readability Agent',
+    id: "readability",
+    name: "Readability Agent",
     prompt: (post: any, lang: string) => `
 You are a content readability expert. Analyze this iGaming article for readability.
 
 Language: ${lang}
-Content (first 8000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 8000)}
+Content (first 8000 chars): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(0, 8000)
+    }
 
 Evaluate:
 1. Average sentence length (ideal: <20 words)
@@ -85,15 +94,23 @@ Respond ONLY with valid JSON:
 }`,
   },
   {
-    id: 'structure',
-    name: 'Structure Agent',
+    id: "structure",
+    name: "Structure Agent",
     prompt: (post: any, lang: string) => `
 You are a content structure expert for iGaming affiliate blogs. Analyze article structure.
 
 Title: ${post[`title_${lang}`] || post.title_en}
-Total word count: ${Math.round((post[`content_${lang}`] || post.content_en || '').split(' ').length)}
-Content START (first 6000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 6000)}
-Content END (last 4000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(-4000)}
+Total word count: ${
+      Math.round(
+        (post[`content_${lang}`] || post.content_en || "").split(" ").length,
+      )
+    }
+Content START (first 6000 chars): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(0, 6000)
+    }
+Content END (last 4000 chars): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(-4000)
+    }
 
 Evaluate:
 1. Does it have a compelling introduction (hook + value prop in first 100 words)?
@@ -117,13 +134,17 @@ Respond ONLY with valid JSON:
 }`,
   },
   {
-    id: 'cta',
-    name: 'CTA & Affiliate Agent',
+    id: "cta",
+    name: "CTA & Affiliate Agent",
     prompt: (post: any, lang: string) => `
 You are an affiliate marketing conversion expert. Analyze CTA and affiliate elements.
 
-Content START (first 5000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 5000)}
-Content END (last 4000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(-4000)}
+Content START (first 5000 chars): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(0, 5000)
+    }
+Content END (last 4000 chars): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(-4000)
+    }
 Category: ${post.category}
 
 Evaluate:
@@ -147,24 +168,34 @@ Respond ONLY with valid JSON:
 }`,
   },
   {
-    id: 'multilingual',
-    name: 'Multilingual Consistency Agent',
+    id: "multilingual",
+    name: "Multilingual Consistency Agent",
     prompt: (post: any, _lang: string) => `
 You are a multilingual content consistency expert. Check this article across languages.
 
 Available languages and word counts:
-- EN: ${Math.round((post.content_en || '').split(' ').length)} words, title: "${post.title_en || 'missing'}"
-- IT: ${Math.round((post.content_it || '').split(' ').length)} words, title: "${post.title_it || 'missing'}"
-- DE: ${Math.round((post.content_de || '').split(' ').length)} words, title: "${post.title_de || 'missing'}"
-- PT: ${Math.round((post.content_pt || '').split(' ').length)} words, title: "${post.title_pt || 'missing'}"
-- ES: ${Math.round((post.content_es || '').split(' ').length)} words, title: "${post.title_es || 'missing'}"
+- EN: ${Math.round((post.content_en || "").split(" ").length)} words, title: "${
+      post.title_en || "missing"
+    }"
+- IT: ${Math.round((post.content_it || "").split(" ").length)} words, title: "${
+      post.title_it || "missing"
+    }"
+- DE: ${Math.round((post.content_de || "").split(" ").length)} words, title: "${
+      post.title_de || "missing"
+    }"
+- PT: ${Math.round((post.content_pt || "").split(" ").length)} words, title: "${
+      post.title_pt || "missing"
+    }"
+- ES: ${Math.round((post.content_es || "").split(" ").length)} words, title: "${
+      post.title_es || "missing"
+    }"
 
 Meta descriptions:
-- EN: ${post.meta_description_en || 'missing'}
-- IT: ${post.meta_description_it || 'missing'}
-- DE: ${post.meta_description_de || 'missing'}
-- PT: ${post.meta_description_pt || 'missing'}
-- ES: ${post.meta_description_es || 'missing'}
+- EN: ${post.meta_description_en || "missing"}
+- IT: ${post.meta_description_it || "missing"}
+- DE: ${post.meta_description_de || "missing"}
+- PT: ${post.meta_description_pt || "missing"}
+- ES: ${post.meta_description_es || "missing"}
 
 Evaluate:
 1. Which languages are missing content?
@@ -183,13 +214,15 @@ Respond ONLY with valid JSON:
 }`,
   },
   {
-    id: 'eeat',
-    name: 'E-E-A-T Agent',
+    id: "eeat",
+    name: "E-E-A-T Agent",
     prompt: (post: any, lang: string) => `
 You are an E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) evaluator for Google quality guidelines.
 
 Title: ${post[`title_${lang}`] || post.title_en}
-Content (first 8000 chars): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 8000)}
+Content (first 8000 chars): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(0, 8000)
+    }
 
 Evaluate for iGaming affiliate content:
 1. Experience: Does it show first-hand knowledge of the topic?
@@ -213,14 +246,16 @@ Respond ONLY with valid JSON:
 }`,
   },
   {
-    id: 'image',
-    name: 'Image Agent',
+    id: "image",
+    name: "Image Agent",
     prompt: (post: any, lang: string) => `
 You are an image optimization expert for web content.
 
-Featured image URL: ${post.featured_image_url || 'MISSING'}
-Featured image alt: ${post.featured_image_alt || 'MISSING'}
-Content (looking for img tags): ${(post[`content_${lang}`] || post.content_en || '').slice(0, 6000)}
+Featured image URL: ${post.featured_image_url || "MISSING"}
+Featured image alt: ${post.featured_image_alt || "MISSING"}
+Content (looking for img tags): ${
+      (post[`content_${lang}`] || post.content_en || "").slice(0, 6000)
+    }
 
 Evaluate:
 1. Is there a featured image?
@@ -245,26 +280,29 @@ Respond ONLY with valid JSON:
 
 // ─── AI call via Lovable gateway ─────────────────────────────────────────────
 
-async function callAI(prompt: string): Promise<any> {
-  const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-      'Content-Type': 'application/json',
+async function callAI(prompt: string, lovableApiKey: string): Promise<any> {
+  const res = await fetch(
+    "https://ai.gateway.lovable.dev/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${lovableApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.1,
+        max_tokens: 2048,
+      }),
     },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.1,
-      max_tokens: 2048,
-    }),
-  });
+  );
   if (!res.ok) {
     const err = await res.text();
     throw new Error(`AI call failed: ${res.status} — ${err.slice(0, 200)}`);
   }
   const data = await res.json();
-  const text = data.choices?.[0]?.message?.content ?? '{}';
+  const text = data.choices?.[0]?.message?.content ?? "{}";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   return jsonMatch ? JSON.parse(jsonMatch[0]) : {};
 }
@@ -272,28 +310,50 @@ async function callAI(prompt: string): Promise<any> {
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+  if (req.method !== "POST") return methodNotAllowed(corsHeaders);
 
   try {
-    const { post_id, lang = 'en', exclude_agents = [] } = await req.json();
-    if (!post_id) throw new Error('post_id required');
+    const auth = await authorizeAdminOrMachine(
+      req,
+      AUTOPILOT_INTERNAL_HEADER,
+      AUTOPILOT_INTERNAL_SECRET_ENV,
+      corsHeaders,
+    );
+    if (!auth.ok) return auth.response;
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    if (!supabaseUrl || !supabaseServiceRoleKey || !lovableApiKey) {
+      console.error("Article review service is not configured");
+      return jsonResponse(
+        { error: "Review service not configured" },
+        500,
+        corsHeaders,
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+    const { post_id, lang = "en", exclude_agents = [] } = await req.json();
+    if (!post_id) throw new Error("post_id required");
 
     // Fetch full post
     const { data: post, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('id', post_id)
+      .from("blog_posts")
+      .select("*")
+      .eq("id", post_id)
       .single();
-    if (error || !post) throw new Error('Post not found');
+    if (error || !post) throw new Error("Post not found");
 
     // Create task record
     const { data: task } = await supabase
-      .from('agent_tasks')
+      .from("agent_tasks")
       .insert({
-        type: 'article_review',
-        status: 'running',
+        type: "article_review",
+        status: "running",
         input: { post_id, lang, title: post[`title_${lang}`] || post.title_en },
       })
       .select()
@@ -303,26 +363,51 @@ serve(async (req) => {
 
     // Run agents IN PARALLEL (optionally excluding some)
     const activeAgents = exclude_agents.length > 0
-      ? AGENTS.filter(a => !exclude_agents.includes(a.id))
+      ? AGENTS.filter((a) => !exclude_agents.includes(a.id))
       : AGENTS;
 
     const agentResults = await Promise.allSettled(
       activeAgents.map(async (agent) => {
         const start = Date.now();
         try {
-          const result = await callAI(agent.prompt(post, lang));
-          return { id: agent.id, name: agent.name, score: result.score ?? 0, result, duration_ms: Date.now() - start };
+          const result = await callAI(agent.prompt(post, lang), lovableApiKey);
+          if (!isValidReviewAgentResult(result)) {
+            throw new Error("Invalid AI review output");
+          }
+          const score = normalizeScore(result.score);
+          const safeResult = { ...result, score };
+          return {
+            id: agent.id,
+            name: agent.name,
+            score,
+            result: safeResult,
+            duration_ms: Date.now() - start,
+          };
         } catch (e) {
-          return { id: agent.id, name: agent.name, score: 0, error: String(e), duration_ms: Date.now() - start };
+          return {
+            id: agent.id,
+            name: agent.name,
+            score: 0,
+            error: String(e),
+            duration_ms: Date.now() - start,
+          };
         }
-      })
+      }),
     );
 
-    const agents = agentResults.map(r => r.status === 'fulfilled' ? r.value : { error: 'failed' });
+    const agents = agentResults.map((r) =>
+      r.status === "fulfilled" ? r.value : { error: "failed" }
+    );
 
     // Calculate overall score (weighted average)
     const weights: Record<string, number> = {
-      seo: 25, readability: 15, structure: 15, cta: 20, multilingual: 10, eeat: 10, image: 5,
+      seo: 25,
+      readability: 15,
+      structure: 15,
+      cta: 20,
+      multilingual: 10,
+      eeat: 10,
+      image: 5,
     };
     let totalWeight = 0, weightedScore = 0;
     agents.forEach((a: any) => {
@@ -330,16 +415,26 @@ serve(async (req) => {
       weightedScore += (a.score ?? 0) * w;
       totalWeight += w;
     });
-    const overallScore = Math.round(weightedScore / totalWeight);
+    const overallScore = normalizeScore(
+      totalWeight > 0 ? weightedScore / totalWeight : 0,
+    );
 
     // Collect all issues and suggestions
     const allIssues = agents.flatMap((a: any) => a.result?.issues ?? []);
-    const allSuggestions = agents.flatMap((a: any) => a.result?.suggestions ?? []);
+    const allSuggestions = agents.flatMap((a: any) =>
+      a.result?.suggestions ?? []
+    );
     const allPassed = agents.flatMap((a: any) => a.result?.passed ?? []);
 
     const summary = {
       overall_score: overallScore,
-      grade: overallScore >= 80 ? 'A' : overallScore >= 65 ? 'B' : overallScore >= 50 ? 'C' : 'D',
+      grade: overallScore >= 80
+        ? "A"
+        : overallScore >= 65
+        ? "B"
+        : overallScore >= 50
+        ? "C"
+        : "D",
       top_issues: allIssues.slice(0, 5),
       top_suggestions: allSuggestions.slice(0, 5),
       passed: allPassed.slice(0, 5),
@@ -348,24 +443,26 @@ serve(async (req) => {
     };
 
     // Update task with results
-    await supabase.from('agent_tasks').update({
-      status: 'completed',
+    await supabase.from("agent_tasks").update({
+      status: "completed",
       agents,
       summary,
       score: overallScore,
       updated_at: new Date().toISOString(),
       completed_at: new Date().toISOString(),
-    }).eq('id', taskId);
+    }).eq("id", taskId);
 
-    return new Response(JSON.stringify({ task_id: taskId, score: overallScore, summary }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
+    return new Response(
+      JSON.stringify({ task_id: taskId, score: overallScore, summary, agents }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
     return new Response(JSON.stringify({ error: msg }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

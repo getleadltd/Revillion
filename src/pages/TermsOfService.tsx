@@ -337,12 +337,20 @@ const TermsOfService = () => {
   };
 
   const currentContent = content[lang as keyof typeof content] || content.en;
+  const metaDescriptions: Record<string, string> = {
+    en: 'Read the terms and conditions that govern use of Revillion Partners affiliate services.',
+    de: 'Lesen Sie die Bedingungen für die Nutzung der Affiliate-Dienste von Revillion Partners.',
+    it: 'Leggi i termini e le condizioni che regolano i servizi di affiliazione Revillion Partners.',
+    pt: 'Leia os termos e condições que regem os serviços de afiliados da Revillion Partners.',
+    es: 'Lee los términos y condiciones que regulan los servicios de afiliación de Revillion Partners.',
+  };
+  const metaDescription = metaDescriptions[lang] || metaDescriptions.en;
 
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": currentContent.title,
-    "description": `${currentContent.title} for Revillion Partners iGaming affiliate program`,
+    "description": metaDescription,
     "url": `https://revillion-partners.com/${lang}/terms-of-service`,
     "inLanguage": lang,
     "publisher": {
@@ -355,8 +363,9 @@ const TermsOfService = () => {
   return (
     <Layout>
       <Helmet>
+        <html lang={lang} />
         <title>{currentContent.title} | Revillion Partners</title>
-        <meta name="description" content={`${currentContent.title} - Read the terms and conditions for using Revillion Partners affiliate services.`} />
+        <meta name="description" content={metaDescription} />
         <link rel="canonical" href={`https://revillion-partners.com/${lang}/terms-of-service`} />
         <link rel="alternate" hrefLang="en" href="https://revillion-partners.com/en/terms-of-service" />
         <link rel="alternate" hrefLang="de" href="https://revillion-partners.com/de/terms-of-service" />
@@ -368,7 +377,7 @@ const TermsOfService = () => {
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${currentContent.title} | Revillion Partners`} />
-        <meta property="og:description" content={`${currentContent.title} - Read the terms and conditions for using Revillion Partners affiliate services.`} />
+        <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={`https://revillion-partners.com/${lang}/terms-of-service`} />
         <meta property="og:image" content="https://revillion-partners.com/og-image.png" />
         <meta property="og:site_name" content="Revillion" />
@@ -377,7 +386,7 @@ const TermsOfService = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@revillion" />
         <meta name="twitter:title" content={`${currentContent.title} | Revillion Partners`} />
-        <meta name="twitter:description" content={`${currentContent.title} - Read the terms and conditions for using Revillion Partners affiliate services.`} />
+        <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content="https://revillion-partners.com/og-image.png" />
 
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>

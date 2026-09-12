@@ -115,6 +115,9 @@ export type Database = {
           excerpt_es: string | null
           excerpt_it: string | null
           excerpt_pt: string | null
+          external_ingest_status: string | null
+          external_ingested_at: string | null
+          external_source_id: string | null
           faq_items: Json | null
           featured_image_alt: string | null
           featured_image_url: string | null
@@ -158,6 +161,9 @@ export type Database = {
           excerpt_es?: string | null
           excerpt_it?: string | null
           excerpt_pt?: string | null
+          external_ingest_status?: string | null
+          external_ingested_at?: string | null
+          external_source_id?: string | null
           faq_items?: Json | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
@@ -201,6 +207,9 @@ export type Database = {
           excerpt_es?: string | null
           excerpt_it?: string | null
           excerpt_pt?: string | null
+          external_ingest_status?: string | null
+          external_ingested_at?: string | null
+          external_source_id?: string | null
           faq_items?: Json | null
           featured_image_alt?: string | null
           featured_image_url?: string | null

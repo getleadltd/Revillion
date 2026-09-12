@@ -1,18 +1,14 @@
 // Google Consent Mode v2 - GDPR Compliant
 // Must be initialized BEFORE loading Google Analytics
 
-// Import global types
-import type {} from './analytics';
+import type {} from '@/types/tracking';
 
 const CONSENT_KEY = 'cookieConsent';
+export const CONSENT_CHANGE_EVENT = 'revillion:consent-change';
+export const OPEN_COOKIE_SETTINGS_EVENT = 'revillion:open-cookie-settings';
+export const ANALYTICS_READY_EVENT = 'revillion:analytics-ready';
 
 type ConsentStatus = 'accepted' | 'rejected' | null;
-
-// Check if debug mode forces consent (for testing)
-const isForceConsentEnabled = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.has('ga_force_consent') || localStorage.getItem('ga_force_consent') === '1';
-};
 
 // Check if debug mode is enabled
 const isDebugMode = () => {
@@ -30,11 +26,12 @@ export const getConsentStatus = (): ConsentStatus => {
 // Initialize Consent Mode BEFORE GA loads
 export const initConsentMode = () => {
   if (typeof window === 'undefined') return;
+  if (window.gtag) return;
 
   // Initialize dataLayer for gtag with official pattern
   window.dataLayer = window.dataLayer || [];
-  function gtag(...args: any[]) {
-    window.dataLayer.push(arguments);
+  function gtag(...args: unknown[]) {
+    window.dataLayer.push(args);
   }
   window.gtag = gtag;
 
@@ -49,18 +46,6 @@ export const initConsentMode = () => {
 
   console.info('[Consent] Default state: denied (GDPR compliant)');
 
-  // If user has already consented, update immediately
-  const existingConsent = getConsentStatus();
-  const forceConsent = isForceConsentEnabled();
-
-  if (forceConsent) {
-    console.warn('[Consent] Force consent enabled for debugging');
-    updateConsent(true, false);
-  } else if (existingConsent === 'accepted') {
-    updateConsent(true, false);
-  } else if (existingConsent === 'rejected') {
-    console.info('[Consent] User previously rejected cookies');
-  }
 };
 
 // Update consent when user makes a choice
@@ -79,81 +64,31 @@ export const updateConsent = (granted: boolean, saveToStorage = true) => {
     });
 
     console.info(`[Consent] Updated: analytics_storage=${consentState}`);
-
-    // If consent is granted, send immediate page_view and test event with retry
-    if (granted) {
-      const sendImmediateEvents = (attempt = 1) => {
-        if (!window.gtag && attempt <= 3) {
-          console.warn(`[GA4] gtag not ready, retry ${attempt}/3`);
-          setTimeout(() => sendImmediateEvents(attempt + 1), 250);
-          return;
-        }
-
-        if (!window.gtag) {
-          console.error('[GA4] gtag not available after retries');
-          return;
-        }
-
-        const pagePath = window.location.pathname + window.location.search;
-        const pageTitle = document.title;
-        const debugMode = isDebugMode();
-
-        // Send page_view immediately after consent
-        window.gtag('event', 'page_view', {
-          page_path: pagePath,
-          page_title: pageTitle,
-          debug_mode: debugMode
-        });
-
-        // Send test event for debugging
-        window.gtag('event', 'consent_accepted', {
-          event_category: 'consent',
-          event_label: 'cookie_banner',
-          timestamp: new Date().toISOString(),
-          debug_mode: debugMode
-        });
-
-        console.info('[GA4] Events sent immediately after consent', { 
-          pagePath, 
-          pageTitle,
-          debugMode,
-          timestamp: new Date().toISOString()
-        });
-      };
-
-      sendImmediateEvents();
-    }
   }
 
   // Save choice to localStorage
   if (saveToStorage) {
     localStorage.setItem(CONSENT_KEY, granted ? 'accepted' : 'rejected');
     console.info(`[Consent] Saved to localStorage: ${granted ? 'accepted' : 'rejected'}`);
+    window.dispatchEvent(new CustomEvent(CONSENT_CHANGE_EVENT, {
+      detail: { status: granted ? 'accepted' : 'rejected' },
+    }));
   }
 };
 
 // Debug helper for console
 if (typeof window !== 'undefined') {
-  (window as any).__gaDebugInfo = () => {
-    const info: any = {
+  window.__gaDebugInfo = () => {
+    const info: Record<string, unknown> = {
       hasGtag: !!window.gtag,
       hasDataLayer: !!window.dataLayer,
       dataLayerLength: window.dataLayer?.length || 0,
-      measurementId: 'G-FKENPNYCSP',
       location: window.location.href,
       title: document.title,
       consentStatus: getConsentStatus(),
-      forceConsent: isForceConsentEnabled(),
       debugMode: isDebugMode(),
       gaCookies: document.cookie.split('; ').filter(c => c.startsWith('_ga'))
     };
-
-    // Try to get client_id if gtag is available
-    if (window.gtag) {
-      window.gtag('get', 'G-FKENPNYCSP', 'client_id', (cid: string) => {
-        console.info('[GA4] Current client_id:', cid);
-      });
-    }
 
     return info;
   };

@@ -62,8 +62,14 @@ const BlogAdmin = () => {
   const handleDeletePost = async (postId: string, postTitle: string) => {
     setDeletingPostId(postId);
     try {
-      // Clear FK reference in blog_queue before deleting
-      await supabase.from('blog_queue').update({ generated_post_id: null }).eq('generated_post_id', postId);
+      const { count: linkedQueueItems, error: linkCheckError } = await supabase
+        .from('blog_queue')
+        .select('id', { count: 'exact', head: true })
+        .eq('generated_post_id', postId);
+      if (linkCheckError) throw linkCheckError;
+      if ((linkedQueueItems ?? 0) > 0) {
+        throw new Error('Il post è collegato alla coda Autopilot: riconcilialo prima di eliminarlo.');
+      }
       const { error } = await supabase.from('blog_posts').delete().eq('id', postId);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['blog-posts-admin'] });
@@ -179,11 +185,20 @@ const BlogAdmin = () => {
                                     const { toast } = await import('@/hooks/use-toast').then(m => m);
                                     toast({ title: '🤖 Avvio review agenti...', description: 'I 7 agenti analizzeranno l\'articolo in parallelo.' });
                                     try {
-                                      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/article-review-swarm`, {
+                                      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                                      if (sessionError || !session?.access_token) {
+                                        throw new Error('Sessione amministratore non disponibile');
+                                      }
+
+                                      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/article-review-swarm`, {
                                         method: 'POST',
-                                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+                                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
                                         body: JSON.stringify({ post_id: post.id, lang }),
                                       });
+                                      if (!response.ok) {
+                                        const message = await response.text().catch(() => `HTTP ${response.status}`);
+                                        throw new Error(message.slice(0, 200));
+                                      }
                                       toast({ title: '✅ Review avviata', description: 'Controlla la Dashboard Agenti per i risultati.' });
                                     } catch {
                                       toast({ title: 'Errore', description: 'Impossibile avviare la review.', variant: 'destructive' });

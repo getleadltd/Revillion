@@ -102,12 +102,17 @@ export const BlogQueueManager = () => {
 
   const deleteItemMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('blog_queue')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .neq('status', 'processing')
+        .is('generated_post_id', null)
+        .select('id')
+        .maybeSingle();
       
       if (error) throw error;
+      if (!data) throw new Error('La voce è in lavorazione o collegata a un post: riconciliazione richiesta');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blog-queue'] });
@@ -119,17 +124,25 @@ export const BlogQueueManager = () => {
   });
 
   const retryItemMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
+    mutationFn: async (item: { id: string; generated_post_id: string | null }) => {
+      if (item.generated_post_id) {
+        throw new Error('Esiste già un post collegato: riconcilialo prima di riprovare');
+      }
+
+      const { data, error } = await supabase
         .from('blog_queue')
-        .update({ 
+        .update({
           status: 'pending',
           error_message: null,
-          retry_count: 0
         })
-        .eq('id', id);
-      
+        .eq('id', item.id)
+        .eq('status', 'failed')
+        .is('generated_post_id', null)
+        .select('id')
+        .maybeSingle();
+
       if (error) throw error;
+      if (!data) throw new Error('La voce non è riprocessabile senza riconciliazione');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blog-queue'] });
@@ -142,15 +155,31 @@ export const BlogQueueManager = () => {
 
   const processNowMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('process-blog-queue');
-      if (error) throw error;
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        throw new Error('Sessione amministratore non disponibile');
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/autopilot`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ force: true }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data?.error || `HTTP ${response.status}`);
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['blog-queue'] });
+      queryClient.invalidateQueries({ queryKey: ['agent-tasks-autopilot'] });
       toast({
-        title: "Processamento completato",
-        description: `Elaborati ${data.success}/${data.processed} articoli`,
+        title: data.skipped ? 'Nessun ciclo avviato' : 'Ciclo Autopilot avviato',
+        description: data.skipped
+          ? `Motivo: ${data.reason}`
+          : `Task ${String(data.task_id).slice(0, 8)} avviato in sicurezza`,
       });
     },
     onError: (error: Error) => {
@@ -368,7 +397,7 @@ export const BlogQueueManager = () => {
               size="sm"
             >
               <Play className="mr-2 h-4 w-4" />
-              Elabora Ora
+              Avvia il prossimo
             </Button>
           </div>
         </div>
@@ -398,6 +427,9 @@ export const BlogQueueManager = () => {
                         {item.retry_count > 0 && (
                           <Badge variant="outline">Tentativi: {item.retry_count}</Badge>
                         )}
+                        {item.generated_post_id && (
+                          <Badge variant="outline">Post collegato · riconciliazione richiesta</Badge>
+                        )}
                       </div>
                       <p className="font-medium truncate">{item.title}</p>
                       <p className="text-sm text-muted-foreground">
@@ -410,14 +442,16 @@ export const BlogQueueManager = () => {
                     <div className="flex items-center gap-2">
                       {item.status === 'failed' && (
                         <Button size="sm" variant="outline"
-                          onClick={() => retryItemMutation.mutate(item.id)}
-                          disabled={retryItemMutation.isPending}>
+                          onClick={() => retryItemMutation.mutate({ id: item.id, generated_post_id: item.generated_post_id })}
+                          disabled={retryItemMutation.isPending || Boolean(item.generated_post_id)}
+                          title={item.generated_post_id ? 'Riconcilia il post collegato prima di riprovare' : 'Riprova'}>
                           <Play className="h-4 w-4" />
                         </Button>
                       )}
                       <Button size="sm" variant="ghost"
                         onClick={() => deleteItemMutation.mutate(item.id)}
-                        disabled={deleteItemMutation.isPending || item.status === 'processing'}>
+                        disabled={deleteItemMutation.isPending || item.status === 'processing' || Boolean(item.generated_post_id)}
+                        title={item.generated_post_id ? 'Riconcilia il post collegato prima di eliminare la voce' : 'Elimina'}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
@@ -527,12 +561,12 @@ export const BlogQueueManager = () => {
           <span>ℹ️</span> Come Funziona l'Automazione
         </h3>
         <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
-          <li>Gli articoli vengono processati automaticamente ogni 30 minuti</li>
-          <li>Ogni articolo viene analizzato, generato, tradotto in 5 lingue e pubblicato</li>
+          <li>Il processamento automatico richiede uno scheduler configurato e autorizzato</li>
+          <li>Ogni articolo viene analizzato, generato, tradotto e pubblicato solo se supera la soglia di qualità</li>
           <li>Include link building automatico con 3-5 link interni rilevanti</li>
           <li>Immagine featured generata automaticamente con AI</li>
           <li>Costo stimato: ~5.5 crediti per articolo completo</li>
-          <li>Retry automatico fino a 3 volte in caso di errori</li>
+          <li>I retry sono consentiti solo se non esiste già un post collegato</li>
         </ul>
       </Card>
     </div>
