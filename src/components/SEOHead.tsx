@@ -14,7 +14,7 @@ const organizationSchema = {
   "url": "https://revillion-partners.com",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://revillion-partners.com/favicon.png"
+    "url": "https://revillion-partners.com/favicon-revillion-2026.png"
   },
   "description": "Revillion Partners is an iGaming affiliate network offering CPA, RevShare and hybrid commission models across global markets.",
   "email": "info@revillion.com",
