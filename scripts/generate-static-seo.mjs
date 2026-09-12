@@ -198,14 +198,24 @@ async function writeRoutePage(template, language, route) {
     noindex,
     includeSchemas: route === '',
   }));
-  // Cloudflare Pages maps `<path>.html` to the extensionless `<path>` URL.
-  // Directory index files instead resolve to a trailing-slash URL, which would
-  // conflict with the slashless canonicals used throughout the site.
-  const outputPath = route
+  // Keep the flat files used by Cloudflare Pages and Netlify, and also emit
+  // directory indexes for hosts (including Lovable) that do not resolve
+  // extensionless URLs to `<path>.html` before applying their SPA fallback.
+  const flatOutputPath = route
     ? path.join(DIST_DIR, language, `${route}.html`)
     : path.join(DIST_DIR, `${language}.html`);
-  await mkdir(path.dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, html);
+  const directoryOutputPath = route
+    ? path.join(DIST_DIR, language, route, 'index.html')
+    : path.join(DIST_DIR, language, 'index.html');
+
+  await Promise.all([
+    mkdir(path.dirname(flatOutputPath), { recursive: true }),
+    mkdir(path.dirname(directoryOutputPath), { recursive: true }),
+  ]);
+  await Promise.all([
+    writeFile(flatOutputPath, html),
+    writeFile(directoryOutputPath, html),
+  ]);
 }
 
 function buildSitemap() {
@@ -356,5 +366,8 @@ if (!sitemapValidation.valid) {
 }
 await writeFile(path.join(DIST_DIR, 'sitemap.xml'), sitemap.xml);
 
-console.log(`Generated ${LANGUAGES.length * Object.keys(routeMeta).length} route-specific HTML files.`);
+console.log(
+  `Generated ${LANGUAGES.length * Object.keys(routeMeta).length} route-specific HTML pairs ` +
+  '(flat file + directory index).',
+);
 console.log(`Sitemap: ${sitemap.urlCount} URLs from ${sitemap.source}.`);
