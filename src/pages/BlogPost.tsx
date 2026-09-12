@@ -289,7 +289,7 @@ const BlogPost = () => {
       "name": "Revillion Partners",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://revillion-partners.com/favicon.png"
+        "url": "https://revillion-partners.com/favicon-revillion-2026.png"
       }
     },
     "mainEntityOfPage": {

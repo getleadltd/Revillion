@@ -115,7 +115,7 @@ function organizationSchema() {
     '@id': `${SITE_URL}/#organization`,
     name: 'Revillion Partners',
     url: SITE_URL,
-    logo: `${SITE_URL}/favicon.png`,
+    logo: `${SITE_URL}/favicon-revillion-2026.png`,
     email: 'info@revillion.com',
     contactPoint: {
       '@type': 'ContactPoint',
