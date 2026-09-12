@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 
 interface BreadcrumbItem {
@@ -14,43 +14,8 @@ interface BreadcrumbsProps {
 }
 
 export const Breadcrumbs = ({ items, currentPage, className = '' }: BreadcrumbsProps) => {
-  const location = useLocation();
-  const currentUrl = new URL(location.pathname, 'https://revillion-partners.com').href;
-  // Generate structured data for breadcrumbs
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      ...items.map(item => ({
-        "@type": "ListItem",
-        "position": item.position,
-        "name": item.name,
-        "item": item.url
-      })),
-      {
-        "@type": "ListItem",
-        "position": items.length + 1,
-        "name": currentPage,
-        "item": currentUrl
-      }
-    ]
-  };
-
   return (
-    <>
-      {/* Inline Structured Data */}
-      <script 
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData)
-            .replace(/</g, '\\u003c')
-            .replace(/\u2028/g, '\\u2028')
-            .replace(/\u2029/g, '\\u2029'),
-        }}
-      />
-      
-      {/* Visual Breadcrumbs */}
-      <nav 
+    <nav
         className={`flex items-center text-sm text-muted-foreground ${className}`}
         aria-label="Breadcrumb"
       >
@@ -85,7 +50,6 @@ export const Breadcrumbs = ({ items, currentPage, className = '' }: BreadcrumbsP
             <meta itemProp="position" content={String(items.length + 1)} />
           </li>
         </ol>
-      </nav>
-    </>
+    </nav>
   );
 };

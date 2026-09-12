@@ -4,7 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 
 /**
  * RedirectHandler component
- * Handles 301 redirects from old URLs to new URLs based on url_redirects table
+ * Provides a client-side fallback for legacy URLs stored in url_redirects.
+ * This changes browser history after the SPA loads; it is not an HTTP 301.
  */
 export const RedirectHandler = () => {
   const location = useLocation();

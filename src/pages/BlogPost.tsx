@@ -12,16 +12,194 @@ import { formatDate, calculateReadingTime, formatHTMLContent } from '@/lib/blog'
 import { Layout } from '@/components/layout/Layout';
 import { Loader2, Calendar, Clock } from 'lucide-react';
 
-// Extract FAQ items from content for schema using DOM parsing
+const OG_LOCALES: Record<string, string> = {
+  en: 'en_US',
+  de: 'de_DE',
+  it: 'it_IT',
+  pt: 'pt_PT',
+  es: 'es_ES',
+};
+
+const BREADCRUMB_LABELS: Record<string, { home: string; blog: string }> = {
+  en: { home: 'Home', blog: 'Blog' },
+  de: { home: 'Startseite', blog: 'Blog' },
+  it: { home: 'Home', blog: 'Blog' },
+  pt: { home: 'Início', blog: 'Blog' },
+  es: { home: 'Inicio', blog: 'Blog' },
+};
+
+function localizeInternalNavigationHref(href: string, language?: string): string {
+  const normalizedLanguage = language && BREADCRUMB_LABELS[language] ? language : undefined;
+  if (!href || !normalizedLanguage) return href;
+
+  const rewritePath = (pathname: string) => {
+    if (pathname === '/' || pathname === '') return `/${normalizedLanguage}`;
+    if (/^\/(?:en\/)?blog\/?$/i.test(pathname)) return `/${normalizedLanguage}/blog`;
+    if (pathname.startsWith('/blog/')) return `/${normalizedLanguage}${pathname}`;
+    return pathname;
+  };
+
+  const siteUrl = 'https://revillion-partners.com';
+  let parsed: URL | null;
+  try {
+    parsed = new URL(href);
+  } catch {
+    parsed = null;
+  }
+
+  if (parsed?.origin === siteUrl) {
+    const rewrittenPath = rewritePath(parsed.pathname);
+    if (rewrittenPath === parsed.pathname) return href;
+    parsed.pathname = rewrittenPath;
+    return parsed.href;
+  }
+
+  if (href.startsWith('/')) {
+    const match = href.match(/^([^?#]*)(.*)$/);
+    return `${rewritePath(match?.[1] || '')}${match?.[2] || ''}`;
+  }
+
+  return href;
+}
+
+function normalizeFragmentMatchText(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/^\s*\d+\s*[.)-]?\s*/, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function leadingOrdinal(value: string): string | undefined {
+  return value.trim().match(/^(\d+)(?:[-.)\s]|$)/)?.[1];
+}
+
+function fragmentTextSimilarity(left: string, right: string): number {
+  const leftTokens = new Set(normalizeFragmentMatchText(left).split(/\s+/).filter(Boolean));
+  const rightTokens = new Set(normalizeFragmentMatchText(right).split(/\s+/).filter(Boolean));
+  if (leftTokens.size === 0 || rightTokens.size === 0) return 0;
+
+  let intersection = 0;
+  leftTokens.forEach(token => {
+    if (rightTokens.has(token)) intersection += 1;
+  });
+  return (2 * intersection) / (leftTokens.size + rightTokens.size);
+}
+
+function findFragmentHeading(
+  fragment: string,
+  linkText: string,
+  headings: HTMLHeadingElement[],
+): HTMLHeadingElement | undefined {
+  const normalizedFragment = normalizeFragmentMatchText(fragment);
+  const fragmentOrdinal = leadingOrdinal(fragment);
+  const exactMatches = headings.filter(
+    heading => {
+      const headingOrdinal = leadingOrdinal(heading.id);
+      return normalizeFragmentMatchText(heading.id) === normalizedFragment
+        && (!fragmentOrdinal || !headingOrdinal || fragmentOrdinal === headingOrdinal);
+    },
+  );
+  if (exactMatches.length === 1) return exactMatches[0];
+
+  const ordinal = leadingOrdinal(fragment) || leadingOrdinal(linkText);
+  if (ordinal) {
+    const ordinalMatches = headings.filter(
+      heading => leadingOrdinal(heading.id) === ordinal
+        || leadingOrdinal(heading.textContent || '') === ordinal,
+    );
+    if (ordinalMatches.length === 1) return ordinalMatches[0];
+  }
+
+  const ranked = headings
+    .map(heading => ({
+      heading,
+      score: fragmentTextSimilarity(linkText, heading.textContent || ''),
+    }))
+    .sort((left, right) => right.score - left.score);
+  const best = ranked[0];
+  const runnerUp = ranked[1];
+  if (best?.score >= 0.55 && (!runnerUp || best.score - runnerUp.score >= 0.08)) {
+    return best.heading;
+  }
+  return undefined;
+}
+
+function repairArticleFragmentLinks(container: DocumentFragment): void {
+  const knownIds = new Set(
+    [...container.querySelectorAll<HTMLElement>('[id]')].map(element => element.id),
+  );
+  const headings = [...container.querySelectorAll<HTMLHeadingElement>('h2[id]')];
+
+  container.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => {
+    if (!link.rel.toLowerCase().split(/\s+/).includes('nofollow')) return;
+
+    const rawFragment = link.getAttribute('href')?.slice(1) || '';
+    let fragment = rawFragment;
+    try {
+      fragment = decodeURIComponent(rawFragment);
+    } catch {
+      // Invalid percent encoding cannot match a valid HTML id.
+    }
+    if (knownIds.has(rawFragment) || knownIds.has(fragment)) return;
+
+    const target = findFragmentHeading(fragment, link.textContent || '', headings);
+    if (target) {
+      link.setAttribute('href', `#${target.id}`);
+      return;
+    }
+
+    link.removeAttribute('href');
+    link.removeAttribute('rel');
+    link.removeAttribute('target');
+  });
+}
+
+function sanitizeArticleContent(html: string, language?: string): string {
+  const sanitized = DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 's', 'a', 'ul', 'ol', 'li', 'br', 'hr', 'img', 'figure', 'figcaption', 'blockquote', 'code', 'pre', 'span', 'div', 'table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height', 'loading', 'id', 'colspan', 'rowspan', 'scope'],
+    ALLOW_DATA_ATTR: false,
+    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
+    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
+  });
+
+  const template = parseArticleTemplate(sanitized);
+  template.content.querySelectorAll('img[src]').forEach(image => {
+    if (!image.getAttribute('src')?.match(/^https:\/\//i)) image.removeAttribute('src');
+  });
+  template.content.querySelectorAll('a[target="_blank"]').forEach(link => {
+    const rel = new Set((link.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
+    rel.add('noopener');
+    rel.add('noreferrer');
+    link.setAttribute('rel', [...rel].join(' '));
+  });
+  template.content.querySelectorAll('a[href]').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href) link.setAttribute('href', localizeInternalNavigationHref(href, language));
+  });
+  repairArticleFragmentLinks(template.content);
+  return template.innerHTML;
+}
+
+// A template fragment stays inert while headings and FAQ blocks are rearranged.
+// In particular, images in it do not initiate the repeated fetches that a
+// DOMParser-created HTML document can trigger.
+function parseArticleTemplate(html: string): HTMLTemplateElement {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  return template;
+}
+
+// Extract FAQ items from already-sanitized content.
 function extractFAQFromContent(content: string): Array<{question: string, answer: string}> {
   const faqs: Array<{question: string, answer: string}> = [];
   
   try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(`<div>${content}</div>`, 'text/html');
-    
     // Find all h4 elements that contain questions (end with ?)
-    const h4Elements = doc.querySelectorAll('h4');
+    const h4Elements = parseArticleTemplate(content).content.querySelectorAll('h4');
     
     h4Elements.forEach(h4 => {
       const questionText = h4.textContent?.trim();
@@ -51,11 +229,8 @@ function removeRecommendedSection(html: string): string {
   if (!html) return html;
   
   try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
-    const container = doc.body.firstElementChild;
-    
-    if (!container) return html;
+    const template = parseArticleTemplate(html);
+    const container = template.content;
     
     // Find h2 or h3 with "Consigliati", "Recommended", etc.
     const headings = container.querySelectorAll('h2, h3');
@@ -70,7 +245,7 @@ function removeRecommendedSection(html: string): string {
     
     headings.forEach(heading => {
       const text = heading.textContent?.toLowerCase() || '';
-      if (keywords.some(keyword => text.includes(keyword))) {
+      if (heading.id.toLowerCase() === 'recommended' || keywords.some(keyword => text.includes(keyword))) {
         recommendedHeader = heading;
       }
     });
@@ -88,9 +263,36 @@ function removeRecommendedSection(html: string): string {
     
     elementsToRemove.forEach(el => el.remove());
     
-    return container.innerHTML;
+    return template.innerHTML;
   } catch (e) {
     console.error('Error removing recommended section:', e);
+    return html;
+  }
+}
+
+// The visible article title is the page's only H1. Imported body headings are
+// demoted while preserving their attributes and child markup.
+function normalizeEmbeddedHeadings(html: string): string {
+  if (!html) return html;
+
+  try {
+    const template = parseArticleTemplate(html);
+    const container = template.content;
+
+    container.querySelectorAll('h1').forEach(heading => {
+      const replacement = document.createElement('h2');
+
+      Array.from(heading.attributes).forEach(attribute => {
+        replacement.setAttribute(attribute.name, attribute.value);
+      });
+
+      replacement.replaceChildren(...Array.from(heading.childNodes));
+      heading.replaceWith(replacement);
+    });
+
+    return template.innerHTML;
+  } catch (e) {
+    console.error('Error normalizing article headings:', e);
     return html;
   }
 }
@@ -98,10 +300,8 @@ function removeRecommendedSection(html: string): string {
 // Wrap FAQ content with styled elements using DOM manipulation
 function wrapFAQContent(html: string): string {
   try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
-    const container = doc.body.firstElementChild;
-    if (!container) return html;
+    const template = parseArticleTemplate(html);
+    const container = template.content;
     
     // Find FAQ section header (h2 with FAQ-related text)
     const h2Elements = container.querySelectorAll('h2');
@@ -127,7 +327,7 @@ function wrapFAQContent(html: string): string {
     if (!faqHeader) return html;
     
     // Create FAQ section wrapper
-    const faqSection = doc.createElement('div');
+    const faqSection = document.createElement('div');
     faqSection.className = 'faq-section';
     
     // Find all h4+p pairs after the FAQ header
@@ -146,16 +346,16 @@ function wrapFAQContent(html: string): string {
           
           if (answerElement && answerElement.tagName === 'P') {
             // Create styled FAQ item
-            const faqItem = doc.createElement('div');
+            const faqItem = document.createElement('div');
             faqItem.className = 'faq-item';
             
-            const questionDiv = doc.createElement('div');
+            const questionDiv = document.createElement('div');
             questionDiv.className = 'faq-question';
             questionDiv.textContent = questionText;
             
-            const answerDiv = doc.createElement('div');
+            const answerDiv = document.createElement('div');
             answerDiv.className = 'faq-answer';
-            answerDiv.innerHTML = answerElement.outerHTML;
+            answerDiv.appendChild(answerElement.cloneNode(true));
             
             faqItem.appendChild(questionDiv);
             faqItem.appendChild(answerDiv);
@@ -174,7 +374,7 @@ function wrapFAQContent(html: string): string {
     elementsToRemove.forEach(el => el.remove());
     faqHeader.after(faqSection);
     
-    return container.innerHTML;
+    return template.innerHTML;
   } catch (e) {
     console.error('Error wrapping FAQ content:', e);
     return html;
@@ -247,28 +447,28 @@ const BlogPost = () => {
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
   
   // Remove hardcoded "Consigliati" section from imported articles, then format
-  const cleanedContent = removeRecommendedSection(rawContent);
+  const safeRawContent = sanitizeArticleContent(rawContent, lang);
+  const cleanedContent = removeRecommendedSection(safeRawContent);
   const formattedContent = formatHTMLContent(cleanedContent);
+  const normalizedContent = normalizeEmbeddedHeadings(formattedContent);
   
   // Extract FAQs for schema
-  const faqs = extractFAQFromContent(formattedContent);
+  const faqs = extractFAQFromContent(normalizedContent);
   
   // Add language prefix to internal blog links
-  const htmlWithLangLinks = formattedContent.replace(/href="\/blog\//g, `href="/${lang}/blog/`);
+  const htmlWithLangLinks = normalizedContent.replace(/href="\/blog\//g, `href="/${lang}/blog/`);
   
   // Wrap FAQ content with styled elements
   const htmlWithFAQStyling = wrapFAQContent(htmlWithLangLinks);
   
   // Sanitize HTML to prevent XSS attacks
-  const sanitizedContent = DOMPurify.sanitize(htmlWithFAQStyling, {
-    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'br', 'img', 'blockquote', 'code', 'pre', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height', 'id', 'tabindex'],
-    ALLOW_DATA_ATTR: false,
-    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
-    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
-  });
+  const sanitizedContent = sanitizeArticleContent(htmlWithFAQStyling, lang);
 
   const currentUrl = `https://revillion-partners.com/${lang}/blog/${slug}`;
+  const seoTitle = title.endsWith('| Revillion Partners')
+    ? title
+    : `${title} | Revillion Partners`;
+  const breadcrumbLabels = BREADCRUMB_LABELS[lang] || BREADCRUMB_LABELS.en;
 
   // Structured Data - Article Schema
   const articleSchema = {
@@ -279,6 +479,7 @@ const BlogPost = () => {
     "image": post.featured_image_url,
     "datePublished": post.published_at || post.created_at,
     "dateModified": post.updated_at || post.published_at || post.created_at,
+    "inLanguage": lang,
     "author": {
       "@type": "Organization",
       "name": "Revillion Partners",
@@ -306,13 +507,13 @@ const BlogPost = () => {
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "Home",
+        "name": breadcrumbLabels.home,
         "item": `https://revillion-partners.com/${lang}`
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": t('blog.title'),
+        "name": breadcrumbLabels.blog,
         "item": `https://revillion-partners.com/${lang}/blog`
       },
       {
@@ -341,24 +542,25 @@ const BlogPost = () => {
   return (
     <Layout>
       <Helmet>
-        <title>{title} | Revillion Partners</title>
+        <title>{seoTitle}</title>
         <meta name="description" content={metaDesc || title} />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         
         {/* Open Graph */}
         <meta property="og:type" content="article" />
-        <meta property="og:title" content={title} />
+        <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={metaDesc || title} />
         <meta property="og:url" content={currentUrl} />
+        <meta property="og:locale" content={OG_LOCALES[lang] || lang} />
         {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
         <meta property="article:published_time" content={post.published_at || post.created_at} />
-        {post.updated_at && <meta property="article:modified_time" content={post.updated_at} />}
+        <meta property="article:modified_time" content={post.updated_at || post.published_at || post.created_at} />
         <meta property="article:section" content={post.category} />
-        <meta property="og:site_name" content="Revillion" />
+        <meta property="og:site_name" content="Revillion Partners" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@revillion" />
-        <meta name="twitter:title" content={`${title} | Revillion Partners`} />
+        <meta name="twitter:title" content={seoTitle} />
         <meta name="twitter:description" content={metaDesc || title} />
         {post.featured_image_url && <meta name="twitter:image" content={post.featured_image_url} />}
 
@@ -386,6 +588,11 @@ const BlogPost = () => {
         {/* Structured Data - Article */}
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
+        </script>
+
+        {/* Structured Data - Breadcrumbs */}
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
         </script>
         
         {/* Structured Data - FAQ for Google Rich Snippets */}
