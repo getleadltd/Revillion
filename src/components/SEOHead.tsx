@@ -69,7 +69,7 @@ export const SEOHead = () => {
       description: "Junte-se à rede de afiliados iGaming Revillion. Acesse acordos CPA, RevShare e híbridos com suporte dedicado e rastreamento em tempo real."
     },
     es: {
-      title: "Revillion Partners - Programa de Afiliados iGaming",
+      title: "Revillion Partners - Programa de Afiliación iGaming",
       description: "Únete a la red de afiliados iGaming Revillion. Accede a acuerdos CPA, RevShare e híbridos con soporte dedicado y seguimiento en tiempo real."
     }
   };
