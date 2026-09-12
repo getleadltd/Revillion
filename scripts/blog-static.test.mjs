@@ -166,6 +166,28 @@ test('article sanitizer removes localized recommendation blocks and preserves th
   );
 });
 
+test('article sanitizer repairs translated table-of-contents fragments and disables dead ones', () => {
+  const input = [
+    '<h2 id="table-of-contents">Indice</h2>',
+    '<ul>',
+    '<li><a href="#campaign-analytics" rel="nofollow">Ottimizzazione delle analisi della campagna per un ROI più elevato</a></li>',
+    '<li><a href="#2-data-driven-campaigns" rel="nofollow">2. Datengesteuerte Kampagnenanpassungen</a></li>',
+    '<li><a href="#missing-heading" rel="nofollow">Missing heading</a></li>',
+    '</ul>',
+    '<h2 id="ottimizzazione-delle-analisi-delle-campagne-per-un-roi-superiore">Ottimizzazione delle analisi delle campagne per un ROI superiore</h2>',
+    '<h2 id="2-datengesteuerte-kampagnenanpassungen">2. Datengesteuerte Kampagnenanpassungen</h2>',
+  ].join('');
+  const output = sanitizeArticleHtml(input, { language: 'it' });
+
+  assert.match(
+    output,
+    /href="#ottimizzazione-delle-analisi-delle-campagne-per-un-roi-superiore"/,
+  );
+  assert.match(output, /href="#2-datengesteuerte-kampagnenanpassungen"/);
+  assert.match(output, /<a>Missing heading<\/a>/);
+  assert.doesNotMatch(output, /href="#missing-heading"/);
+});
+
 test('articleTextContent returns normalized visible text', () => {
   assert.equal(articleTextContent('<p>Hello <strong>world</strong>.</p>'), 'Hello world.');
 });

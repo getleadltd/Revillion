@@ -61,6 +61,68 @@ const RECOMMENDED_HEADING_KEYWORDS = Object.freeze([
   'empfohlen',
 ]);
 
+function normalizeFragmentMatchText(value) {
+  return String(value ?? '')
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/^\s*\d+\s*[.)-]?\s*/, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function leadingOrdinal(value) {
+  const match = String(value ?? '').trim().match(/^(\d+)(?:[-.)\s]|$)/);
+  return match?.[1] || null;
+}
+
+function fragmentTextSimilarity(left, right) {
+  const leftTokens = new Set(normalizeFragmentMatchText(left).split(/\s+/).filter(Boolean));
+  const rightTokens = new Set(normalizeFragmentMatchText(right).split(/\s+/).filter(Boolean));
+  if (leftTokens.size === 0 || rightTokens.size === 0) return 0;
+
+  let intersection = 0;
+  for (const token of leftTokens) {
+    if (rightTokens.has(token)) intersection += 1;
+  }
+  return (2 * intersection) / (leftTokens.size + rightTokens.size);
+}
+
+function findFragmentHeading(fragment, linkText, headings) {
+  const normalizedFragment = normalizeFragmentMatchText(fragment);
+  const fragmentOrdinal = leadingOrdinal(fragment);
+  const exactMatches = headings.filter(
+    (heading) => {
+      const headingOrdinal = leadingOrdinal(heading.attribs?.id);
+      return normalizeFragmentMatchText(heading.attribs?.id) === normalizedFragment
+        && (!fragmentOrdinal || !headingOrdinal || fragmentOrdinal === headingOrdinal);
+    },
+  );
+  if (exactMatches.length === 1) return exactMatches[0];
+
+  const ordinal = leadingOrdinal(fragment) || leadingOrdinal(linkText);
+  if (ordinal) {
+    const ordinalMatches = headings.filter(
+      (heading) => leadingOrdinal(heading.attribs?.id) === ordinal
+        || leadingOrdinal(DomUtils.textContent(heading)) === ordinal,
+    );
+    if (ordinalMatches.length === 1) return ordinalMatches[0];
+  }
+
+  const ranked = headings
+    .map((heading) => ({
+      heading,
+      score: fragmentTextSimilarity(linkText, DomUtils.textContent(heading)),
+    }))
+    .sort((left, right) => right.score - left.score);
+  const best = ranked[0];
+  const runnerUp = ranked[1];
+  if (best?.score >= 0.55 && (!runnerUp || best.score - runnerUp.score >= 0.08)) {
+    return best.heading;
+  }
+  return null;
+}
+
 function localizeInternalNavigationHref(href, language) {
   if (!href || !DEFAULT_LANGUAGES.includes(language)) return href;
 
@@ -276,7 +338,7 @@ export function sanitizeArticleHtml(input, { language } = {}) {
     },
   }).trim();
 
-  return removeRecommendedSection(sanitized);
+  return repairArticleFragmentLinks(removeRecommendedSection(sanitized));
 }
 
 /**
@@ -319,6 +381,63 @@ export function removeRecommendedSection(html) {
     const next = current.next;
     DomUtils.removeElement(current);
     current = next;
+  }
+
+  return DomUtils.getInnerHTML(root).trim();
+}
+
+/**
+ * Repair imported table-of-contents fragments after translation or heading
+ * renumbering. If no safe, unique H2 match exists, keep the label but remove
+ * the dead navigation behavior.
+ */
+export function repairArticleFragmentLinks(html) {
+  const normalizedHtml = typeof html === 'string' ? html : '';
+  if (!normalizedHtml) return '';
+
+  const document = parseDocument(
+    `<div data-revillion-fragment-root="">${normalizedHtml}</div>`,
+  );
+  const root = DomUtils.findOne(
+    (node) => node.type === 'tag' && node.attribs?.['data-revillion-fragment-root'] === '',
+    document.children,
+    true,
+  );
+  if (!root) throw new Error('Could not parse article fragment links');
+
+  const idElements = DomUtils.findAll(
+    (node) => node.type === 'tag' && Boolean(node.attribs?.id),
+    root.children,
+  );
+  const knownIds = new Set(idElements.map((node) => node.attribs.id));
+  const headings = idElements.filter((node) => node.name === 'h2');
+  const fragmentLinks = DomUtils.findAll(
+    (node) => node.type === 'tag'
+      && node.name === 'a'
+      && node.attribs?.href?.startsWith('#')
+      && asTrimmedString(node.attribs.rel).toLowerCase().split(/\s+/).includes('nofollow'),
+    root.children,
+  );
+
+  for (const link of fragmentLinks) {
+    const rawFragment = link.attribs.href.slice(1);
+    let fragment = rawFragment;
+    try {
+      fragment = decodeURIComponent(rawFragment);
+    } catch {
+      // Invalid percent encoding cannot match a valid HTML id.
+    }
+    if (knownIds.has(rawFragment) || knownIds.has(fragment)) continue;
+
+    const target = findFragmentHeading(fragment, DomUtils.textContent(link), headings);
+    if (target?.attribs?.id) {
+      link.attribs.href = `#${target.attribs.id}`;
+      continue;
+    }
+
+    delete link.attribs.href;
+    delete link.attribs.rel;
+    delete link.attribs.target;
   }
 
   return DomUtils.getInnerHTML(root).trim();

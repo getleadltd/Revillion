@@ -62,6 +62,101 @@ function localizeInternalNavigationHref(href: string, language?: string): string
   return href;
 }
 
+function normalizeFragmentMatchText(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/^\s*\d+\s*[.)-]?\s*/, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function leadingOrdinal(value: string): string | undefined {
+  return value.trim().match(/^(\d+)(?:[-.)\s]|$)/)?.[1];
+}
+
+function fragmentTextSimilarity(left: string, right: string): number {
+  const leftTokens = new Set(normalizeFragmentMatchText(left).split(/\s+/).filter(Boolean));
+  const rightTokens = new Set(normalizeFragmentMatchText(right).split(/\s+/).filter(Boolean));
+  if (leftTokens.size === 0 || rightTokens.size === 0) return 0;
+
+  let intersection = 0;
+  leftTokens.forEach(token => {
+    if (rightTokens.has(token)) intersection += 1;
+  });
+  return (2 * intersection) / (leftTokens.size + rightTokens.size);
+}
+
+function findFragmentHeading(
+  fragment: string,
+  linkText: string,
+  headings: HTMLHeadingElement[],
+): HTMLHeadingElement | undefined {
+  const normalizedFragment = normalizeFragmentMatchText(fragment);
+  const fragmentOrdinal = leadingOrdinal(fragment);
+  const exactMatches = headings.filter(
+    heading => {
+      const headingOrdinal = leadingOrdinal(heading.id);
+      return normalizeFragmentMatchText(heading.id) === normalizedFragment
+        && (!fragmentOrdinal || !headingOrdinal || fragmentOrdinal === headingOrdinal);
+    },
+  );
+  if (exactMatches.length === 1) return exactMatches[0];
+
+  const ordinal = leadingOrdinal(fragment) || leadingOrdinal(linkText);
+  if (ordinal) {
+    const ordinalMatches = headings.filter(
+      heading => leadingOrdinal(heading.id) === ordinal
+        || leadingOrdinal(heading.textContent || '') === ordinal,
+    );
+    if (ordinalMatches.length === 1) return ordinalMatches[0];
+  }
+
+  const ranked = headings
+    .map(heading => ({
+      heading,
+      score: fragmentTextSimilarity(linkText, heading.textContent || ''),
+    }))
+    .sort((left, right) => right.score - left.score);
+  const best = ranked[0];
+  const runnerUp = ranked[1];
+  if (best?.score >= 0.55 && (!runnerUp || best.score - runnerUp.score >= 0.08)) {
+    return best.heading;
+  }
+  return undefined;
+}
+
+function repairArticleFragmentLinks(container: DocumentFragment): void {
+  const knownIds = new Set(
+    [...container.querySelectorAll<HTMLElement>('[id]')].map(element => element.id),
+  );
+  const headings = [...container.querySelectorAll<HTMLHeadingElement>('h2[id]')];
+
+  container.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => {
+    if (!link.rel.toLowerCase().split(/\s+/).includes('nofollow')) return;
+
+    const rawFragment = link.getAttribute('href')?.slice(1) || '';
+    let fragment = rawFragment;
+    try {
+      fragment = decodeURIComponent(rawFragment);
+    } catch {
+      // Invalid percent encoding cannot match a valid HTML id.
+    }
+    if (knownIds.has(rawFragment) || knownIds.has(fragment)) return;
+
+    const target = findFragmentHeading(fragment, link.textContent || '', headings);
+    if (target) {
+      link.setAttribute('href', `#${target.id}`);
+      return;
+    }
+
+    link.removeAttribute('href');
+    link.removeAttribute('rel');
+    link.removeAttribute('target');
+  });
+}
+
 function sanitizeArticleContent(html: string, language?: string): string {
   const sanitized = DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 's', 'a', 'ul', 'ol', 'li', 'br', 'hr', 'img', 'figure', 'figcaption', 'blockquote', 'code', 'pre', 'span', 'div', 'table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td'],
@@ -85,6 +180,7 @@ function sanitizeArticleContent(html: string, language?: string): string {
     const href = link.getAttribute('href');
     if (href) link.setAttribute('href', localizeInternalNavigationHref(href, language));
   });
+  repairArticleFragmentLinks(template.content);
   return template.innerHTML;
 }
 
