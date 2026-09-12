@@ -1,4 +1,5 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
+import type { ComponentType } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,7 +22,7 @@ import { SITE_LANGUAGES } from './lib/dashboard';
 
 // Lazy-loaded public pages
 const Blog = lazy(() => import("./pages/Blog"));
-const BlogPost = lazy(() => import("./pages/BlogPost"));
+const LazyBlogPost = lazy(() => import("./pages/BlogPost"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
@@ -65,14 +66,28 @@ const LanguageGuard = () => {
 };
 
 // Animated page wrapper
-const AnimatedRoutes = () => {
+type AnimatedRoutesProps = {
+  initialBlogPostComponent?: ComponentType;
+  disableInitialAnimation?: boolean;
+};
+
+const AnimatedRoutes = ({
+  initialBlogPostComponent: BlogPost = LazyBlogPost,
+  disableInitialAnimation = false,
+}: AnimatedRoutesProps) => {
   const location = useLocation();
+  const isInitialRender = useRef(true);
+
+  useEffect(() => {
+    isInitialRender.current = false;
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
         variants={pageVariants}
-        initial="initial"
+        initial={disableInitialAnimation && isInitialRender.current ? false : "initial"}
         animate="animate"
         exit="exit"
       >
@@ -116,7 +131,12 @@ const AnimatedRoutes = () => {
 
 const queryClient = new QueryClient();
 
-const App = () => (
+type AppProps = {
+  initialBlogPostComponent?: ComponentType;
+  disableInitialRouteAnimation?: boolean;
+};
+
+const App = ({ initialBlogPostComponent, disableInitialRouteAnimation }: AppProps) => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <TooltipProvider>
@@ -128,7 +148,10 @@ const App = () => (
             <GAListener />
             <CookieBanner />
             <RedirectHandler />
-            <AnimatedRoutes />
+            <AnimatedRoutes
+              initialBlogPostComponent={initialBlogPostComponent}
+              disableInitialAnimation={disableInitialRouteAnimation}
+            />
           </TrackingProvider>
         </BrowserRouter>
       </TooltipProvider>

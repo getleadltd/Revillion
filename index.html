@@ -29,7 +29,33 @@
     <!-- SEO_STATIC_START -->
     <title data-rh="true">Revillion Partners</title>
     <meta data-rh="true" name="description" content="Revillion Partners iGaming affiliate network." />
+    <meta data-rh="true" name="robots" content="noindex, follow" />
     <!-- SEO_STATIC_END -->
+    <script>
+      (() => {
+        const canonicalHost = 'revillion-partners.com';
+        let pathname = window.location.pathname.replace(/\/{2,}/g, '/');
+
+        if (pathname === '/') {
+          pathname = '/en';
+        } else {
+          pathname = pathname
+            .replace(/\/index\.html$/i, '')
+            .replace(/\.html$/i, '')
+            .replace(/\/$/, '');
+          if (!pathname) pathname = '/en';
+        }
+
+        if (window.location.hostname === `www.${canonicalHost}` || pathname !== window.location.pathname) {
+          const hostname = window.location.hostname === `www.${canonicalHost}`
+            ? canonicalHost
+            : window.location.host;
+          window.location.replace(
+            `${window.location.protocol}//${hostname}${pathname}${window.location.search}${window.location.hash}`,
+          );
+        }
+      })();
+    </script>
   </head>
 
   <body>

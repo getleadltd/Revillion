@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getBlogBootstrapPost } from '@/lib/blogBootstrap';
 
 export const useBlogPost = (slug: string, lang: string) => {
   const queryClient = useQueryClient();
@@ -30,6 +31,11 @@ export const useBlogPost = (slug: string, lang: string) => {
       
       return data;
     },
+    initialData: () => getBlogBootstrapPost(lang, slug),
+    // Bootstrap data removes the loading-only first render, while Supabase remains
+    // the source of truth and refreshes the article immediately in the background.
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   const incrementViewsMutation = useMutation({
