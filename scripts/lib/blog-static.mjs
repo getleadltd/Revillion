@@ -61,6 +61,38 @@ const RECOMMENDED_HEADING_KEYWORDS = Object.freeze([
   'empfohlen',
 ]);
 
+function localizeInternalNavigationHref(href, language) {
+  if (!href || !DEFAULT_LANGUAGES.includes(language)) return href;
+
+  const rewritePath = (pathname) => {
+    if (pathname === '/' || pathname === '') return `/${language}`;
+    if (/^\/(?:en\/)?blog\/?$/i.test(pathname)) return `/${language}/blog`;
+    if (pathname.startsWith('/blog/')) return `/${language}${pathname}`;
+    return pathname;
+  };
+
+  let parsed;
+  try {
+    parsed = new URL(href);
+  } catch {
+    parsed = null;
+  }
+
+  if (parsed?.origin === DEFAULT_SITE_URL) {
+    const rewrittenPath = rewritePath(parsed.pathname);
+    if (rewrittenPath === parsed.pathname) return href;
+    parsed.pathname = rewrittenPath;
+    return parsed.href;
+  }
+
+  if (href.startsWith('/')) {
+    const match = href.match(/^([^?#]*)(.*)$/);
+    return `${rewritePath(match?.[1] || '')}${match?.[2] || ''}`;
+  }
+
+  return href;
+}
+
 /** Escape a value for an HTML text or quoted-attribute context. */
 export function escapeHtml(value) {
   return String(value ?? '')
@@ -220,8 +252,11 @@ export function sanitizeArticleHtml(input, { language } = {}) {
       h1: 'h2',
       a: (tagName, attribs) => {
         const attributes = { ...attribs };
-        if (normalizedLanguage && attributes.href?.startsWith('/blog/')) {
-          attributes.href = `/${normalizedLanguage}${attributes.href}`;
+        if (normalizedLanguage && attributes.href) {
+          attributes.href = localizeInternalNavigationHref(
+            attributes.href,
+            normalizedLanguage,
+          );
         }
         if (attributes.target === '_blank') {
           const rel = new Set(asTrimmedString(attributes.rel).split(/\s+/).filter(Boolean));
@@ -271,7 +306,8 @@ export function removeRecommendedSection(html) {
   );
   const recommendedHeading = headings.findLast((heading) => {
     const headingText = DomUtils.textContent(heading).replace(/\s+/g, ' ').trim().toLowerCase();
-    return RECOMMENDED_HEADING_KEYWORDS.some((keyword) => headingText.includes(keyword));
+    return heading.attribs?.id?.toLowerCase() === 'recommended'
+      || RECOMMENDED_HEADING_KEYWORDS.some((keyword) => headingText.includes(keyword));
   });
   if (!recommendedHeading) return normalizedHtml.trim();
 

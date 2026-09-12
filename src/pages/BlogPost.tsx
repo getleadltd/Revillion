@@ -28,7 +28,41 @@ const BREADCRUMB_LABELS: Record<string, { home: string; blog: string }> = {
   es: { home: 'Inicio', blog: 'Blog' },
 };
 
-function sanitizeArticleContent(html: string): string {
+function localizeInternalNavigationHref(href: string, language?: string): string {
+  const normalizedLanguage = language && BREADCRUMB_LABELS[language] ? language : undefined;
+  if (!href || !normalizedLanguage) return href;
+
+  const rewritePath = (pathname: string) => {
+    if (pathname === '/' || pathname === '') return `/${normalizedLanguage}`;
+    if (/^\/(?:en\/)?blog\/?$/i.test(pathname)) return `/${normalizedLanguage}/blog`;
+    if (pathname.startsWith('/blog/')) return `/${normalizedLanguage}${pathname}`;
+    return pathname;
+  };
+
+  const siteUrl = 'https://revillion-partners.com';
+  let parsed: URL | null;
+  try {
+    parsed = new URL(href);
+  } catch {
+    parsed = null;
+  }
+
+  if (parsed?.origin === siteUrl) {
+    const rewrittenPath = rewritePath(parsed.pathname);
+    if (rewrittenPath === parsed.pathname) return href;
+    parsed.pathname = rewrittenPath;
+    return parsed.href;
+  }
+
+  if (href.startsWith('/')) {
+    const match = href.match(/^([^?#]*)(.*)$/);
+    return `${rewritePath(match?.[1] || '')}${match?.[2] || ''}`;
+  }
+
+  return href;
+}
+
+function sanitizeArticleContent(html: string, language?: string): string {
   const sanitized = DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'strong', 'em', 'u', 's', 'a', 'ul', 'ol', 'li', 'br', 'hr', 'img', 'figure', 'figcaption', 'blockquote', 'code', 'pre', 'span', 'div', 'table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td'],
     ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'width', 'height', 'loading', 'id', 'colspan', 'rowspan', 'scope'],
@@ -46,6 +80,10 @@ function sanitizeArticleContent(html: string): string {
     rel.add('noopener');
     rel.add('noreferrer');
     link.setAttribute('rel', [...rel].join(' '));
+  });
+  template.content.querySelectorAll('a[href]').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href) link.setAttribute('href', localizeInternalNavigationHref(href, language));
   });
   return template.innerHTML;
 }
@@ -111,7 +149,7 @@ function removeRecommendedSection(html: string): string {
     
     headings.forEach(heading => {
       const text = heading.textContent?.toLowerCase() || '';
-      if (keywords.some(keyword => text.includes(keyword))) {
+      if (heading.id.toLowerCase() === 'recommended' || keywords.some(keyword => text.includes(keyword))) {
         recommendedHeader = heading;
       }
     });
@@ -313,7 +351,7 @@ const BlogPost = () => {
   const metaDesc = post[`meta_description_${lang}` as keyof typeof post] as string || post.meta_description_en;
   
   // Remove hardcoded "Consigliati" section from imported articles, then format
-  const safeRawContent = sanitizeArticleContent(rawContent);
+  const safeRawContent = sanitizeArticleContent(rawContent, lang);
   const cleanedContent = removeRecommendedSection(safeRawContent);
   const formattedContent = formatHTMLContent(cleanedContent);
   const normalizedContent = normalizeEmbeddedHeadings(formattedContent);
@@ -328,7 +366,7 @@ const BlogPost = () => {
   const htmlWithFAQStyling = wrapFAQContent(htmlWithLangLinks);
   
   // Sanitize HTML to prevent XSS attacks
-  const sanitizedContent = sanitizeArticleContent(htmlWithFAQStyling);
+  const sanitizedContent = sanitizeArticleContent(htmlWithFAQStyling, lang);
 
   const currentUrl = `https://revillion-partners.com/${lang}/blog/${slug}`;
   const seoTitle = title.endsWith('| Revillion Partners')

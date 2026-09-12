@@ -90,6 +90,14 @@ test('article sanitizer strips active content and normalizes nested H1 to H2', (
     '<p onmouseover="alert(1)">Safe paragraph</p>',
     '<a href="javascript:alert(1)" onclick="alert(1)">bad link</a>',
     '<a href="/blog/next-guide" target="_blank">internal link</a>',
+    '<a href="https://revillion-partners.com">absolute home</a>',
+    '<a href="https://revillion-partners.com?utm_source=article">absolute home with query</a>',
+    '<a href="https://revillion-partners.com#top">absolute home with fragment</a>',
+    '<a href="https://revillion-partners.com/?next=/">query ending with slash</a>',
+    '<a href="https://revillion-partners.com/#/">fragment ending with slash</a>',
+    '<a href="https://revillion-partners.com.example.test/">lookalike external origin</a>',
+    '<a href="/">relative home</a>',
+    '<a href="https://revillion-partners.com/en/blog">blog index</a>',
     '<img src="javascript:alert(1)" onerror="alert(1)" alt="cover">',
     '<img src="http://images.example.test/insecure.jpg" alt="insecure">',
     '<img src="https://images.example.test/secure.jpg" alt="secure">',
@@ -104,9 +112,21 @@ test('article sanitizer strips active content and normalizes nested H1 to H2', (
   assert.doesNotMatch(output, /http:\/\/images\.example\.test\/insecure\.jpg/i);
   assert.match(output, /src="https:\/\/images\.example\.test\/secure\.jpg"/);
   assert.match(output, /href="\/it\/blog\/next-guide"/);
+  assert.match(output, /href="https:\/\/revillion-partners\.com\/it"/);
+  assert.match(output, /href="https:\/\/revillion-partners\.com\/it\?utm_source=article"/);
+  assert.match(output, /href="https:\/\/revillion-partners\.com\/it#top"/);
+  assert.match(output, /href="https:\/\/revillion-partners\.com\/it\?next=\/"/);
+  assert.match(output, /href="https:\/\/revillion-partners\.com\/it#\/"/);
+  assert.match(output, /href="https:\/\/revillion-partners\.com\.example\.test\/"/);
+  assert.match(output, /href="\/it"/);
+  assert.match(output, /href="https:\/\/revillion-partners\.com\/it\/blog"/);
   assert.match(output, /rel="noopener noreferrer"/);
   assert.match(output, /Safe paragraph/);
   assert.equal(normalizeArticleHtml(input, { language: 'it' }), output);
+  assert.match(
+    sanitizeArticleHtml('<a href="/">unsupported language</a>', { language: 'fr' }),
+    /href="\/"/,
+  );
 });
 
 test('article sanitizer removes localized recommendation blocks and preserves the next H2', () => {
@@ -130,6 +150,11 @@ test('article sanitizer removes localized recommendation blocks and preserves th
 
   assert.equal(
     removeRecommendedSection('<h2>Recommended</h2><p>Remove me.</p>'),
+    '',
+  );
+
+  assert.equal(
+    removeRecommendedSection('<h2 id="recommended">Empfehlungen</h2><p>Remove localized.</p>'),
     '',
   );
 
