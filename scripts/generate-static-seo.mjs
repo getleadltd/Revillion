@@ -39,7 +39,7 @@ const homeMeta = {
   de: ['Revillion Partners - iGaming-Partnerprogramm', 'Treten Sie Revillions iGaming-Affiliate-Netzwerk bei. Nutzen Sie CPA-, RevShare- und Hybrid-Deals mit persönlichem Support und Echtzeit-Tracking.'],
   it: ['Revillion Partners - Programma Affiliazione iGaming', 'Entra nel network di affiliazione iGaming Revillion. Accedi ad accordi CPA, RevShare e ibridi con supporto dedicato e tracking in tempo reale.'],
   pt: ['Revillion Partners - Programa de Afiliados iGaming', 'Junte-se à rede de afiliados iGaming Revillion. Acesse acordos CPA, RevShare e híbridos com suporte dedicado e rastreamento em tempo real.'],
-  es: ['Revillion Partners - Programa de Afiliados iGaming', 'Únete a la red de afiliados iGaming Revillion. Accede a acuerdos CPA, RevShare e híbridos con soporte dedicado y seguimiento en tiempo real.'],
+  es: ['Revillion Partners - Programa de Afiliación iGaming', 'Únete a la red de afiliados iGaming Revillion. Accede a acuerdos CPA, RevShare e híbridos con soporte dedicado y seguimiento en tiempo real.'],
 };
 
 const routeMeta = {
@@ -81,7 +81,7 @@ const routeMeta = {
   },
   blog: {
     en: ['iGaming Affiliate Blog & News | Revillion Partners', 'Affiliate marketing guides, casino promotion strategies and iGaming industry news from Revillion Partners.'],
-    de: ['iGaming Affiliate Blog & News | Revillion Partners', 'Affiliate-Marketing-Ratgeber, Casino-Strategien und iGaming-Branchennews von Revillion Partners.'],
+    de: ['iGaming-Affiliate-Blog & Branchennews | Revillion Partners', 'Affiliate-Marketing-Ratgeber, Casino-Strategien und iGaming-Branchennews von Revillion Partners.'],
     it: ['Blog Affiliazione iGaming e News | Revillion Partners', 'Guide di affiliate marketing, strategie di promozione casino e notizie iGaming da Revillion Partners.'],
     pt: ['Blog de Afiliados iGaming e Notícias | Revillion Partners', 'Guias de marketing de afiliados, estratégias de casino e notícias iGaming da Revillion Partners.'],
     es: ['Blog de Afiliados iGaming y Noticias | Revillion Partners', 'Guías de marketing de afiliación, estrategias de casino y noticias iGaming de Revillion Partners.'],
@@ -94,6 +94,39 @@ const routeMeta = {
     es: ['Campaña de afiliados | Revillion Partners', 'Página de campaña de afiliados de Revillion Partners.'],
   },
 };
+
+function validateLocalizedRouteMeta(metadata) {
+  for (const [route, localizedMeta] of Object.entries(metadata)) {
+    const seenTitles = new Map();
+    const seenDescriptions = new Map();
+    for (const language of LANGUAGES) {
+      const values = localizedMeta[language];
+      if (
+        !Array.isArray(values)
+        || values.length !== 2
+        || values.some((value) => typeof value !== 'string' || value.trim().length === 0)
+      ) {
+        throw new Error(`Static SEO metadata is incomplete for route "${route}" and language "${language}"`);
+      }
+      const [title, description] = values;
+      for (const [kind, value, seen] of [
+        ['title', title, seenTitles],
+        ['description', description, seenDescriptions],
+      ]) {
+        const normalized = value.trim().toLowerCase();
+        const previousLanguage = seen.get(normalized);
+        if (previousLanguage) {
+          throw new Error(
+            `Duplicate static SEO ${kind} for route "${route}": ${previousLanguage} and ${language}`,
+          );
+        }
+        seen.set(normalized, language);
+      }
+    }
+  }
+}
+
+validateLocalizedRouteMeta(routeMeta);
 
 const indexableRoutes = Object.keys(routeMeta).filter((route) => route !== 'earn');
 
